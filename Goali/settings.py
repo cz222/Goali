@@ -99,11 +99,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
-
-#authentication stuff
-from django.contrib.auth.views import login, logout
-
-urlpatterns = patterns('',
-	(r'^accounts/login/$', login),
-	(r'^accounts/logout/$', logout),
-)
