@@ -7,8 +7,8 @@ class RegisterForm(forms.Form):
 	"""
     username = models.RegexField(required = True, max_length=30, regex=r'^[\w.@+-]+$', error_messages={'invalid': "This value may contain only letters, numbers, and @/./+/-/_ characters."})
 	email = forms.EmailField(required = True)
-	first_name = forms.CharField(required = True)
-	last_name = forms.CharField(required = True)
+	first_name = forms.CharField(required = True, max_length=30)
+	last_name = forms.CharField(required = True, max_length=30)
 	password1 = models.PasswordField(required = True, widget=forms.PasswordInput)
 	password2 = models.PasswordField(required = True, widget=forms.PasswordInput)
 	
