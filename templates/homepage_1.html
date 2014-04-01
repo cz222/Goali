@@ -1,11 +1,22 @@
-{% extends "homepage.html" %}
+<html>
+<head>
+	{% load bootstrap3 %}
+	<link rel= "stylesheet" href = "../static/css/home.css">
+	{% bootstrap_css %}
+	{% bootstrap_javascript %}
+	{% bootstrap_messages %}
+</head>
+<body>
 
-{% block content %}
-	{% if form.errors %}
+<p>Welcome to Goali!</p>
+<a href="#">Learn More</a>
+
+{% block form %}
+{% if form.errors %}
 		<p class="error">Sorry, that's not a valid username or password</p>
 	{% endif %}
 	
-	<form action="" method="post".
+	<form action="" method="post">
 		<label for="username">Username:</label>
 		<input type="text" name="username" value="" id="username">
 		<label for="email">Email:</label>
@@ -22,5 +33,20 @@
 		<input type="submit" value="login"/>
 		<input type="hidden" name="next" value="{{ next|escape }}" />
 	</form>
-	
 {% endblock %}
+
+{% block bottomnav %}
+	<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+		<ul>
+			<li><img href="../static/img/G-logo.jpg" alt="logo"/></li>
+			<li></li>
+			<li></li>
+		</ul>
+	</nav>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
+</body>
+</html>

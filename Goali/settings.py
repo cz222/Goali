@@ -35,7 +35,7 @@ INSTALLED_APPS = (
 #    'django.contrib.contenttypes',
 #    'django.contrib.sessions',
 #    'django.contrib.messages',
-#    'django.contrib.staticfiles',
+	'django.contrib.staticfiles',
 	'accounts',
 	'books',
 	'django.contrib.admin',
@@ -43,6 +43,7 @@ INSTALLED_APPS = (
 	'django.contrib.contenttypes',
 	'django.contrib.messages',
 	'django.contrib.sessions',
+	'bootstrap3',
 )
 
 MIDDLEWARE_CLASSES = (
