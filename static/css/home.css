@@ -12,6 +12,35 @@ a{
 	color:#fff;
 }
 
+#lean_overlay {
+    position: fixed;
+    z-index:100;
+    top: 0px;
+    left: 0px;
+    height:100%;
+    width:100%;
+    background: #000;
+    display: none;
+}
+
+#signin-form{
+	display:none;
+}
+
+.modal_close{
+	position: absolute;
+	top:12px;
+	right:12px;
+	display:block;
+	width: 14px;
+	height: 14px;
+}
+
+.modal_close img{
+	width: 14px;
+	height: 14px;
+}
+
 .intro{
 	float:left;
 	font-size: 18px;
@@ -85,6 +114,10 @@ h3{
 
 #password2{
 	margin-bottom: 10px;
+}
+
+#email-signin{
+	margin-bottom:15px;
 }
 
 #home-logo{
