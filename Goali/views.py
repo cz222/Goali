@@ -1,6 +1,4 @@
 import datetime, random, sha
-
-
 from django.contrib import auth
 from django.core.context_processors import csrf
 from django.core.mail import send_mail
@@ -10,9 +8,9 @@ from django.template import Template, Context
 from django.template.loader import get_template
 
 from forms import RegisterForm, ContactForm
-from models import User
-	
-def register(request):
+from accounts.models import User
+
+def homepage(request):
 	"""
 	Register a new user. Salt hash (use sha) and email them an activation key
 	"""
@@ -22,7 +20,7 @@ def register(request):
 			#Make activation key, STILL NEED TO WRITE VIEW FOR CONFIRMATION
 			salt = sha.new(str(random.random())).hexdigest()[:5]
 			activation_key = sha.new(salt+new_user.username).hexdigest()
-			key_expires = datetime.datetime.today() + datetime.timedelta92)
+			key_expires = datetime.datetime.today() + datetime.timedelta(92)
 			
 			#save new user
 			new_user = form.save()
@@ -34,9 +32,9 @@ def register(request):
 			
 			return HttpResponseRedirect("/account/")
 	else:
-		form = UserCreationForm()
-	return render(request, "registration/register.html", { 'form': form,})
-	
+		form = RegisterForm()
+	return render(request, "homepage.html", { 'form': form,})
+
 def login(request):
 	if request.method != 'POST':
 		#test for cookies
@@ -49,18 +47,16 @@ def login(request):
 		if m.password == request.POST['password']:
 			request.sessions['member_id'] = m.id
 			return HttpResponseRedirect('/you-are-logged-in/')
-		except Member.DoesNotExist:
-			return HttpResponse("Your username and password didn't match.")
-			
+	except Member.DoesNotExist:
+		return HttpResponse("Your username and password didn't match.")
+
+
 def logout(request):
 	try:
 		del request.session['member_id']
 	except KeyError:
 		pass
 	return HttpResponse("You're logged out.")
-
-
-
 
 def hello(request):
 	return HttpResponse("Hello world")
@@ -70,6 +66,8 @@ def current_datetime(request):
 	t = get_template('current_datetime.html')
 	html = t.render(Context({'current_date': now}))
 	return HttpResponse(html)
+	
+
 
 #contact web owner
 def contact(request):

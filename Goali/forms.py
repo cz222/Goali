@@ -1,16 +1,15 @@
 from django import forms
 from django.contrib.auth.models import User
 
+
 class RegisterForm(forms.Form):
 	"""
 	Form for registering new use account
 	"""
-    username = models.RegexField(required = True, max_length=30, regex=r'^[\w.@+-]+$', error_messages={'invalid': "This value may contain only letters, numbers, and @/./+/-/_ characters."})
-	email = forms.EmailField(required = True)
-	first_name = forms.CharField(required = True, max_length=30)
-	last_name = forms.CharField(required = True, max_length=30)
-	password1 = models.PasswordField(required = True, widget=forms.PasswordInput)
-	password2 = models.PasswordField(required = True, widget=forms.PasswordInput)
+	username = forms.RegexField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Username'}), max_length=30, regex=r'^[\w.@+-]+$', error_messages={'invalid': "This value may contain only letters, numbers, and @/./+/-/_ characters."})
+	email = forms.EmailField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Email'}))
+	password = forms.CharField(required = True, label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+	repeat_password = forms.CharField(required = True, label='', widget=forms.PasswordInput(attrs={'placeholder': 'Repeat Password'}))
 	
 	class Meta:
 		model = User
@@ -23,18 +22,18 @@ class RegisterForm(forms.Form):
 		user_exists = User.objects.filter(username_exact=self.cleaned_data['username'])
 		if user_exists():
 			raise forms.ValidationError('Username is already taken.')
-		else
+		else:
 			return True
 	
 	def clean_passwords(self):
 		"""
 		Validate that the two passwords match
 		"""
-		if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
-			if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+		if 'password' in self.cleaned_data and 'repeat_password' in self.cleaned_data:
+			if self.cleaned_data['password'] != self.cleaned_data['repeat_password']:
 				raise forms.ValidationError("The two password fields did not match.")
 		return True
-	
+		
 	def clean_email(self):
 		"""
 		Validates that the email isn't in use
@@ -51,7 +50,7 @@ class RegisterForm(forms.Form):
 		user.email = self.cleaned_data['email']
 		user.first_name = self.cleaned_data['first_name']
 		user.last_name = self.cleaned_data['last_name']
-		user.set_password(self.cleaned_data['password1'])
+		user.set_password(self.cleaned_data['password'])
 		
 		if commit:
 			user.save()

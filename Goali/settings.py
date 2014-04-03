@@ -26,6 +26,9 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#LOGIN URL
+LOGIN_URL = '/homepage/'
+
 
 # Application definition
 
@@ -35,26 +38,25 @@ INSTALLED_APPS = (
 #    'django.contrib.contenttypes',
 #    'django.contrib.sessions',
 #    'django.contrib.messages',
-#    'django.contrib.staticfiles',
+	'django.contrib.staticfiles',
 	'accounts',
-	'books',
 	'django.contrib.admin',
 	'django.contrib.auth',
 	'django.contrib.contenttypes',
 	'django.contrib.messages',
 	'django.contrib.sessions',
+	'bootstrap3',
 )
 
 MIDDLEWARE_CLASSES = (
 #    'django.contrib.sessions.middleware.SessionMiddleware',
 #    'django.middleware.common.CommonMiddleware',
 #    'django.middleware.csrf.CsrfViewMiddleware',
-#    'django.contrib.auth.middleware.AuthenticationMiddleware',
 #    'django.contrib.messages.middleware.MessageMiddleware',
 #    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'django.middleware.common.CommonMiddleware',
-	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.contrib.sessions.middleware.SessionMiddleware',
+	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
@@ -99,3 +101,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+	os.path.join(BASE_DIR, "static"),
+	'/var/www/static/',
+)
