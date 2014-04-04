@@ -1,4 +1,4 @@
-import datetime, random, sha
+import datetime, random, hashlib
 from django.contrib import auth
 from django.core.context_processors import csrf
 from django.core.mail import send_mail
@@ -18,9 +18,9 @@ def homepage(request):
 		form = RegisterForm(request.POST)
 		if form.is_valid() and form.clean_passwords and form.clean_username and form.clean_email:
 			#Make activation key, STILL NEED TO WRITE VIEW FOR CONFIRMATION
-			salt = sha.new(str(random.random())).hexdigest()[:5]
-			activation_key = sha.new(salt+new_user.username).hexdigest()
-			key_expires = datetime.datetime.today() + datetime.timedelta(92)
+			#salt = sha.new(str(random.random())).hexdigest()[:5]
+			#activation_key = sha.new(salt+new_user.username).hexdigest()
+			#key_expires = datetime.datetime.today() + datetime.timedelta(92)
 			
 			#save new user
 			new_user = form.save()
@@ -57,17 +57,6 @@ def logout(request):
 	except KeyError:
 		pass
 	return HttpResponse("You're logged out.")
-
-def hello(request):
-	return HttpResponse("Hello world")
-	
-def current_datetime(request):
-	now = datetime.datetime.now()
-	t = get_template('current_datetime.html')
-	html = t.render(Context({'current_date': now}))
-	return HttpResponse(html)
-	
-
 
 #contact web owner
 def contact(request):
