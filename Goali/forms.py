@@ -2,25 +2,25 @@ from django import forms
 from django.contrib.auth.models import User
 
 
-class RegisterForm(forms.Form):
+class RegisterForm(forms.ModelForm):
 	"""
 	Form for registering new use account
 	"""
 	username = forms.RegexField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Username'}), max_length=30, regex=r'^[\w.@+-]+$', error_messages={'invalid': "This value may contain only letters, numbers, and @/./+/-/_ characters."})
-	email = forms.EmailField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Email'}))
+	email = forms.EmailField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Email', 'type': 'email'}))
 	password = forms.CharField(required = True, label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
 	repeat_password = forms.CharField(required = True, label='', widget=forms.PasswordInput(attrs={'placeholder': 'Repeat Password'}))
 	
 	class Meta:
 		model = User
-		fields = ('username', 'email', 'first_name', 'last_name')
+		fields = ('username', 'email')
 	
 	def clean_username(self):
 		"""
 		Validate the username to be alphanumeric and see if it's in use.
 		"""
-		user_exists = User.objects.filter(username_exact=self.cleaned_data['username'])
-		if user_exists():
+		username = self.cleaned_data['username']
+		if User.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
 			raise forms.ValidationError('Username is already taken.')
 		else:
 			return True
@@ -38,9 +38,11 @@ class RegisterForm(forms.Form):
 		"""
 		Validates that the email isn't in use
 		"""
-		if User.objects.filter(email_exact=self.cleaned_data['email']):
-			raise forms.ValidationError("This email address is already in use.")
-		return True
+		email = self.cleaned_data['email']
+		if User.objects.exclude(pk=self.instance.pk).filter(email=email).exists():
+			raise forms.ValidationError('This email is already registered.')
+		else:
+			return True
 	
 	def save(self, commit = True):
 		"""
@@ -48,8 +50,6 @@ class RegisterForm(forms.Form):
 		"""
 		user = super(RegisterForm, self).save(commit = False)
 		user.email = self.cleaned_data['email']
-		user.first_name = self.cleaned_data['first_name']
-		user.last_name = self.cleaned_data['last_name']
 		user.set_password(self.cleaned_data['password'])
 		
 		if commit:

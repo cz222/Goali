@@ -9,9 +9,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Goali</title>
-	
+
 	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.4.2/pure-min.css" type="text/css">
-	
+
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script type="text/javascript" src="{{STATIC_URL}}js/jquery-2.1.0.min.js"></script>
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -60,16 +60,16 @@
 			  </div>
 
 		<div id="formwrapper">
-		
+
 		<form class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
 			<p>New to Goali?</p>
 			{% bootstrap_form form %}
+
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Sign Up for Goali Now!"/>
 			<p><a id="signintext" href="#signin-form" rel="signin-form">Or Sign In Here</a></p>
 			<input type="hidden" name="next" value="{{ next|escape }}" />
 		</form>
-
 
     <!-- Signin form-->
     <form class="pure-form pure-form-stacked" action="" method="post" id="signin-form">
@@ -81,9 +81,6 @@
       </fieldset>
       <input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit"/>
     </form>
-
-		
->>>>>>> upstream/master
 	</div>
 
 	</div>
