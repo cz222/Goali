@@ -1,19 +1,19 @@
 from django import forms
 from django.contrib.auth.models import User
-
+from django.core.validators import validate_email
 
 class RegisterForm(forms.ModelForm):
 	"""
 	Form for registering new use account
 	"""
 	username = forms.RegexField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Username'}), max_length=30, regex=r'^[\w.@+-]+$', error_messages={'invalid': "This value may contain only letters, numbers, and @/./+/-/_ characters."})
-	email = forms.EmailField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Email', 'type': 'email'}))
-	password = forms.CharField(required = True, label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
-	repeat_password = forms.CharField(required = True, label='', widget=forms.PasswordInput(attrs={'placeholder': 'Repeat Password'}))
-	
+	email = forms.EmailField(max_length=75, required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Email'}))
+	password1 = forms.CharField(max_length=70, required = True, label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+	password2 = forms.CharField(max_length=70, required = True, label='', widget=forms.PasswordInput(attrs={'placeholder': 'Repeat Password'}))
+
 	class Meta:
 		model = User
-		fields = ('username', 'email')
+		fields = ('username', 'email',)
 	
 	def clean_username(self):
 		"""
@@ -21,19 +21,10 @@ class RegisterForm(forms.ModelForm):
 		"""
 		username = self.cleaned_data['username']
 		if User.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
-			raise forms.ValidationError('Username is already taken.')
+			raise forms.ValidationError('This username is already taken.')
 		else:
-			return True
+			return username
 	
-	def clean_passwords(self):
-		"""
-		Validate that the two passwords match
-		"""
-		if 'password' in self.cleaned_data and 'repeat_password' in self.cleaned_data:
-			if self.cleaned_data['password'] != self.cleaned_data['repeat_password']:
-				raise forms.ValidationError("The two password fields did not match.")
-		return True
-		
 	def clean_email(self):
 		"""
 		Validates that the email isn't in use
@@ -42,7 +33,17 @@ class RegisterForm(forms.ModelForm):
 		if User.objects.exclude(pk=self.instance.pk).filter(email=email).exists():
 			raise forms.ValidationError('This email is already registered.')
 		else:
-			return True
+			return email
+			
+	def clean_password2(self):
+		"""
+		Validate that the two passwords match
+		"""
+		password1 = self.cleaned_data.get("password1")
+		password2 = self.cleaned_data.get("password2")
+		if password1 and password2 and password1 != password2:
+			raise forms.ValidationError("Your passwords don't match.")
+		return password2
 	
 	def save(self, commit = True):
 		"""
@@ -50,12 +51,14 @@ class RegisterForm(forms.ModelForm):
 		"""
 		user = super(RegisterForm, self).save(commit = False)
 		user.email = self.cleaned_data['email']
-		user.set_password(self.cleaned_data['password'])
+		user.set_password(self.cleaned_data['password1'])
 		
 		if commit:
 			user.save()
 		return user
-	
+
+
+		
 class RegisterTermsOfService(RegisterForm):
 	"""
 	adds required checkbox for reading Terms of Service
