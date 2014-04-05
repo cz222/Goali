@@ -16,7 +16,8 @@ def homepage(request):
 	"""
 	if request.method == 'POST':
 		form = RegisterForm(request.POST)
-		if form.is_valid() and form.clean_passwords and form.clean_username and form.clean_email:
+		if form.is_valid():
+		#if form.is_valid() and form.clean_passwords and form.clean_username and form.clean_email:
 			#Make activation key, STILL NEED TO WRITE VIEW FOR CONFIRMATION
 			#salt = sha.new(str(random.random())).hexdigest()[:5]
 			#activation_key = sha.new(salt+new_user.username).hexdigest()
@@ -30,7 +31,7 @@ def homepage(request):
 			#email_body = "Hello, %s! Thank you for signing up for a Goali account!\nTo activate your account, click this link within 48 \hours:\n\nhttp://example.com/accounts/confirm/%s" % (new_user.username,new_profile.activation_key)
 			#send_mail(email_subject,email_body,'admin@goali.net',[new_user.email])
 			
-			return HttpResponseRedirect("/account/")
+			return HttpResponseRedirect("Registration Works!")
 	else:
 		form = RegisterForm()
 	return render(request, "homepage.html", { 'form': form,})
@@ -43,8 +44,12 @@ def login(request):
 			return
 		raise Http404('Only POSTs are allowed')
 	try:
-		m = Member.objects.get(username=request.POST['username'])
-		if m.password == request.POST['password']:
+		username = request.POST.get('username', '')
+		password = request.POST.get('password', '')
+		user = auth.authenticate(username=username, password=password)
+		#if user is not None and user.is_active:
+		if user is not None:
+			auth.login(request, user)
 			request.sessions['member_id'] = m.id
 			return HttpResponseRedirect('/you-are-logged-in/')
 	except Member.DoesNotExist:
@@ -52,10 +57,7 @@ def login(request):
 
 
 def logout(request):
-	try:
-		del request.session['member_id']
-	except KeyError:
-		pass
+	auth.logout(request)
 	return HttpResponse("You're logged out.")
 
 #contact web owner

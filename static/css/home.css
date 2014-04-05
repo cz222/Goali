@@ -3,6 +3,11 @@
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
 @import url(http://fonts.googleapis.com/css?family=Montserrat);
 
+#home-logo{
+	width: 40px;
+	height:auto;
+}
+
 body{
 	background-color:#47a938; 
 	font-family:'Open Sans', Arial, sans-serif;
@@ -21,26 +26,26 @@ a{
     width:100%;
     background: #000;
     display: none;
- }
- 
- #signin-form{
- 	display:none;
- }
- 
- .modal_close{
- 	position: absolute;
- 	top:12px;
- 	right:12px;
- 	display:block;
- 	width: 14px;
- 	height: 14px;
- }
- 
- .modal_close img{
- 	width: 14px;
- 	height: 14px;
- }
- 
+}
+
+#signin-form{
+	display:none;
+}
+
+.modal_close{
+	position: absolute;
+	top:12px;
+	right:12px;
+	display:block;
+	width: 14px;
+	height: 14px;
+}
+
+.modal_close img{
+	width: 14px;
+	height: 14px;
+}
+
 .intro{
 	float:left;
 	font-size: 18px;
@@ -119,7 +124,6 @@ h3{
 #email-signin{
 	margin-bottom:15px;
 }
-
 
 #home-logo{
 	width: 40px;
