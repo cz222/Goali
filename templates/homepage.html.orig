@@ -93,9 +93,53 @@
 					<li>© 2014 Goali</li>
 				  </ul>
 
+				<div id="home-container">
+					<div id="intro" class="inner cover">
+						<h1 class="cover-heading">Welcome to Goali</h1>
+						<p class="intro">Goali is an online service to help you keep track of your goals and aspirations.</p>
+						<p class="intro">
+						<a href="#" class="pure-button pure-button-primary">Learn more</a>
+						</p>
+					</div>
 
+					<div id="formwrapper">
+						<!--Registration form-->
+						<form class="pure-form pure-form-stacked" action="" method="post">
+							{% csrf_token %}
+							<p>New to Goali?</p>
+							{% bootstrap_form form %}
+							<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Sign Up for Goali Now!"/>
+							<p><a id="signintext" href="#signin-form" rel="signin-form">Or Sign In Here</a></p>
+							<input type="hidden" name="next" value="{{ next|escape }}" />
+						</form>
+
+						<!-- Signin form-->
+						<form class="pure-form pure-form-stacked" action="" method="post" id="signin-form">
+							<p>Sign In Here</p>
+							<a href="#" class="modal_close"><img href="{{STATIC_URL}}img/close-button.png" alt="close"/></a>
+							<fieldset>
+								<input type="email" class="pure-input-1" name="email" placeholder="Email" value="" id="email-signin">
+								<input type="password" class="pure-input-1" name="password" placeholder="Password" value="" id="password-signin">
+							</fieldset>
+							<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit"/>
+						</form>
+					</div>
+					
+
+				</div>
+
+				<div class="mastfoot">
+					<div class="inner">
+						<ul id="nav-bottom">
+							<li><a href="#">About</a></li>
+							<li><a href="#">Help</a></li>
+							<li><a href="#">Terms</a></li>
+							<li><a href="#">Contact</a></li>
+						<li>© 2014 Goali</li>
+						</ul>
 					</div>
 				</div>
 			</div>
-
+		</div>
+	</div>
 {% endblock %}
