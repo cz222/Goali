@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% comment %}
-	User Profile Page
+	One Shot Goal Page
 {% endcomment %}
 
 {% block head %}
@@ -29,39 +29,9 @@
 
 {% block body %}
 	{% if user.is_authenticated %}
-		<h1>Hey, {{ user.username }}!</h1>
+		<h1>{{ user.username }}!</h1>
 		<a href="/logout/">Logout</a><br />
-		<h2>Profile:</h2>
-		{% if user.profile.user_image %}
-			<p>change password</p>
-			<p>Would you like to upload a new profile image?</p><br/>
-		{% else %}
-			<p>change password</p>
-			<p>It looks like you don't have a profile image.</p>
-			<p>Would you like to upload one?</p><br/>
-		{% endif %}
-		<h3>Goals:</h3>
-		{% if oneshotgoalcount == 0 %}
-			<p>Hey it looks like you don't have any One Shot Goals.</p>
-			<p>Would you like to add one?</p>
-			<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotgoal-form">
-				{% csrf_token %}
-				<p>New One Shot Goal</p>
-				{% bootstrap_form oneshotgoalform %}
-				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osgoalSub"/>
-			</form>
-		{% else %}
-			{% for osgoal in oneshotgoals %}
-				<a href="{% url 'osgoals' osgoal.title|slugify %}">{{ osgoal.title }}</a>
-			{% endfor %}
-			<p>New Goal</p>
-				<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotgoal-form">
-				{% csrf_token %}
-				<p>New One Shot Goal</p>
-				{% bootstrap_form oneshotgoalform %}
-				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osgoalSub"/>
-			</form>
-		{% endif %}
+		<p> working so far </p>
 	{% else %}
 		<h1>No one's logged in...</h1>
 		<a href="{% url 'homepage' %}">Login?</a><br />
