@@ -31,6 +31,16 @@ LOGIN_URL = ''
 #LOGIN REDIRECT URL
 LOGIN_REDIRECT_URL = '/accounts/home'
 
+#USER PROFILE
+AUTH_PROFILE_MODULE = "accounts.UserProfile"
+
+#MEDIA ROOT
+MEDIA_ROOT = '/media/'
+
+#AUTHENTICATION BACKENDS
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',
+)
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -47,6 +57,7 @@ INSTALLED_APPS = (
 	'django.contrib.messages',
 	'django.contrib.sessions',
 	'bootstrap3',
+#	'south',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -76,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'goali',
 		'USER': 'root',
-		'PASSWORD': 'admin',
+		'PASSWORD': 'goaliadmin',
 		'HOST': '',
 		'PORT': '',
     }
@@ -94,7 +105,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/

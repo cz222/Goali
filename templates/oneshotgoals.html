@@ -29,9 +29,35 @@
 
 {% block body %}
 	{% if user.is_authenticated %}
-		<h1>{{ user.username }}!</h1>
+		<a href="/{{ user.username }}/">Back</a><br />
 		<a href="/logout/">Logout</a><br />
-		<p> working so far </p>
+		<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteSub"/>
+		<h1>{{ goal.title }}</h1>
+		{% if goal.completed %}
+			<p>Status: Incomplete</p>
+		{% else %}
+			<p>Status: Completed on {{ goal.date_completed }}</p>
+		{% endif %}
+		<p>Created on: {{ goal.date_created }}</p>
+		<p>Last updated: {{ goal.last_updated }}<p>
+		{% for osjournal in oneshotjournal %}
+			<p>{{ osjournal.date }}: {{ osjournal.entry }}</p>
+		{% endfor %}
+		{% for osnote in oneshotnote %}
+			<p>{{ osnote.note }}</p>
+		{% endfor %}
+		<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotjournal-form">
+			{% csrf_token %}
+				<p>New Journal Entry</p>
+			{% bootstrap_form oneshotjournalform %}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osjournalSub"/>
+		</form>
+		<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotnote-form">
+			{% csrf_token %}
+				<p>Add Note</p>
+			{% bootstrap_form oneshotnoteform %}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osnoteSub"/>
+		</form>
 	{% else %}
 		<h1>No one's logged in...</h1>
 		<a href="{% url 'homepage' %}">Login?</a><br />

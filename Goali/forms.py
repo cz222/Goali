@@ -1,3 +1,4 @@
+import datetime
 from django import forms
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
@@ -65,10 +66,6 @@ class LoginForm(forms.Form):
 	"""
 	username = forms.CharField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Username or Email'}), max_length=75)
 	password = forms.CharField(max_length=70, required = True, label='', widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
-		
-	class Meta:
-		model = User
-		fields = ('username',)
 
 	def clean_password(self):
 		"""
@@ -101,7 +98,6 @@ class LoginForm(forms.Form):
 			else:
 				raise forms.ValidationError('Email is not registered.')
 	
-	
 	def get_user(self, username):
 		"""
 		Returns the user based on email.
@@ -115,4 +111,3 @@ class ContactForm(forms.Form):
 	subject = forms.CharField(max_length=100, label='Subject')
 	email = forms.EmailField(required=False, label='E-Mail Address (optional)')
 	message = forms.CharField(widget=forms.Textarea, label='Subject')
-	

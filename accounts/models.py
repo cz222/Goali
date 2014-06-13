@@ -32,7 +32,7 @@ class OneShotGoal(models.Model):
 	last_updated = models.DateField(auto_now=True)
 	
 	def __unicode__(self):
-		return self.name
+		return self.title
 		
 	def get_oneshotgoalbyorder(self):
 		if self.oneshotgoal.count():
@@ -48,16 +48,27 @@ class OneShotImage(models.Model):
 	"""
 	Image for One Shot Goal
 	"""
-	goal = models.OneToOneField(OneShotGoal, related_name="oneshotgoalimage")
+	goal = models.ForeignKey(OneShotGoal, blank=True, related_name="oneshotgoalimage")
 	image_file = models.ImageField(upload_to=get_upload_path)
 	
 class OneShotJournal(models.Model):
 	"""
 	Journal entries for One Shot Goals
 	"""
-	goal = models.OneToOneField(OneShotGoal, related_name="oneshotgoaljournal")
-	entry = models.TextField()
+	goal = models.ForeignKey(OneShotGoal, blank=True, related_name="oneshotgoaljournal")
+	entry = models.TextField(max_length=500)
 	date = models.DateField(auto_now_add=True)
 	
 	def __unicode__(self):
-		return self.date
+		return self.entry
+
+class OneShotNote(models.Model):
+	"""
+	Notes for One Shot Goals
+	"""
+	goal = models.ForeignKey(OneShotGoal, blank=True, related_name="oneshotgoalnote")
+	note = models.TextField(max_length=300)
+	date = models.DateField(auto_now_add=True)
+	
+	def __unicode__(self):
+		return self.note

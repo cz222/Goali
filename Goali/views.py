@@ -9,8 +9,8 @@ from django.template.loader import get_template
 from django.contrib.sessions.models import Session
 from django.contrib.auth import login, logout
 
+
 from forms import RegisterForm, LoginForm, ContactForm
-from accounts.models import User
 
 def homepage(request):
 	"""
@@ -31,13 +31,21 @@ def homepage(request):
 					
 					#save new user
 					new_user = registerform.save()
-
+					
 					#send email
 					#email_subject = 'Your Goali Account Confirmation'
 					#email_body = "Hello, %s! Thank you for signing up for a Goali account!\nTo activate your account, click this link within 48 \hours:\n\nhttp://example.com/accounts/confirm/%s" % (new_user.username,new_profile.activation_key)
 					#send_mail(email_subject,email_body,'admin@goali.net',[new_user.email])
 					
-					return HttpResponseRedirect('/%s/'%request.user.username)
+					#logging in user
+					user = auth.authenticate(username=request.POST['username'], password=request.POST['password1'])
+					if user is not None:
+						if user.is_active:
+							auth.login(request, user)
+	#						request.sessions['member_id'] = m.id
+							return HttpResponseRedirect('/%s/'%request.user.username)
+					else:
+						return HttpResponseRedirect('login failed')
 			elif 'loginSub' in request.POST:
 				try:
 					loginform = LoginForm(request.POST)
@@ -88,7 +96,7 @@ def logout(request):
 	"""
 	auth.logout(request)
 	return HttpResponseRedirect("/")
-	
+
 #contact web owner
 def contact(request):
 	if request.method == 'POST':
@@ -105,4 +113,3 @@ def contact(request):
 	else:
 		form = ContactForm()
 	return render(request, 'contact_form.html', {'form': form})
-

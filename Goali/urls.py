@@ -1,22 +1,30 @@
 from django.conf.urls import patterns, include, url
 from Goali.views import homepage, login_new, logout
-from accounts.views import myprofile
+from accounts.views import myprofile, osgoals, test_view
 from django.contrib import admin
+from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = patterns('',
 	#homepage
 	url(r'^$', homepage, name='homepage'),
 	
-	
-	#admin-site
-	url(r'^admin/', include(admin.site.urls)),
+	#Test link
+	url(r'^test/$', test_view),
 	
 	#login / logout
 	url(r'^login_new/', login_new, name='login_new'),
 	url(r'^logout/', logout, name='logout'),	
 	
-	#Personal account login
+	#One Shot Goal Pages
+	url(r'^(?P<username>.+?)/osgoals/(?P<title>.+?)/$', osgoals, name='osgoals'),
+	
+	#Personal Profile (authorization required)
 	url(r'^(?P<username>.+?)/$', myprofile, name='myprofile'),
 	
+	#admin-site
+	url(r'^admin/', include(admin.site.urls)),
+	
+	#media
+	#(r'^media/(?P<path>.*)$', 'django.views.static.serve', {document_root': settings.MEDIA_ROOT}))
 )

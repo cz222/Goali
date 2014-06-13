@@ -52,7 +52,7 @@
 			</form>
 		{% else %}
 			{% for osgoal in oneshotgoals %}
-				<a href="{% url 'osgoals' osgoal.title|slugify %}">{{ osgoal.title }}</a>
+				<a href="/{{ user.username }}/osgoals/{{ osgoal.title }}">{{ osgoal.title }}</a>
 			{% endfor %}
 			<p>New Goal</p>
 				<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotgoal-form">
