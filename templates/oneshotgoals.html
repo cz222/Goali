@@ -17,7 +17,13 @@
 	<!-- js file of the plugin -->
 	<script type="text/javascript" src="{{STATIC_URL}}js/jquery.leanModal.min.js"></script>
 	<!-- Initializing the plugin for the signin popup -->
-
+	<script>
+		$(document).ready(function(){
+			$("a[rel*=oneshotjournal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=oneshotnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+		});
+	</script>
+	
 	{% load bootstrap3 %}
 	{% load staticfiles %}
 
@@ -40,6 +46,10 @@
 		{% endif %}
 		<p>Created on: {{ goal.date_created }}</p>
 		<p>Last updated: {{ goal.last_updated }}<p>
+		<a href="#oneshotjournal-form" class="pure-button" rel="oneshotjournal-form">New Journal entry</a>
+		<input type="hidden" name="next" value="{{ next|escape }}" />
+		<a href="#oneshotnote-form" class="pure-button" rel="oneshotnote-form">Add a Note</a>
+		<input type="hidden" name="next" value="{{ next|escape }}" />
 		{% for osjournal in oneshotjournal %}
 			<p>{{ osjournal.date }}: {{ osjournal.entry }}</p>
 		{% endfor %}
@@ -48,7 +58,7 @@
 		{% endfor %}
 		<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotjournal-form">
 			{% csrf_token %}
-				<p>New Journal Entry</p>
+			<p>New Journal Entry</p>
 			{% bootstrap_form oneshotjournalform %}
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osjournalSub"/>
 		</form>
