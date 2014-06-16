@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth.models import User
 from models import OneShotGoal, OneShotJournal, OneShotNote
-from forms import OneShotGoalForm, OneShotJournalForm, OneShotNoteForm
+from forms import OneShotGoalForm, OneShotJournalForm, OneShotNoteForm, DeleteOneShotForm, DeleteOneShotJournalForm
 
 @login_required
 def myprofile(request, username):
@@ -45,14 +45,14 @@ def myprofile(request, username):
 	return render(request, 'profile.html', {'user' : user, 'oneshotgoalcount': oneshotgoalcount, 'oneshotgoals': oneshotgoals, 'oneshotgoalform': oneshotgoalform })
 
 @login_required
-def osgoals(request, username, title):
+def osgoals(request, username, title, id):
 	"""
 	Displays a single One Shot Goal
 	"""
 	user = request.user
 	
 	#goal variables
-	goal = request.user.oneshotgoal.get(title=title)
+	goal = request.user.oneshotgoal.get(id=id)
 	oneshotjournal = goal.oneshotgoaljournal.all()
 	oneshotnote = goal.oneshotgoalnote.all()
 	
@@ -62,31 +62,60 @@ def osgoals(request, username, title):
 		if 'osjournalSub' in request.POST:
 			oneshotjournalform = OneShotJournalForm(request.POST)
 			oneshotnoteform = OneShotNoteForm()
-			oneshotgoalform = OneShotGoalForm()
+			editoneshotform = OneShotGoalForm(instance=goal)
+			deleteoneshotform = DeleteOneShotForm()
 			if oneshotjournalform.is_valid():
 				osJournal = oneshotjournalform.save(commit=False)
 				osJournal.goal = goal
 				oneshotjournalform.save()
-				return HttpResponseRedirect('/%s/osgoals/%s/'%(request.user.username, goal.title))
+				return HttpResponseRedirect('/%s/osgoals/%s%d/'%(request.user.username, goal.title, goal.id))
 		elif 'osnoteSub' in request.POST:
 			oneshotjournalform = OneShotJournalForm()
 			oneshotnoteform = OneShotNoteForm(request.POST)
-			oneshotgoalform = OneShotGoalForm()
+			editoneshotform = OneShotGoalForm(instance=goal)
+			deleteoneshotform = DeleteOneShotForm()
 			if oneshotnoteform.is_valid():
 				osNote = oneshotnoteform.save(commit=False)
 				osNote.goal = goal
 				oneshotnoteform.save()
-				return HttpResponseRedirect('/%s/osgoals/%s/'%(request.user.username, goal.title))
+				return HttpResponseRedirect('/%s/osgoals/%s%d/'%(request.user.username, goal.title, goal.id))
+		elif 'editSub' in request.POST:
+			oneshotjournalform = OneShotJournalForm()
+			oneshotnoteform = OneShotNoteForm()
+			editoneshotform = OneShotGoalForm(request.POST, instance=goal)
+			deleteoneshotform = DeleteOneShotForm()
+			if editoneshotform.is_valid():
+				editoneshotform.save()
+				return HttpResponseRedirect('/%s/osgoals/%s%d/'%(request.user.username, goal.title, goal.id))
+		elif 'editjournalSub' in request.POST:
+			oneshotjournalform = OneShotJournalForm(request.POST, instance=goal)
+			oneshotnoteform = OneShotNoteForm()
+			editoneshotform = OneShotGoalForm()
+			deleteoneshotform = DeleteOneShotForm()
+			if editoneshotform.is_valid():
+				editoneshotform.save()
+				return HttpResponseRedirect('/%s/osgoals/%s%d/'%(request.user.username, goal.title, goal.id))
+		elif 'deleteSub' in request.POST:
+			oneshotjournalform = OneShotJournalForm()
+			oneshotnoteform = OneShotNoteForm()
+			editoneshotform = OneShotGoalForm(instance=goal)
+			deleteoneshotform = DeleteOneShotForm(request.POST)
+			
+			toDelete = get_object_or_404(OneShotGoal, id=id)
+			if deleteoneshotform.is_valid():
+				toDelete.delete()
+				return HttpResponseRedirect('/%s/'%request.user.username)
 		else:
 			oneshotjournalform = OneShotJournalForm()
 			oneshotnoteform = OneShotNoteForm()
-			oneshotgoalform = OneShotGoalForm()
+			editoneshotform = OneShotGoalForm(instance=goal)
+			deleteoneshotform = DeleteOneShotForm()
 	else:
 		oneshotjournalform = OneShotJournalForm()
 		oneshotnoteform = OneShotNoteForm()
-		oneshotgoalform = OneShotGoalForm()
-	return render(request, 'oneshotgoals.html', {'user' : user, 'title' : title, 'goal' : goal, 'oneshotjournalform' : oneshotjournalform, 'oneshotnoteform' : oneshotnoteform, 'oneshotgoalform' : oneshotgoalform, 'oneshotjournal' : oneshotjournal, 'oneshotnote' : oneshotnote })
-
+		editoneshotform = OneShotGoalForm(instance=goal)
+		deleteoneshotform = DeleteOneShotForm()
+	return render(request, 'oneshotgoals.html', {'user' : user, 'title' : title, 'goal' : goal, 'oneshotjournalform' : oneshotjournalform, 'oneshotnoteform' : oneshotnoteform, 'editoneshotform' : editoneshotform, 'oneshotjournal' : oneshotjournal, 'oneshotnote' : oneshotnote, 'deleteoneshotform' : deleteoneshotform})
 	
 def test_view(request):
 	return render(request, 'testview.html')

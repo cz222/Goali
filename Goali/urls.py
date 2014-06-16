@@ -17,7 +17,7 @@ urlpatterns = patterns('',
 	url(r'^logout/', logout, name='logout'),	
 	
 	#One Shot Goal Pages
-	url(r'^(?P<username>.+?)/osgoals/(?P<title>.+?)/$', osgoals, name='osgoals'),
+	url(r'^(?P<username>.+?)/osgoals/(?P<title>.+?)(?P<id>\d)/$', osgoals, name='osgoals'),
 	
 	#Personal Profile (authorization required)
 	url(r'^(?P<username>.+?)/$', myprofile, name='myprofile'),

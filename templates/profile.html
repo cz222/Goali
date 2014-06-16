@@ -28,7 +28,7 @@
     <!-- Bootstrap -->
     <link href="{{STATIC_URL}}bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="{{STATIC_URL}}css/cover.css" rel="stylesheet" type="text/css">
-    <link rel= "stylesheet" href = "{{STATIC_URL}}css/home.css" type="text/css">
+    <link rel= "stylesheet" href = "{{STATIC_URL}}css/profile.css" type="text/css">
 {% endblock %}
 
 {% block body %}
@@ -49,7 +49,6 @@
 			<p>Hey it looks like you don't have any One Shot Goals.</p>
 			<p>Would you like to add one?</p>
 			<a href="#oneshotgoal-form" class="pure-button" rel="oneshotgoal-form">New One Shot Goal</a>
-			<input type="hidden" name="next" value="{{ next|escape }}" />
 			<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotgoal-form">
 				{% csrf_token %}
 				<p>New One Shot Goal</p>
@@ -57,11 +56,11 @@
 				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osgoalSub"/>
 			</form>
 		{% else %}
+			<p>One Shot Goals:<p>
 			{% for osgoal in oneshotgoals %}
-				<a href="/{{ user.username }}/osgoals/{{ osgoal.title }}">{{ osgoal.title }}</a>
+				<a href="/{{ user.username }}/osgoals/{{ osgoal.title|slugify }}{{ osgoal.id }}">{{ osgoal.title }}</a>
 			{% endfor %}
 			<a href="#oneshotgoal-form" class="pure-button" id="newoneshotgoal-button" rel="oneshotgoal-form">New One Shot Goal</a>
-			<input type="hidden" name="next" value="{{ next|escape }}" />
 			<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotgoal-form">
 				{% csrf_token %}
 				<p>New One Shot Goal</p>

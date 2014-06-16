@@ -12,10 +12,10 @@ class OneShotGoalForm(forms.ModelForm):
 	Form for creating one shot goals
 	"""
 	
-	title = forms.RegexField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Title*'}), max_length=75, regex=r'[^\@\.\/+)(*&^%$#!\[\]:{}\'";,<>?|]+$', error_messages={'invalid': "Invalid Title."})
+	title = forms.CharField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Title*'}), max_length=75)
 	description = forms.CharField(max_length=300, required = False, label='', widget=forms.Textarea(attrs={'placeholder': 'Goal Description'}))
 	private = forms.BooleanField(required=False, label='Private')
-	completed = forms.BooleanField(required=False, label='Completed')
+	completed = forms.TypedChoiceField(required=False, label='Completed', coerce=lambda x: x =='True', choices=((False, 'No'), (True, 'Yes')), widget=forms.RadioSelect)
 	date_completed = forms.DateField(required=False, label='MM/DD/YYYY')
 
 	class Meta:
@@ -27,16 +27,8 @@ class OneShotGoalForm(forms.ModelForm):
 		Validate title and see if it's in use.
 		"""
 		title = self.cleaned_data['title']
-		
-		if title[0] == ' ':
-			raise forms.ValidationError('Cannot lead with a space.')
-		elif '%20' in title:
-			raise forms.ValidationError('Invalid title.')
-		elif OneShotGoal.objects.exclude(pk=self.instance.pk).filter(title=title).exists():
-			raise forms.ValidationError('You already have a goal by this title.')
-		else:
-			return title
-	
+		return title
+
 	def clean_completed(self):
 		"""
 		Raise Error if date_completed has something when the goal is not yet completed and vice versa
@@ -89,3 +81,16 @@ class OneShotNoteForm(forms.ModelForm):
 	class Meta:
 		model = OneShotNote
 		fields = ('note',)
+
+class DeleteOneShotJournalForm(forms.Form):
+	object_id = forms.CharField(max_length=500, required = False, label='', widget=forms.TextInput(attrs={'placeholder': 'Object_id'}))
+		
+class DeleteOneShotNoteForm(forms.ModelForm):
+	class Meta:
+		model = OneShotNote
+		fields = []
+
+class DeleteOneShotForm(forms.ModelForm):
+	class Meta:
+		model = OneShotGoal
+		fields = []
