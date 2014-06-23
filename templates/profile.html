@@ -29,6 +29,25 @@
     <link href="{{STATIC_URL}}bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="{{STATIC_URL}}css/cover.css" rel="stylesheet" type="text/css">
     <link rel= "stylesheet" href = "{{STATIC_URL}}css/profile.css" type="text/css">
+	
+	<script>
+		function cloneMore(selector, type) {
+			var newElement = $(selector).clone(true);
+			var total = $(selector).length;
+			newElement.find(':input').each(function() {
+				var name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
+				var id = 'id_' + name;			
+				$(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+			});
+			newElement.find('label').each(function() {
+				var newFor = $(this).attr('for').replace('-' + (total-1) + '-', '-' + total + '-');
+				$(this).attr('for', newFor);
+			});
+			total++;
+			$('#id_' + type + '-TOTAL_FORMS').val(total);
+			$(selector).after(newElement);
+		}
+	</script>
 {% endblock %}
 
 {% block body %}
@@ -56,7 +75,7 @@
 				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osgoalSub"/>
 			</form>
 		{% else %}
-			<p>One Shot Goals:<p>
+			<p>One Shot Goals:</p>
 			{% for osgoal in oneshotgoals %}
 				<a href="/{{ user.username }}/osgoals/{{ osgoal.title|slugify }}{{ osgoal.id }}">{{ osgoal.title }}</a>
 			{% endfor %}
@@ -66,6 +85,36 @@
 				<p>New One Shot Goal</p>
 				{% bootstrap_form oneshotgoalform %}
 				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osgoalSub"/>
+			</form>
+			<p>Milestone Goals:</p>
+			<form class="pure-form pure-form-stacked" action="" method="post" id="milestonegoal-form">
+				{% csrf_token %}
+				<p>Milestone Goal</p>
+				{% bootstrap_form milestonegoalform %}
+				{{ milestoneformset.management_form }}
+				<div id='milestoneform_set'>
+					{% for form in milestoneformset.forms %}
+						<table class='no_error'>
+							<p>Milestone</p>
+							{{ form.as_table }}
+						</table>
+					{% endfor %}
+				</div>
+				<input type="button" value="Add Milestone" id="add_milestone"/>
+				<div id='empty_form' style='display:none'>
+					<table class = 'no_error'>
+						<p>Milestone</p>
+						{{ milestoneformset.empty_form.as_table }}
+					</table>
+				</div>
+				<script>
+					$('#add_milestone').click(function() {
+						var form_idx = $('#id_form-TOTAL_FOMRS').val();
+						$('#milestoneform_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+						$('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+					});
+				</script>
+				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="msgoalSub"/>
 			</form>
 		{% endif %}
 	{% else %}

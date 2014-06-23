@@ -10,10 +10,11 @@ from django.contrib.sessions.models import Session
 from django.contrib.auth import login, logout
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.forms.formsets import formset_factory
 
 from django.contrib.auth.models import User
 from models import OneShotGoal, OneShotJournal, OneShotNote
-from forms import OneShotGoalForm, OneShotJournalForm, OneShotNoteForm, DeleteOneShotForm, DeleteOneShotJournalForm
+from forms import OneShotGoalForm, OneShotJournalForm, OneShotNoteForm, DeleteOneShotForm, DeleteOneShotJournalForm, MilestoneGoalForm, MilestoneForm, SubMilestoneForm
 
 @login_required
 def myprofile(request, username):
@@ -22,27 +23,41 @@ def myprofile(request, username):
 	"""
 	user = request.user
 	
-	#NEED TO ADD MORE PROFILE SHIT
+	#NEED TO ADD MORE PROFILE STUFF
 	
 	#goal variables
 	oneshotgoalcount = request.user.oneshotgoal.count()
 	oneshotgoals = request.user.oneshotgoal.all()
+	
+	#milestone goal formsets
+	MilestoneFormSet = formset_factory(MilestoneForm, extra=1)
+	SubMilestoneFormSet = formset_factory(SubMilestoneForm, extra=1)
 	
 	#handle forms
 	if request.method == 'POST':
 		#handle one shot goal
 		if 'osgoalSub' in request.POST:
 			oneshotgoalform = OneShotGoalForm(request.POST)
+			milestonegoalform = MilestoneGoalForm()
+			milestoneformset = MilestoneFormSet()
 			if oneshotgoalform.is_valid():
 				osGoal = oneshotgoalform.save(commit=False)
 				osGoal.owner = user
 				oneshotgoalform.save()
 				return HttpResponseRedirect('/%s/'%request.user.username)
+		if 'msgoalSub' in request.POST:
+			oneshotgoalform = OneShotGoalForm()
+			milestonegoalform = MilestoneGoalForm(request.POST)
+			milestoneformset = MilestoneFormSet(request.POST, request.FILES)
 		else:
 			oneshotgoalform = OneShotGoalForm()
+			milestonegoalform = MilestoneGoalForm()
+			milestoneformset = MilestoneFormSet()
 	else:
 		oneshotgoalform = OneShotGoalForm()
-	return render(request, 'profile.html', {'user' : user, 'oneshotgoalcount': oneshotgoalcount, 'oneshotgoals': oneshotgoals, 'oneshotgoalform': oneshotgoalform })
+		milestonegoalform = MilestoneGoalForm()
+		milestoneformset = MilestoneFormSet()
+	return render(request, 'profile.html', {'user' : user, 'oneshotgoalcount': oneshotgoalcount, 'oneshotgoals': oneshotgoals, 'oneshotgoalform': oneshotgoalform, 'milestonegoalform': milestonegoalform, 'milestoneformset': milestoneformset })
 
 @login_required
 def osgoals(request, username, title, id):

@@ -3,9 +3,9 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.contrib import auth
+from django.forms.formsets import formset_factory
 
-from models import OneShotGoal, OneShotJournal, OneShotNote
-
+from models import OneShotGoal, OneShotJournal, OneShotNote, MilestoneGoal, Milestone, SubMilestone, SubSubMilestone
 
 class OneShotGoalForm(forms.ModelForm):
 	"""
@@ -94,3 +94,143 @@ class DeleteOneShotForm(forms.ModelForm):
 	class Meta:
 		model = OneShotGoal
 		fields = []
+		
+#MilestoneGoal, Milestone, SubMilestone, SubSubMilestone
+
+class MilestoneGoalForm(forms.ModelForm):
+	"""
+	Form for creating Milestone Goals
+	"""
+	
+	title = forms.CharField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Title*'}), max_length=75)
+	description = forms.CharField(max_length=300, required = False, label='', widget=forms.Textarea(attrs={'placeholder': 'Goal Description'}))
+	private = forms.BooleanField(required=False, label='Private')
+	completed = forms.TypedChoiceField(required=False, label='Completed', coerce=lambda x: x =='True', choices=((False, 'No'), (True, 'Yes')), widget=forms.RadioSelect)
+	date_completed = forms.DateField(required=False, label='MM/DD/YYYY')
+
+	class Meta:
+		model = MilestoneGoal
+		fields = ('title', 'description', 'private', 'completed', 'date_completed',)
+	
+	def clean_title(self):
+		"""
+		Validate title and see if it's in use.
+		"""
+		title = self.cleaned_data['title']
+		return title
+
+	def clean_completed(self):
+		"""
+		Raise Error if date_completed has something when the goal is not yet completed and vice versa
+		"""
+		
+		date_completed = self.cleaned_data.get('date_completed')
+		completed = self.cleaned_data.get('completed')
+		if completed and (date_completed is None):
+			raise forms.ValidationError('Please enter a date of completion')
+		else:
+			if completed and (not (date_completed is None)):
+				return completed
+			else:
+				if (not completed) and (date_completed is None):
+					return completed
+				else:
+					raise forms.ValidationError('If goal is completed, please check it off')
+
+class MilestoneForm(forms.ModelForm):
+	"""
+	Form for creating Milestones
+	"""
+	
+	title = forms.CharField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Title*'}), max_length=75)
+	description = forms.CharField(max_length=300, required = False, label='', widget=forms.Textarea(attrs={'placeholder': 'Goal Description'}))
+	completed = forms.TypedChoiceField(required=False, label='Completed', coerce=lambda x: x =='True', choices=((False, 'No'), (True, 'Yes')), widget=forms.RadioSelect)
+	date_completed = forms.DateField(required=False, label='MM/DD/YYYY')
+
+	class Meta:
+		model = Milestone
+		fields = ('title', 'description', 'completed', 'date_completed',)
+
+	def clean_completed(self):
+		"""
+		Raise Error if date_completed has something when the goal is not yet completed and vice versa
+		"""
+		
+		date_completed = self.cleaned_data.get('date_completed')
+		completed = self.cleaned_data.get('completed')
+		if completed and (date_completed is None):
+			raise forms.ValidationError('Please enter a date of completion')
+		else:
+			if completed and (not (date_completed is None)):
+				return completed
+			else:
+				if (not completed) and (date_completed is None):
+					return completed
+				else:
+					raise forms.ValidationError('If goal is completed, please check it off')
+
+class SubMilestoneForm(forms.ModelForm):
+	"""
+	Form for creating Sub-Milestones
+	"""
+	
+	title = forms.CharField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Title*'}), max_length=75)
+	description = forms.CharField(max_length=300, required = False, label='', widget=forms.Textarea(attrs={'placeholder': 'Goal Description'}))
+	completed = forms.TypedChoiceField(required=False, label='Completed', coerce=lambda x: x =='True', choices=((False, 'No'), (True, 'Yes')), widget=forms.RadioSelect)
+	date_completed = forms.DateField(required=False, label='MM/DD/YYYY')
+
+	class Meta:
+		model = SubMilestone
+		fields = ('title', 'description', 'completed', 'date_completed',)
+
+	def clean_completed(self):
+		"""
+		Raise Error if date_completed has something when the goal is not yet completed and vice versa
+		"""
+		
+		date_completed = self.cleaned_data.get('date_completed')
+		completed = self.cleaned_data.get('completed')
+		if completed and (date_completed is None):
+			raise forms.ValidationError('Please enter a date of completion')
+		else:
+			if completed and (not (date_completed is None)):
+				return completed
+			else:
+				if (not completed) and (date_completed is None):
+					return completed
+				else:
+					raise forms.ValidationError('If goal is completed, please check it off')
+
+class SubSubMilestone(forms.ModelForm):
+	"""
+	Form for creating Sub-Milestones
+	"""
+	
+	title = forms.CharField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Title*'}), max_length=75)
+	description = forms.CharField(max_length=300, required = False, label='', widget=forms.Textarea(attrs={'placeholder': 'Goal Description'}))
+	completed = forms.TypedChoiceField(required=False, label='Completed', coerce=lambda x: x =='True', choices=((False, 'No'), (True, 'Yes')), widget=forms.RadioSelect)
+	date_completed = forms.DateField(required=False, label='MM/DD/YYYY')
+
+	class Meta:
+		model = SubSubMilestone
+		fields = ('title', 'description', 'completed', 'date_completed',)
+
+	def clean_completed(self):
+		"""
+		Raise Error if date_completed has something when the goal is not yet completed and vice versa
+		"""
+		
+		date_completed = self.cleaned_data.get('date_completed')
+		completed = self.cleaned_data.get('completed')
+		if completed and (date_completed is None):
+			raise forms.ValidationError('Please enter a date of completion')
+		else:
+			if completed and (not (date_completed is None)):
+				return completed
+			else:
+				if (not completed) and (date_completed is None):
+					return completed
+				else:
+					raise forms.ValidationError('If goal is completed, please check it off')
+					
+#Milestone Goal formsets
