@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% comment %}
+	One Shot Goal Page
+{% endcomment %}
+
+{% block head %}
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.4.2/pure-min.css" type="text/css">
+	
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery-2.1.0.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script type="text/javascript" src="{{STATIC_URL}}bootstrap/js/bootstrap.min.js"></script>
+	<!-- js file of the plugin -->
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery.leanModal.min.js"></script>
+	<!-- Initializing the plugin for the signin popup -->
+	<script>
+		$(document).ready(function(){
+			$("a[rel*=deletemilestonegoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=editmilestonegoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=milestonegoaljournal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=milestonegoalnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+		});
+	</script>
+	
+	{% load bootstrap3 %}
+	{% load staticfiles %}
+
+    <!-- Bootstrap -->
+    <link href="{{STATIC_URL}}bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="{{STATIC_URL}}css/cover.css" rel="stylesheet" type="text/css">
+    <link rel= "stylesheet" href = "{{STATIC_URL}}css/milestonegoals.css" type="text/css">
+{% endblock %}
+
+{% block body %}
+	{% if user.is_authenticated %}
+		<a href="/{{ user.username }}/">Back</a><br />
+		<a href="#editmilestonegoal-form" class="pure-button" rel="editmilestonegoal-form">Edit Goal</a>
+		<a href="#deletemilestonegoal-form" class="pure-button" rel="deletemilestonegoal-form">Delete Goal</a>
+		<h1>{{ goal.title }}</h1>
+		<h2>Goal Description: {{ goal.description }}</h2>
+		<p>Private: {{ goal.private }}</p>
+		{% if goal.completed %}
+			<p>Status: Completed on {{ goal.date_completed }}</p>
+		{% else %}
+			<p>Status: Incomplete</p>
+		{% endif %}
+		<p>Created on: {{ goal.date_created }}</p>
+		<p>Last updated: {{ goal.last_updated }}<p>
+		<a href="#milestonegoaljournal-form" class="pure-button" rel="milestonegoaljournal-form">New Journal entry</a>
+		<a href="#milestonegoalnote-form" class="pure-button" rel="milestonegoalnote-form">Add a Note</a>
+		{% for msgjournal in milestonegoaljournal %}
+			<p>
+				{{ msgjournal.date }}: {{ msgjournal.entry }}
+			</p>
+		{% endfor %}
+		{% for msgnote in milestonegoalnote %}
+			<p>{{ msgnote.note }}</p>
+		{% endfor %}
+		{% for ms in milestone %}
+			<h2>{{ ms.title }}</h2>
+			{% if ms.completed %}
+				<p>Status: Completed on {{ ms.date_completed }}</p>
+			{% else %}
+				<p>Status: Incomplete</p>
+			{% endif %}
+		{% endfor %}
+		<!-- FORMS -->
+		<form id="deletemilestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>Are You Sure?</p>
+			{% bootstrap_form deletemilestonegoalform %}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteMSGoalSub"/>
+		</form>
+		<form id="editmilestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>Edit {{ goal.title }}</p>
+			{% bootstrap_form editmilestonegoalform %}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="editMSGSub"/>
+		</form>
+		<form id="milestonegoaljournal-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>New Journal Entry</p>
+			{% bootstrap_form milestonegoaljournalform %}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="msgJournalSub"/>
+		</form>
+		<form id="milestonegoalnote-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>New Note</p>
+			{% bootstrap_form milestonegoalnoteform %}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="msgNoteSub"/>
+		</form>
+	{% else %}
+		<h1>No one's logged in...</h1>
+		<a href="{% url 'homepage' %}">Login?</a><br />
+	{% endif %}
+{% endblock %}

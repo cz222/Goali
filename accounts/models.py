@@ -142,6 +142,7 @@ class Milestone(models.Model):
 	def __unicode__(self):
 		return self.title
 
+
 class MilestoneNote(models.Model):
 	"""
 	Notes for One Shot Goals
@@ -152,20 +153,21 @@ class MilestoneNote(models.Model):
 	
 	def __unicode__(self):
 		return self.note
-		
+	
 class MilestoneImage(models.Model):
 	"""
 	Image for Milestone Goal
 	"""
 	milestone = models.ForeignKey(Milestone, blank=True, related_name="milestoneimage")
 	image_file = models.ImageField(upload_to=get_upload_path)
-		
+
 class SubMilestone(models.Model):
 	"""
 	Model for Milestone Sub Goals
 	"""
-	#Link to a Milestone
+	#Link to a Milestone or submilestone
 	milestone = models.ForeignKey(Milestone, blank=True, related_name="submilestone")
+	milestone = models.ForeignKey('self', blank=True, related_name="subsubmilestone")
 	
 	#attributes
 	title = models.CharField(max_length=75)
@@ -196,18 +198,20 @@ class SubMilestoneImage(models.Model):
 	"""
 	submilestone = models.ForeignKey(SubMilestone, blank=True, related_name="submilestoneimage")
 	image_file = models.ImageField(upload_to=get_upload_path)
-		
-class SubSubMilestone(models.Model):
+
+#TIME GOALS-ONE SHOT GOALS
+class TimeOneShotGoal(models.Model):
 	"""
-	Model for Milestone Sub Goals
+	One Shot Goal with a Time Limit
 	"""
-	#Link to a Sub Milestone
-	submilestone = models.ForeignKey(SubMilestone, blank=True, related_name="subsubmilestone")
+	#Link to a User
+	owner = models.ForeignKey(User, blank=True, related_name="timeoneshotgoal")
 	
 	#attributes
 	title = models.CharField(max_length=75)
 	description = models.TextField()
 	private = models.BooleanField()
+	date_to_complete = models.DateField(blank=True, null=True, editable=True)
 	completed = models.BooleanField()
 	date_created = models.DateField(auto_now_add=True)
 	date_completed = models.DateField(blank=True, null=True, editable=True)
@@ -215,21 +219,8 @@ class SubSubMilestone(models.Model):
 	
 	def __unicode__(self):
 		return self.title
+#TIME GOALS-MILESTONE GOALS
 
-class SubSubMilestoneNote(models.Model):
-	"""
-	Notes for One Shot Goals
-	"""
-	subsubmilestone = models.ForeignKey(SubSubMilestone, blank=True, related_name="submilestonenote")
-	note = models.TextField(max_length=300)
-	date = models.DateField(auto_now_add=True)
-	
-	def __unicode__(self):
-		return self.note
-		
-class SubSubMilestoneImage(models.Model):
-	"""
-	Image for Milestone Goal
-	"""
-	subsubmilestone = models.ForeignKey(SubSubMilestone, blank=True, related_name="submilestoneimage")
-	image_file = models.ImageField(upload_to=get_upload_path)
+#RECURRANT GOALS-ONE SHOT GOALS
+
+#RECURRANT GOALS-MILESTONE GOALS
