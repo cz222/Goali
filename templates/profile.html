@@ -50,6 +50,19 @@
 			$(selector).after(newElement);
 		}
 	</script>
+	<!-- jquery for hiding date_completed unless goal is completed -->
+	<script>
+		function hideDateCompleted(divID){
+			if ($('#id_completed').is(':checked')) {
+				$("#"+divID+" label[for='id_date_completed']").show();
+				$('#id_date_completed').show();
+			}
+			else {
+				$("#"+divID+" label[for='id_date_completed']").hide();
+				$('#id_date_completed').hide();
+			}
+		}
+	</script>
 {% endblock %}
 
 {% block body %}
@@ -83,7 +96,6 @@
 				<a href="/{{ user.username }}/osgoals/{{ osgoal.title|slugify }}{{ osgoal.id }}">{{ osgoal.title }}</a>
 			{% endfor %}
 			<a href="#oneshotgoal-form" class="pure-button" id="newoneshotgoal-button" rel="oneshotgoal-form">New One Shot Goal</a>
-			
 			<!-- MILESTONE GOALS -->
 			<p>Milestone Goals:</p>
 			{% for msgoal in milestonegoals %}
@@ -95,13 +107,27 @@
 			<form id="oneshotgoal-form" class="pure-form pure-form-stacked" action="" method="post">
 				{% csrf_token %}
 				<p>New One Shot Goal</p>
-				{% bootstrap_form oneshotgoalform %}
+				<div id='oneshotgoal'>
+					{% bootstrap_form oneshotgoalform %}
+				</div>
 				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osgoalSub"/>
+				<script>
+					$('#id_completed').click(function() {
+						hideDateCompleted('oneshotgoal');
+					});
+				</script>
+				<script>
+					$(document).ready(function() {
+						hideDateCompleted('oneshotgoal');
+					});
+				</script>
 			</form>
 			<form id="milestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
 				{% csrf_token %}
 				<p>Milestone Goal</p>
-				{% bootstrap_form milestonegoalform %}
+				<div id='milestonegoal'>
+					{% bootstrap_form milestonegoalform %}
+				</div>
 				{{ milestoneformset.management_form }}
 				<div id='milestoneform_set'>
 					{% for form in milestoneformset %}

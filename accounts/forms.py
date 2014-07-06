@@ -6,7 +6,8 @@ from django.contrib import auth
 from django.forms.formsets import formset_factory
 
 from django.forms.models import inlineformset_factory
-from models import OneShotGoal, OneShotJournal, OneShotNote, MilestoneGoal, Milestone, MilestoneGoalJournal, MilestoneGoalNote, MilestoneNote, SubMilestone, SubMilestoneNote
+from models import OneShotGoal, OneShotJournal, OneShotNote
+from models import MilestoneGoal, MilestoneGoalJournal, MilestoneGoalNote, Milestone, SubMilestone
 
 class OneShotGoalForm(forms.ModelForm):
 	"""
@@ -78,7 +79,15 @@ class OneShotJournalForm(forms.ModelForm):
 	class Meta:
 		model = OneShotJournal
 		fields = ('entry',)
-		
+
+class EditOneShotJournalForm(forms.Form):
+	"""
+	Form for creating journal entries for one shot goals
+	"""
+
+	edit_entry = forms.CharField(required=True, label='', widget=forms.Textarea(attrs={'placeholder': 'Journal Entry'}))
+	edit_journal_id = forms.CharField(required=True)
+	
 class OneShotNoteForm(forms.ModelForm):
 	"""
 	Form for creating notes for one shot goals
@@ -89,7 +98,7 @@ class OneShotNoteForm(forms.ModelForm):
 	class Meta:
 		model = OneShotNote
 		fields = ('note',)
-
+		
 class DeleteOneShotJournalForm(forms.Form):
 	object_id = forms.CharField(max_length=500, required = False, label='', widget=forms.TextInput(attrs={'placeholder': 'Object_id'}))
 		
@@ -202,7 +211,7 @@ class MilestoneForm(forms.ModelForm):
 	private = forms.BooleanField(required=False, label='Private', initial=False)
 	completed = forms.BooleanField(required=False, label='Completed')
 	date_completed = forms.DateField(required=False, label='MM/DD/YYYY')
-
+	
 	class Meta:
 		model = Milestone
 		fields = ('title', 'description', 'private', 'completed', 'date_completed',)
@@ -244,17 +253,6 @@ class MilestoneForm(forms.ModelForm):
 				raise forms.ValidationError('Time travel is not allowed.')
 			else:
 				return date_completed
-
-class MilestoneNoteForm(forms.ModelForm):
-	"""
-	Form for creating notes for milestones
-	"""
-	
-	note = forms.CharField(required=True, label='', widget=forms.Textarea(attrs={'placeholder': 'Note'}))
-	
-	class Meta:
-		model = MilestoneNote
-		fields = ('note',)
 					
 class SubMilestoneForm(forms.ModelForm):
 	"""
@@ -263,13 +261,24 @@ class SubMilestoneForm(forms.ModelForm):
 	
 	title = forms.CharField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Title*'}), max_length=75)
 	description = forms.CharField(max_length=300, required = False, label='', widget=forms.Textarea(attrs={'placeholder': 'Goal Description'}))
-	completed = forms.TypedChoiceField(required=False, label='Completed', coerce=lambda x: x =='True', choices=((False, 'No'), (True, 'Yes')), widget=forms.RadioSelect)
+	private = forms.BooleanField(required=False, label='Private', initial=False)
+	completed = forms.BooleanField(required=False, label='Completed')
 	date_completed = forms.DateField(required=False, label='MM/DD/YYYY')
-
+	
 	class Meta:
 		model = SubMilestone
-		fields = ('title', 'description', 'completed', 'date_completed',)
+		fields = ('title', 'description', 'private', 'completed', 'date_completed',)
 
+	def clean_private(self):
+		"""
+		Validate private
+		"""
+		private = self.cleaned_data['private']
+		if private is None:
+			return False
+		else:
+			return private
+		
 	def clean_completed(self):
 		"""
 		Raise Error if date_completed has something when the goal is not yet completed and vice versa
@@ -287,7 +296,8 @@ class SubMilestoneForm(forms.ModelForm):
 		date_completed = self.cleaned_data.get('date_completed')
 		completed = self.cleaned_data.get('completed')
 		if (not completed) and (not (date_completed is None)):
-			raise forms.ValidationError('Please mark the goal as completed.')
+			date_completed = None
+			return date_completed
 		elif completed and (date_completed is None):
 			raise forms.ValidationError('Please enter a date of completion.')
 		elif (date_completed is None):
@@ -298,16 +308,22 @@ class SubMilestoneForm(forms.ModelForm):
 			else:
 				return date_completed
 
-class SubMilestoneNoteForm(forms.ModelForm):
+class CollectMilestoneIDForm(forms.Form):
 	"""
-	Form for creating notes for sub-milestones
+	Form for creating Sub-Milestones
 	"""
 	
-	note = forms.CharField(required=True, label='', widget=forms.Textarea(attrs={'placeholder': 'Note'}))
+	milestone_id = forms.CharField(required = False)
+
+class CollectSubMilestoneIDForm(forms.Form):
+	"""
+	Form for creating Sub-Milestones
+	"""
 	
-	class Meta:
-		model = SubMilestoneNote
-		fields = ('note',)
-					
+	submilestone_id = forms.CharField(required = False)
+	
+
 #Milestone Goal formsets
 MilestoneFormSet = inlineformset_factory(MilestoneGoal, Milestone, form=MilestoneForm, extra=1)
+SubMilestoneFormSet = inlineformset_factory(Milestone, SubMilestone, form=SubMilestoneForm, extra=1)
+SubSubMilestoneFormSet = inlineformset_factory(SubMilestone, SubMilestone, form=SubMilestoneForm, extra=1)

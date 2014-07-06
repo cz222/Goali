@@ -12,9 +12,9 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth.models import User
-from models import OneShotGoal, OneShotJournal, OneShotNote, MilestoneGoal, Milestone
-from forms import OneShotGoalForm, OneShotJournalForm, OneShotNoteForm, DeleteOneShotForm, DeleteOneShotJournalForm 
-from forms import MilestoneGoalForm, MilestoneForm, MilestoneFormSet, DeleteMilestoneGoalForm, MilestoneGoalJournalForm, MilestoneGoalNoteForm
+from models import OneShotGoal, OneShotJournal, OneShotNote, MilestoneGoal, Milestone, SubMilestone
+from forms import OneShotGoalForm, OneShotJournalForm, OneShotNoteForm, DeleteOneShotForm, DeleteOneShotJournalForm, EditOneShotJournalForm
+from forms import MilestoneGoalForm, DeleteMilestoneGoalForm, MilestoneGoalJournalForm, MilestoneGoalNoteForm, MilestoneForm, MilestoneFormSet, SubMilestoneForm, SubMilestoneFormSet, SubSubMilestoneFormSet, CollectMilestoneIDForm, CollectSubMilestoneIDForm
 
 
 @login_required
@@ -30,6 +30,9 @@ def myprofile(request, username):
 	oneshotgoalcount = request.user.oneshotgoal.count()
 	oneshotgoals = request.user.oneshotgoal.all()
 	milestonegoals = request.user.milestonegoal.all()
+	
+	
+	editoneshotjournalform = EditOneShotJournalForm()
 	
 	#handle forms
 	if request.method == 'POST':
@@ -77,6 +80,7 @@ def osgoals(request, username, title, id):
 	goal = request.user.oneshotgoal.get(id=id)
 	oneshotjournal = goal.oneshotgoaljournal.all()
 	oneshotnote = goal.oneshotgoalnote.all()
+	editoneshotjournalform = EditOneShotJournalForm()
 	
 	#handle forms
 	if request.method == 'POST':
@@ -90,7 +94,7 @@ def osgoals(request, username, title, id):
 				osJournal = oneshotjournalform.save(commit=False)
 				osJournal.goal = goal
 				oneshotjournalform.save()
-				return HttpResponseRedirect('/%s/osgoals/%s%d/'%(request.user.username, goal.title, goal.id))
+				return HttpResponseRedirect('/%s/osgoals/%s%d/'%(request.user.username, title, goal.id))
 		elif 'osnoteSub' in request.POST:
 			oneshotjournalform = OneShotJournalForm()
 			oneshotnoteform = OneShotNoteForm(request.POST)
@@ -100,7 +104,7 @@ def osgoals(request, username, title, id):
 				osNote = oneshotnoteform.save(commit=False)
 				osNote.goal = goal
 				oneshotnoteform.save()
-				return HttpResponseRedirect('/%s/osgoals/%s%d/'%(request.user.username, goal.title, goal.id))
+				return HttpResponseRedirect('/%s/osgoals/%s%d/'%(request.user.username, title, goal.id))
 		elif 'editSub' in request.POST:
 			oneshotjournalform = OneShotJournalForm()
 			oneshotnoteform = OneShotNoteForm()
@@ -108,15 +112,23 @@ def osgoals(request, username, title, id):
 			deleteoneshotform = DeleteOneShotForm()
 			if editoneshotform.is_valid():
 				editoneshotform.save()
-				return HttpResponseRedirect('/%s/osgoals/%s%d/'%(request.user.username, goal.title, goal.id))
-		elif 'editjournalSub' in request.POST:
-			oneshotjournalform = OneShotJournalForm(request.POST, instance=goal)
+				return HttpResponseRedirect('/%s/osgoals/%s%d/'%(request.user.username, title, goal.id))
+		elif 'editosjournalSub' in request.POST:
+			editoneshotjournalform = EditOneShotJournalForm(request.POST)
+			oneshotjournalform = OneShotJournalForm()
 			oneshotnoteform = OneShotNoteForm()
 			editoneshotform = OneShotGoalForm()
 			deleteoneshotform = DeleteOneShotForm()
-			if editoneshotform.is_valid():
-				editoneshotform.save()
-				return HttpResponseRedirect('/%s/osgoals/%s%d/'%(request.user.username, goal.title, goal.id))
+			if editoneshotjournalform.is_valid():
+				edit_id = editoneshotjournalform.cleaned_data['edit_journal_id']
+				edit_entry = editoneshotjournalform.cleaned_data['edit_entry']
+				journal = goal.oneshotgoaljournal.get(id=edit_id)
+				journalform = OneShotJournalForm({'entry': edit_entry}, instance=journal)
+				if journalform.is_valid():
+					journalform.save()
+					return HttpResponseRedirect('/%s/osgoals/%s%d/'%(request.user.username, title, goal.id))
+				else:
+					return HttpResponseRedirect('not valid')
 		elif 'deleteSub' in request.POST:
 			oneshotjournalform = OneShotJournalForm()
 			oneshotnoteform = OneShotNoteForm()
@@ -137,7 +149,7 @@ def osgoals(request, username, title, id):
 		oneshotnoteform = OneShotNoteForm()
 		editoneshotform = OneShotGoalForm(instance=goal)
 		deleteoneshotform = DeleteOneShotForm()
-	return render(request, 'oneshotgoals.html', {'user' : user, 'title' : title, 'goal' : goal, 'oneshotjournalform' : oneshotjournalform, 'oneshotnoteform' : oneshotnoteform, 'editoneshotform' : editoneshotform, 'oneshotjournal' : oneshotjournal, 'oneshotnote' : oneshotnote, 'deleteoneshotform' : deleteoneshotform})
+	return render(request, 'oneshotgoals.html', {'user' : user, 'title' : title, 'goal' : goal, 'oneshotjournalform' : oneshotjournalform, 'oneshotnoteform' : oneshotnoteform, 'editoneshotform' : editoneshotform, 'oneshotjournal' : oneshotjournal, 'oneshotnote' : oneshotnote, 'deleteoneshotform' : deleteoneshotform, 'editoneshotjournalform': editoneshotjournalform})
 
 @login_required
 def msgoals(request, username, title, id):
@@ -148,15 +160,23 @@ def msgoals(request, username, title, id):
 	
 	#goal variables
 	goal = request.user.milestonegoal.get(id=id)
-	milestone = goal.milestone.all()
+	milestones = goal.milestone.all()
 	milestonegoaljournal = goal.milestonegoaljournal.all()
 	milestonegoalnote = goal.milestonegoalnote.all()
+	
 	
 	#Form variables
 	milestonegoaljournalform = MilestoneGoalJournalForm(request.POST)
 	milestonegoalnoteform = MilestoneGoalNoteForm()
 	editmilestonegoalform = MilestoneGoalForm(instance=goal)
 	deletemilestonegoalform = DeleteMilestoneGoalForm()
+	milestoneform = MilestoneForm()
+	milestoneformset = MilestoneFormSet(prefix='milestone', queryset=Milestone.objects.none())
+	submilestoneform = SubMilestoneForm()
+	submilestoneformset = SubMilestoneFormSet(prefix='submilestone', queryset=SubMilestone.objects.none())
+	subsubmilestoneformset = SubSubMilestoneFormSet(prefix='subsubmilestone', queryset=SubMilestone.objects.none())
+	collectmilestoneidform = CollectMilestoneIDForm()
+	collectsubmilestoneidform = CollectSubMilestoneIDForm()
 	
 	#handle forms
 	if request.method == 'POST':
@@ -166,26 +186,55 @@ def msgoals(request, username, title, id):
 				msgJournal = milestonegoaljournalform.save(commit=False)
 				msgJournal.goal = goal
 				milestonegoaljournalform.save()
-				return HttpResponseRedirect('/%s/msgoals/%s%d/'%(request.user.username, goal.title, goal.id))
+				return HttpResponseRedirect('/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
 		elif 'msgNoteSub' in request.POST:
 			milestonegoalnoteform = MilestoneGoalNoteForm(request.POST)
 			if milestonegoalnoteform.is_valid():
 				msgNote = milestonegoalnoteform.save(commit=False)
 				msgNote.goal = goal
 				msgNote.save()
-				return HttpResponseRedirect('/%s/msgoals/%s%d/'%(request.user.username, goal.title, goal.id))
+				return HttpResponseRedirect('/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
 		elif 'editMSGSub' in request.POST:
 			editmilestonegoalform = MilestoneGoalForm(request.POST, instance=goal)
 			if editmilestonegoalform.is_valid():
 				editmilestonegoalform.save()
-				return HttpResponseRedirect('/%s/msgoals/%s%d/'%(request.user.username, goal.title, goal.id))
+				return HttpResponseRedirect('/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
 		elif 'deleteMSGoalSub' in request.POST:
 			deletemilestonegoalform = DeleteMilestoneGoalForm(request.POST)
 			goalToDelete = get_object_or_404(MilestoneGoal, id=id)
 			if deletemilestonegoalform.is_valid():
 				goalToDelete.delete()
 				return HttpResponseRedirect('/%s/'%request.user.username)
-	return render(request, 'milestonegoals.html', {'user' : user, 'title' : title, 'goal' : goal, 'milestonegoalnote': milestonegoalnote, 'milestonegoaljournal': milestonegoaljournal, 'milestone' : milestone, 'deletemilestonegoalform': deletemilestonegoalform, 'editmilestonegoalform': editmilestonegoalform, 'milestonegoaljournalform': milestonegoaljournalform, 'milestonegoalnoteform': milestonegoalnoteform})
+		elif 'msSub' in request.POST:
+			milestoneformset = MilestoneFormSet(request.POST, request.FILES, prefix='milestone', queryset=Milestone.objects.none(), instance=goal)
+			if milestoneformset.is_valid():
+				milestoneformset.save()
+				return HttpResponseRedirect('/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
+		elif 'editMSSub' in request.POST:
+			return HttpResponseRedirect('Not implemented Yet')
+		elif 'deleteMSSub' in request.POST:
+			return HttpResponseRedirect('Not implemented Yet')
+		elif 'subMSSub' in request.POST:
+			collectmilestoneidform = CollectMilestoneIDForm(request.POST)
+			if collectmilestoneidform.is_valid():
+				milestone_id = collectmilestoneidform.cleaned_data['milestone_id']
+				clean_ms = goal.milestone.get(id=milestone_id)
+				submilestoneformset = SubMilestoneFormSet(request.POST, request.FILES, prefix='submilestone', queryset=SubMilestone.objects.none(), instance=clean_ms)
+				if submilestoneformset.is_valid():
+					submilestoneformset.save()
+					return HttpResponseRedirect('/%s/'%request.user.username)
+				else:
+					return HttpResponseRedirect('submilestones not valid')
+			else:
+				return HttpResponseRedirect('milestone_id form not valid')
+		elif 'subsubMSSub' in request.POST:
+			return HttpResponseRedirect('Not implemented Yet')
+		else:
+			oneshotgoalform = OneShotGoalForm()
+			milestonegoalform = MilestoneGoalForm()
+			milestoneformset = MilestoneFormSet(prefix='milestone', queryset=Milestone.objects.none())
+			submilestoneformset = SubMilestoneFormSet(request.POST, request.FILES, prefix='submilestone', queryset=Milestone.objects.none())
+	return render(request, 'milestonegoals.html', {'user' : user, 'title' : title, 'goal' : goal, 'milestonegoalnote': milestonegoalnote, 'milestonegoaljournal': milestonegoaljournal, 'milestones' : milestones, 'deletemilestonegoalform': deletemilestonegoalform, 'editmilestonegoalform': editmilestonegoalform, 'milestonegoaljournalform': milestonegoaljournalform, 'milestonegoalnoteform': milestonegoalnoteform, 'milestoneformset': milestoneformset, 'submilestoneformset': submilestoneformset, 'subsubmilestoneformset': subsubmilestoneformset, 'collectmilestoneidform': collectmilestoneidform, 'collectsubmilestoneidform': collectsubmilestoneidform})
 
 def test_view(request):
 	return render(request, 'testview.html')

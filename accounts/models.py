@@ -115,13 +115,6 @@ class MilestoneGoalNote(models.Model):
 	
 	def __unicode__(self):
 		return self.note
-		
-class MilestoneGoalImage(models.Model):
-	"""
-	Image for Milestone Goal
-	"""
-	goal = models.ForeignKey(MilestoneGoal, blank=True, related_name="milestonegoalimage")
-	image_file = models.ImageField(upload_to=get_upload_path)
 	
 class Milestone(models.Model):
 	"""
@@ -142,32 +135,13 @@ class Milestone(models.Model):
 	def __unicode__(self):
 		return self.title
 
-
-class MilestoneNote(models.Model):
-	"""
-	Notes for One Shot Goals
-	"""
-	milestone = models.ForeignKey(Milestone, blank=True, related_name="milestonenote")
-	note = models.TextField(max_length=300)
-	date = models.DateField(auto_now_add=True)
-	
-	def __unicode__(self):
-		return self.note
-	
-class MilestoneImage(models.Model):
-	"""
-	Image for Milestone Goal
-	"""
-	milestone = models.ForeignKey(Milestone, blank=True, related_name="milestoneimage")
-	image_file = models.ImageField(upload_to=get_upload_path)
-
 class SubMilestone(models.Model):
 	"""
 	Model for Milestone Sub Goals
 	"""
 	#Link to a Milestone or submilestone
-	milestone = models.ForeignKey(Milestone, blank=True, related_name="submilestone")
-	milestone = models.ForeignKey('self', blank=True, related_name="subsubmilestone")
+	milestone = models.ForeignKey(Milestone, blank=True, null=True, related_name="submilestone")
+	submilestone = models.ForeignKey('self', blank=True, null=True, related_name="subsubmilestone")
 	
 	#attributes
 	title = models.CharField(max_length=75)
@@ -180,24 +154,6 @@ class SubMilestone(models.Model):
 	
 	def __unicode__(self):
 		return self.title
-
-class SubMilestoneNote(models.Model):
-	"""
-	Notes for One Shot Goals
-	"""
-	submilestone = models.ForeignKey(SubMilestone, blank=True, related_name="submilestonenote")
-	note = models.TextField(max_length=300)
-	date = models.DateField(auto_now_add=True)
-	
-	def __unicode__(self):
-		return self.note
-		
-class SubMilestoneImage(models.Model):
-	"""
-	Image for Milestone Goal
-	"""
-	submilestone = models.ForeignKey(SubMilestone, blank=True, related_name="submilestoneimage")
-	image_file = models.ImageField(upload_to=get_upload_path)
 
 #TIME GOALS-ONE SHOT GOALS
 class TimeOneShotGoal(models.Model):

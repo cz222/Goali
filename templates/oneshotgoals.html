@@ -26,6 +26,29 @@
 		});
 	</script>
 	
+	<!-- jquery for hiding date_completed unless goal is completed -->
+	<script>
+		function hideDateCompleted(divID){
+			if ($('#id_completed').is(':checked')) {
+				$("#"+divID+" label[for='id_date_completed']").show();
+				$('#id_date_completed').show();
+			}
+			else {
+				$("#"+divID+" label[for='id_date_completed']").hide();
+				$('#id_date_completed').hide();
+			}
+		}
+	</script>
+	<script>
+		function addNewButton(selector, type, id, entry) {
+			$('#'+selector).append('<a href="#editoneshotjournal-form" class="pure-button" rel="editoneshotjournal-form" id="'+type+'-'+id+'">Edit Journal Entry</a>');
+			$("#"+type+"-"+id).click(function() {
+				$('#id_edit_entry').val(entry);
+				$('#id_edit_journal_id').val(id);
+			});
+		}
+	</script>
+	
 	{% load bootstrap3 %}
 	{% load staticfiles %}
 
@@ -53,11 +76,18 @@
 		<a href="#oneshotjournal-form" class="pure-button" rel="oneshotjournal-form">New Journal entry</a>
 		<a href="#oneshotnote-form" class="pure-button" rel="oneshotnote-form">Add a Note</a>
 		{% for osjournal in oneshotjournal %}
+			<div id='osjournal{{ osjournal.id }}'>
 			<p>
-				{{ osjournal.date }}: {{ osjournal.entry }}
-				<a href="#oneshotnote-form" rel="oneshotnote-form">Edit Journal Entry</a>
-				<a href="#oneshotnote-form" rel="oneshotnote-form">Delete Journal Entry</a>
+			<td> Preview 
+				<a href="#oneshotnote-form" rel="oneshotnote-form">Edit</a> 
+				<a href="#oneshotnote-form" rel="oneshotnote-form">Delete</a> 
+			</td>
+			<p> {{ osjournal.date }}: {{ osjournal.entry }} </p>
 			</p>
+			</div>
+			<script>
+				addNewButton("osjournal{{ osjournal.id }}", "osjournal", "{{osjournal.id}}", "{{ osjournal.entry }}"); 
+			</script>
 		{% endfor %}
 		{% for osnote in oneshotnote %}
 			<p>{{ osnote.note }}</p>
@@ -69,6 +99,13 @@
 			{% bootstrap_form oneshotjournalform %}
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osjournalSub"/>
 		</form>
+		<form class="pure-form pure-form-stacked" action="" method="post" id="editoneshotjournal-form">
+			{% csrf_token %}
+			<p>Edit Journal Entry</p>
+			{{ editoneshotjournalform.edit_entry }}
+			{{ editoneshotjournalform.edit_journal_id }}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="editosjournalSub"/>
+		</form>
 		<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotnote-form">
 			{% csrf_token %}
 			<p>Add Note</p>
@@ -78,8 +115,20 @@
 		<form class="pure-form pure-form-stacked" action="" method="post" id="editoneshot-form">
 			{% csrf_token %}
 			<p>Edit {{ goal.title }}</p>
-			{% bootstrap_form editoneshotform %}
+			<div id='editoneshotgoal'>
+				{% bootstrap_form editoneshotform %}
+			</div>
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="editSub"/>
+			<script>
+				$('#id_completed').click(function() {
+					hideDateCompleted('editoneshotgoal');
+				});
+			</script>
+			<script>
+				$(document).ready(function() {
+					hideDateCompleted('editoneshotgoal');
+				});
+			</script>
 		</form>
 		<form class="pure-form pure-form-stacked" action="" method="post" id="deleteoneshot-form">
 			{% csrf_token %}

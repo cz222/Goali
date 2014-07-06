@@ -25,7 +25,34 @@
 			$("a[rel*=milestonegoalnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 		});
 	</script>
-	
+	<!-- cloning function for adding milestones -->
+	<script>
+		function cloneMore(selector, type) {
+			var newElement = $(selector).clone(true);
+			var total = $('#id_'+type+'-TOTAL_FORMS').val();
+			newElement.find(':input').each(function() {
+				var name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
+				var id = 'id_' + name;			
+				$(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+			});
+			newElement.find('label').each(function() {
+				var newFor = $(this).attr('for').replace('-' + (total-1) + '-', '-' + total + '-');
+				$(this).attr('for', newFor);
+			});
+			total++;
+			$('#id_' + type + '-TOTAL_FORMS').val(total);
+			$(selector).after(newElement);
+		}
+	</script>
+	<script>
+		function addNewButton(selector, type, id, message) {
+			$('#'+selector).append('<a href="#submilestone-form" class="pure-button" rel="submilestone-form" id="'+type+'-'+id+'">'+message+'</a>');
+			$("#"+type+"-"+id).click(function() {
+				$('#id_milestone_id').val(id);
+			});
+		}
+	</script>
+
 	{% load bootstrap3 %}
 	{% load staticfiles %}
 
@@ -60,14 +87,24 @@
 		{% for msgnote in milestonegoalnote %}
 			<p>{{ msgnote.note }}</p>
 		{% endfor %}
-		{% for ms in milestone %}
-			<h2>{{ ms.title }}</h2>
-			{% if ms.completed %}
-				<p>Status: Completed on {{ ms.date_completed }}</p>
-			{% else %}
-				<p>Status: Incomplete</p>
-			{% endif %}
+		<a href="#milestone-form" class="pure-button" rel="milestonegoal-form">Add New Milestone</a>
+		{% for ms in milestones %}
+			<div id='milestone{{ ms.id }}'>
+				<h2>{{ ms.title }}</h2>
+				{% if ms.completed %}
+					<p>Status: Completed on {{ ms.date_completed }}</p>
+				{% else %}
+					<p>Status: Incomplete</p>
+				{% endif %}
+				<script>
+					addNewButton('milestone{{ ms.id }}', 'milestone', '{{ ms.id }}', 'Add New Sub-Milestone')
+				</script>
+				{% for sms in ms.submilestone.all %}
+					<p>Sub-Milestone: {{ sms.title }}</p>
+				{% endfor %}
+			</div>
 		{% endfor %}
+		
 		<!-- FORMS -->
 		<form id="deletemilestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
@@ -92,6 +129,54 @@
 			<p>New Note</p>
 			{% bootstrap_form milestonegoalnoteform %}
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="msgNoteSub"/>
+		</form>
+		<form id="milestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			{{ milestoneformset.management_form }}
+			<div id='milestoneform_set'>
+				{% for form in milestoneformset %}
+					<div class='table'>
+						<table class='no_error'>
+							<p>Milestone</p>
+							{{ form.as_table }}
+						</table>		
+					</div>
+				{% endfor %}
+			</div>
+			<input type="button" value="Add Milestone" id="add_milestone"/>
+			<script>
+				$('#add_milestone').click(function() {
+					cloneMore('div.table:last', 'milestone');
+				});
+			</script>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="msSub"/>
+		</form>
+		<form id="submilestone-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			{{ collectmilestoneidform.milestone_id }}
+			{{ submilestoneformset.management_form }}
+			<div id='submilestoneform_set'>
+				{% for form in submilestoneformset %}
+					<div class='table'>
+						<table class='no_error'>
+							<p>Sub-Milestone</p>
+							{{ form.as_table }}
+						</table>		
+					</div>
+				{% endfor %}
+			</div>
+			<input type="button" value="Add Sub-Milestone" id="add_submilestone"/>
+			<script>
+				$('#add_submilestone').click(function() {
+					cloneMore('div.table:last', 'submilestone');
+				});
+			</script>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="subMSSub"/>
+		</form>
+		<form id="collectsubmilestoneid-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			{{ collectsubmilestoneidform.submilestone_id }}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="editosjournalSub"/>
 		</form>
 	{% else %}
 		<h1>No one's logged in...</h1>
