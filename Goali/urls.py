@@ -11,6 +11,9 @@ urlpatterns = patterns('',
 	
 	#Test link
 	url(r'^test/$', test_view),
+
+	#About page link
+	url(r'^about/$', about, name='about'),
 	
 	#login / logout
 	url(r'^login_new/', login_new, name='login_new'),
