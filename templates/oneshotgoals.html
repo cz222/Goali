@@ -60,7 +60,7 @@
 
 {% block body %}
 	{% if user.is_authenticated %}
-		<a href="/{{ user.username }}/">Back</a><br />
+		<a href="/user/{{ user.username }}/">Back</a><br />
 		<a href="#editoneshot-form" class="pure-button" rel="editoneshot-form">Edit Goal</a>
 		<a href="#deleteoneshot-form" class="pure-button" rel="deleteoneshot-form">Delete Goal</a>
 		<h1>{{ goal.title }}</h1>

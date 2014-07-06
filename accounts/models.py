@@ -2,6 +2,8 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import User
 
+import json
+
 # Create your models here.
 
 #USER PROFILE MODEL
@@ -121,7 +123,8 @@ class Milestone(models.Model):
 	Model for Milestone Goals
 	"""
 	#Link to a Milestone Goal
-	goal = models.ForeignKey(MilestoneGoal, blank=True, related_name="milestone")
+	goal = models.ForeignKey(MilestoneGoal, blank=True, null=True, related_name="milestone")
+	milestone = models.ForeignKey('self', blank=True, null=True, related_name="submilestone")
 	
 	#attributes
 	title = models.CharField(max_length=75)
@@ -134,27 +137,7 @@ class Milestone(models.Model):
 	
 	def __unicode__(self):
 		return self.title
-
-class SubMilestone(models.Model):
-	"""
-	Model for Milestone Sub Goals
-	"""
-	#Link to a Milestone or submilestone
-	milestone = models.ForeignKey(Milestone, blank=True, null=True, related_name="submilestone")
-	submilestone = models.ForeignKey('self', blank=True, null=True, related_name="subsubmilestone")
-	
-	#attributes
-	title = models.CharField(max_length=75)
-	description = models.TextField()
-	private = models.BooleanField()
-	completed = models.BooleanField()
-	date_created = models.DateField(auto_now_add=True)
-	date_completed = models.DateField(blank=True, null=True, editable=True)
-	last_updated = models.DateField(auto_now=True)
-	
-	def __unicode__(self):
-		return self.title
-
+		
 #TIME GOALS-ONE SHOT GOALS
 class TimeOneShotGoal(models.Model):
 	"""

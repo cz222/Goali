@@ -17,7 +17,7 @@ def homepage(request):
 	Register a new user. Salt hash (use sha) and email them an activation key
 	"""
 	if request.user.is_authenticated():
-		return HttpResponseRedirect('/%s/'%request.user.username)
+		return HttpResponseRedirect('/user/%s/'%request.user.username)
 	else:
 		if request.method == 'POST':
 			if 'registerSub' in request.POST:

@@ -39,23 +39,19 @@ a{
     display: none;
 }
 
-#deleteoneshot-form{
+#deletemilestonegoal-form{
 	display:none;
 }
 
-#editoneshot-form{
+#editmilestonegoal-form{
 	display:none;
 }
 
-#oneshotjournal-form{
+#milestonegoaljournal-form{
 	display:none;
 }
 
-#editoneshotjournal-form{
-	display:none;
-}
-
-#oneshotnote-form{
+#milestonegoalnote-form{
 	display:none;
 }
 

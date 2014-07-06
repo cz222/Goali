@@ -7,7 +7,7 @@ from django.forms.formsets import formset_factory
 
 from django.forms.models import inlineformset_factory
 from models import OneShotGoal, OneShotJournal, OneShotNote
-from models import MilestoneGoal, MilestoneGoalJournal, MilestoneGoalNote, Milestone, SubMilestone
+from models import MilestoneGoal, MilestoneGoalJournal, MilestoneGoalNote, Milestone
 
 class OneShotGoalForm(forms.ModelForm):
 	"""
@@ -253,60 +253,6 @@ class MilestoneForm(forms.ModelForm):
 				raise forms.ValidationError('Time travel is not allowed.')
 			else:
 				return date_completed
-					
-class SubMilestoneForm(forms.ModelForm):
-	"""
-	Form for creating Sub-Milestones
-	"""
-	
-	title = forms.CharField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Title*'}), max_length=75)
-	description = forms.CharField(max_length=300, required = False, label='', widget=forms.Textarea(attrs={'placeholder': 'Goal Description'}))
-	private = forms.BooleanField(required=False, label='Private', initial=False)
-	completed = forms.BooleanField(required=False, label='Completed')
-	date_completed = forms.DateField(required=False, label='MM/DD/YYYY')
-	
-	class Meta:
-		model = SubMilestone
-		fields = ('title', 'description', 'private', 'completed', 'date_completed',)
-
-	def clean_private(self):
-		"""
-		Validate private
-		"""
-		private = self.cleaned_data['private']
-		if private is None:
-			return False
-		else:
-			return private
-		
-	def clean_completed(self):
-		"""
-		Raise Error if date_completed has something when the goal is not yet completed and vice versa
-		"""
-		completed = self.cleaned_data.get('completed')
-		date_completed = self.cleaned_data.get('date_completed')
-		if completed is None:
-			completed = False
-		return completed
-	
-	def clean_date_completed(self):
-		"""
-		Raise Error if date_completed is greater than the current date.
-		"""
-		date_completed = self.cleaned_data.get('date_completed')
-		completed = self.cleaned_data.get('completed')
-		if (not completed) and (not (date_completed is None)):
-			date_completed = None
-			return date_completed
-		elif completed and (date_completed is None):
-			raise forms.ValidationError('Please enter a date of completion.')
-		elif (date_completed is None):
-			return date_completed
-		else:
-			if (datetime.now().date() < date_completed):
-				raise forms.ValidationError('Time travel is not allowed.')
-			else:
-				return date_completed
 
 class CollectMilestoneIDForm(forms.Form):
 	"""
@@ -315,15 +261,6 @@ class CollectMilestoneIDForm(forms.Form):
 	
 	milestone_id = forms.CharField(required = False)
 
-class CollectSubMilestoneIDForm(forms.Form):
-	"""
-	Form for creating Sub-Milestones
-	"""
-	
-	submilestone_id = forms.CharField(required = False)
-	
-
 #Milestone Goal formsets
 MilestoneFormSet = inlineformset_factory(MilestoneGoal, Milestone, form=MilestoneForm, extra=1)
-SubMilestoneFormSet = inlineformset_factory(Milestone, SubMilestone, form=SubMilestoneForm, extra=1)
-SubSubMilestoneFormSet = inlineformset_factory(SubMilestone, SubMilestone, form=SubMilestoneForm, extra=1)
+SubMilestoneFormSet = inlineformset_factory(Milestone, Milestone, form=MilestoneForm, extra=1)
