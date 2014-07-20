@@ -4,8 +4,6 @@ from django.contrib.auth.models import User
 
 import json
 
-# Create your models here.
-
 #USER PROFILE MODEL
 class UserProfile(models.Model):
 	"""
@@ -39,18 +37,21 @@ class OneShotGoal(models.Model):
 	def __unicode__(self):
 		return self.title
 
+###############################################################################
 def get_upload_path(instance, filename):
 	"""
 	Renames media upload filepath to user_username/goal_imagename
 	"""
 	return "user_{username}/{goal}/{file}".format(id=instance.user.username, goal=instance.name.slug, file=filename)
 
+	
 class OneShotImage(models.Model):
 	"""
 	Image for One Shot Goal
 	"""
 	goal = models.ForeignKey(OneShotGoal, blank=True, related_name="oneshotgoalimage")
 	image_file = models.ImageField(upload_to=get_upload_path)
+	
 	
 class OneShotJournal(models.Model):
 	"""
@@ -63,6 +64,7 @@ class OneShotJournal(models.Model):
 	def __unicode__(self):
 		return self.entry
 
+		
 class OneShotNote(models.Model):
 	"""
 	Notes for One Shot Goals
@@ -137,7 +139,7 @@ class Milestone(models.Model):
 	
 	def __unicode__(self):
 		return self.title
-		
+	
 #TIME GOALS-ONE SHOT GOALS
 class TimeOneShotGoal(models.Model):
 	"""

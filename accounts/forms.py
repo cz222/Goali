@@ -5,7 +5,7 @@ from django.core.validators import validate_email
 from django.contrib import auth
 from django.forms.formsets import formset_factory
 
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from models import OneShotGoal, OneShotJournal, OneShotNote
 from models import MilestoneGoal, MilestoneGoalJournal, MilestoneGoalNote, Milestone
 
@@ -131,10 +131,13 @@ class MilestoneGoalForm(forms.ModelForm):
 	
 	def clean_title(self):
 		"""
-		Validate title and see if it's in use.
+		Validate title
 		"""
 		title = self.cleaned_data['title']
-		return title
+		if not title.strip():
+			raise forms.ValidationError("Cannot just be whitespace.")
+		elif (title[0] == ' '):
+			raise forms.ValidationError("Please don't lead with whitespace.")
 	
 	def clean_private(self):
 		"""
@@ -208,7 +211,7 @@ class MilestoneForm(forms.ModelForm):
 	
 	title = forms.CharField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Title*'}), max_length=75)
 	description = forms.CharField(max_length=300, required = False, label='', widget=forms.Textarea(attrs={'placeholder': 'Goal Description'}))
-	private = forms.BooleanField(required=False, label='Private', initial=False)
+	private = forms.BooleanField(required=False, label='Private')
 	completed = forms.BooleanField(required=False, label='Completed')
 	date_completed = forms.DateField(required=False, label='MM/DD/YYYY')
 	
@@ -216,6 +219,21 @@ class MilestoneForm(forms.ModelForm):
 		model = Milestone
 		fields = ('title', 'description', 'private', 'completed', 'date_completed',)
 
+	def clean_title(self):
+		"""
+		Validate title
+		"""
+		if 'title' not in self.cleaned_data:
+			raise ValidationError('Please enter a title.')
+		else:
+			title = self.cleaned_data['title']
+			if not title.strip():
+				raise forms.ValidationError("Cannot just be whitespace.")
+			elif (title[0] == ' '):
+				raise forms.ValidationError("Please don't lead with whitespace.")
+			else:
+				return title
+		
 	def clean_private(self):
 		"""
 		Validate private
@@ -254,13 +272,51 @@ class MilestoneForm(forms.ModelForm):
 			else:
 				return date_completed
 
+class DeleteMilestoneForm(forms.ModelForm):
+	"""
+	Form for deleting Milestones
+	"""
+	class Meta:
+		model = Milestone
+		fields = []
+
+class DeleteSubMilestoneForm(forms.ModelForm):
+	"""
+	Form for deleting Sub-Milestones
+	"""
+	class Meta:
+		model = Milestone
+		fields = []
+
+class CompletedButtonForm(forms.Form):
+	"""
+	Form for completing milestones
+	"""
+	date_completed = forms.DateField(required=False, label='MM/DD/YYYY')
+		
 class CollectMilestoneIDForm(forms.Form):
 	"""
 	Form for creating Sub-Milestones
 	"""
-	
 	milestone_id = forms.CharField(required = False)
+	milestone_isSub = forms.BooleanField(required = False)
+	
+	editmilestone_id = forms.CharField(required = False)
+	editmilestone_isSub = forms.BooleanField(required = False)
+	
+	deletemilestone_id = forms.CharField(required = False)
+	deletemilestone_isSub = forms.BooleanField(required = False)
+	
+	completedmilestone_id = forms.CharField(required = False)
 
 #Milestone Goal formsets
-MilestoneFormSet = inlineformset_factory(MilestoneGoal, Milestone, form=MilestoneForm, extra=1)
-SubMilestoneFormSet = inlineformset_factory(Milestone, Milestone, form=MilestoneForm, extra=1)
+class RequiredInlineFormSet(BaseInlineFormSet):
+	"""
+	New formset with the first form required to be filled out
+	"""
+	def __init__(self, *args, **kwargs):
+		super(RequiredInlineFormSet, self).__init__(*args, **kwargs)
+		self.forms[0].empty_permitted = False
+
+MilestoneFormSet = inlineformset_factory(MilestoneGoal, Milestone, form=MilestoneForm, extra=1, formset=RequiredInlineFormSet)
+SubMilestoneFormSet = inlineformset_factory(Milestone, Milestone, form=MilestoneForm, extra=1, formset=RequiredInlineFormSet)

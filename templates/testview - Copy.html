@@ -1,0 +1,111 @@
+<html>
+<head>
+	<script type="text/javascript" src="{{STATIC_URL}}mbostock-d3/d3.min.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}hexbin-js-master/src/d3.hexbin.js"></script>
+	<script src="http://d3js.org/d3.hexbin.v0.min.js"></script>
+	<script src="http://d3js.org/topojson.v1.min.js"></script>
+</head>
+
+<body>
+			<style>
+				.hexagon {
+					opactiy: .4;
+				}
+			</style>
+			
+			<script>
+				var width = 1000,
+					height = 500;
+					radius = 20;
+					
+				var svg = d3.select("body").append("svg")
+					.attr("width", width)
+					.attr("height", height);
+				
+				svg.append("rect")
+					.attr("width", hexWidth)
+					.attr("height", hexHeight)
+					.attr("stroke", "black")
+					.attr("fill", "white");
+				
+				//hexagon stuff now
+				
+				var hexWidth = 700,
+					hexHeight = 500;
+				
+				var points = [];
+				for (var i = 0; i < 27; i++) {
+					for (var j = 0; j < 26; j++) {
+						points.push([Math.floor(hexWidth*j/25), Math.floor(hexHeight*i/26)]);
+					}
+				};
+				
+				var hexColorScaleRed = d3.scale.ordinal()
+					.domain([0, 1, 2, 3, 4, 5, 6, 7])
+					.range(["FF4D4D","#FF3333", "FF1919", "#FF0000", "#E60000", "#CC0000", "#B20000"]);
+				
+				var hexColorScaleBlue = d3.scale.linear()
+					.domain([0,20])
+					.range(["lightblue", "steelblue"])
+					.interpolate(d3.interpolateLab);
+				
+				function randomNum() {
+					return Math.floor(Math.random()*21);
+				};
+				
+				var hexbin = d3.hexbin()
+					.size([hexWidth, hexHeight])
+					.radius((hexWidth/20)/2);
+				
+				var hexagons = svg.append("g")
+					.selectAll(".hexagon")
+					.data(hexbin(points))
+					.enter().append("path")
+					.attr("class", "hexagon")
+					.attr("d", function (d) { return hexbin.hexagon();})
+					.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+					.attr("stroke", "#fff")
+					.attr("stroke-width", "2px")
+					.style("fill", function () { return hexColorScaleBlue(randomNum())} );
+				
+				svg.append("clipPath")
+					.attr("id", "svgclip")
+				  .append("rect")
+					.attr("width", hexWidth)
+					.attr("height", hexHeight);
+				
+				hexagons.append("clip-path", "url(#svgclip)");
+				
+				console.log(points);
+				var hexBorder = svg.append("rect")
+					.attr("width", hexWidth)
+					.attr("height", hexHeight)
+					.attr("stroke", "black")
+					.attr("stroke-width", "2px")
+					.attr("fill", "none");
+				
+				
+				//animation
+				function randomPoint() {
+					return Math.floor(Math.random()*703);
+				}
+				
+				function randomPointX() {
+					return Math.floor(hexWidth*(Math.random()*27)/25);
+				};
+				
+				function randomPointY() {
+					return Math.floor(hexHeight*(Math.random()*26)/26);
+				};
+				
+				var k = 10;
+				
+				d3.timer(function() {
+					for (var j = 0; j < k; j++) {
+						points[randomPoint()][0] = randomPointX();
+						points[randomPoint()][1] = randomPointY();
+					}
+				});
+			</script>
+</body>
+</html>

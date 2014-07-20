@@ -1,15 +1,58 @@
-@import url(http://fonts.googleapis.com/css?family=Roboto);
+/*@import url(http://fonts.googleapis.com/css?family=Roboto);
 @import url(http://fonts.googleapis.com/css?family=Inconsolata);
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
-@import url(http://fonts.googleapis.com/css?family=Montserrat);
+@import url(http://fonts.googleapis.com/css?family=Montserrat); */
 
 #home-logo{
 	width: 40px;
-	height:auto;
+	height: auto;
+	float:left;
+	vertical-align: middle;
+}
+
+ul {
+	width: 940px;
+	height: 40px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0;
+}
+
+ul#list-nav  {
+	margin-right: 20px;
+	list-style: none;
+	width: 940px;
+}
+
+ul#list-nav li {
+	display: inline;
+	float:right;
+	vertical-align: middle;
+}
+
+ul#list-nav li a {
+	font-weight: bold;
+	text-decoration: none;
+	padding: 10px 1px;
+	width: 60px;
+	background: #FFFFFF;
+	color: #47a938;
+	float: left;
+	text-align: center;
+	border-left:1px solid #fff;
+	text-shadow: #FFFFFF 2px 2px 3px;
+}
+
+ul#list-nav li a:hover{
+	text-shadow: #CCCCCC 1px 1px 1px;
+}
+
+.container {
+	height:40px;
 }
 
 body{
-	background-color:#47a938; 
+	background-color: #47a938; 
 	font-family:'Open Sans', Arial, sans-serif;
 }
 
@@ -39,6 +82,14 @@ a{
     display: none;
 }
 
+#goal_visual {
+	width: 960px;
+	height: 500px;
+	margin-top: 40px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 #deletemilestonegoal-form{
 	display:none;
 }
@@ -47,12 +98,27 @@ a{
 	display:none;
 }
 
-#milestonegoaljournal-form{
+#deletemilestone-form{
 	display:none;
 }
 
-#milestonegoalnote-form{
+#editmilestone-form{
 	display:none;
+}
+
+#milestone-form{
+	display:none;
+}
+
+#submilestone-form{
+	display:none;
+}
+
+#completed-form{
+	position: absolute;
+	display:none;
+	width: 260px;
+	height: 50px;
 }
 
 .modal_close{
@@ -155,6 +221,7 @@ h3{
 
 .navbar-fixed-top{
 	background-color: #fff;
+	height: 40px;
 }
 
 #signin-button{

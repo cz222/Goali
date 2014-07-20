@@ -67,6 +67,16 @@
 
 {% block body %}
 	{% if user.is_authenticated %}
+		<nav class="navbar navbar-fixed-top" role="navigation">
+				<div class="container">	
+					<ul id="list-nav">
+						<a href="{% url 'homepage' %}" target="_blank"><img src="{{STATIC_URL}}img/G_White.png" border="0" id="home-logo"/></a>
+						<li><a id='logout_button-btn' href="/logout/">Logout</a></li>
+						<li><a id='profile-btn' href="#">Profile</a></li>
+						<li><a id='goals-btn' href="/user/{{ user.username }}">Goals</a></li>
+					</ul>
+				</div>
+		</nav>	
 		<h1>Hey, {{ user.username }}!</h1>
 		<a href="/logout/">Logout</a><br />
 		<h2>Profile:</h2>

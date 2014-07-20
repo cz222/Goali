@@ -1,8 +1,526 @@
 <html>
 <head>
+	<script type="text/javascript" src="{{STATIC_URL}}mbostock-d3/d3.min.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}hexbin-js-master/src/d3.hexbin.js"></script>
+	<script src="http://d3js.org/d3.hexbin.v0.min.js"></script>
+	<script src="http://d3js.org/topojson.v1.min.js"></script>
 </head>
 
 <body>
-<p>THIS IS THE TEST VIEW</p>
+			<style>
+				.hexagon {
+					opacity: .4;
+					filter: blur(1px);
+				}
+				
+				.notice {
+					opacity: .7;
+					-webkit-filter: blur(5px);
+					padding: 10px 0;
+					border-bottom: 1px solid;
+					border-bottom-color: #ccc;
+					border-bottom-color: rgba(255,255,255,0.2);
+					background-color: rgba(255,255,255,0.2);
+					box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+				}
+				
+				.noticetext {
+					opacity: .9;
+					-webkit-filter: blur(5px);
+					padding: 10px 0;
+					border-bottom: 1px solid;
+					border-bottom-color: #ccc;
+					border-bottom-color: rgba(255,255,255,0.2);
+					background-color: rgba(255,255,255,0.2);
+					box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+				}
+				
+				.glass {
+					padding: 10px 0;
+					background-color: rgba(0,0,0,0.1);
+					border-radius: 10px;
+					box-shadow: inset 0 50px rgba(255,255,255,0.2),
+								inset 0 -15px 30px rgba(0,0,0,0.4),
+									  0 5 px 10px rgba(0,0,0,0.5);
+					-mox-box-shadow: inset 0 0 10px #000000;
+					-webkit-box-shadow: inset 0 0 10px #000000;
+					box-shadow: inset 0 0 0 10px #000000;
+				}
+			</style>
+			
+			<script>
+			var element = function(divID, goalID, goalTitle, goalDescription, goalPrivate, goalCompleted, goaldDateCompleted) {	
+				
+				var completed = goalCompleted;
+				
+				var svgWidth = 960,
+					svgHeight = 500;
+				
+				var width = 700,
+					height = 500,
+					i = -1,
+					θ = 0,
+					δθ = .03,
+					n = 2000,
+					k = 6; // samples to replace per frame
+					
+				var hexID = -1;
+					
+				var randomX = d3.random.normal(width/2, 350),
+					randomY = d3.random.normal(height/2, 250),
+					points = d3.range(n).map(function() { return [randomX(), randomY()]; });
+
+				var color = d3.scale.linear()
+					.domain([0, 10])
+					.range(["white", "steelblue"])
+					.interpolate(d3.interpolateLab);
+
+				var hexbin = d3.hexbin()
+					.size([width, height])
+					.radius(20);
+					
+				var svg = d3.select("body").append("svg")
+					.attr("width", svgWidth)
+					.attr("height", svgHeight);
+					
+				var clipBox = svg.append("clipPath")
+					.attr("id", "clip-box");
+					
+				clipBox.append("rect")
+					.attr("class", "glass")
+					.attr("width", svgWidth)
+					.attr("height", svgHeight)
+					.attr("fill", "none")
+					.attr("rx", "30");
+					
+				svg.attr("clip-path", "url(#clip-box)");
+					
+				var hexagon = svg.append("g")
+					.attr("class", "hexagons")
+				  .selectAll("path")
+					.data(hexbin(points))
+				  .enter().append("path")
+					.attr("d", hexbin.hexagon(19.5))
+					.attr("id", function(d){ hexID++; return (hexID+""); })
+					.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+					.style("fill", function(d) { return color(d.length); });
+					
+				var start = true;
+				
+				var noticePoints = [{"x":0, "y":50},
+									{"x":25, "y":0},
+									{"x":300, "y":0},
+									{"x":325, "y":50},
+									{"x":300, "y":100},
+									{"x":25, "y":100}];
+				
+				var notice = svg.append("g")
+					.attr("class", "notice")
+					.selectAll("polygon")
+				  .data([noticePoints]).enter()
+					.append("polygon")
+					.attr("points", function(d) { return d.map(function(d){ return [d.x,d.y].join(","); }).join(" "); })
+					//.attr("stroke", "grey")
+					.attr("stroke-width", 2)
+					.attr("transform", "translate(187.5,200)")
+					.attr("fill", "steelblue");
+					
+				var glass = svg.append("rect")
+					.attr("class", "glass")
+					.attr("width", width)
+					.attr("height", height)
+					.attr("fill", "none");
+					
+				//CALCULATE TEXT SIZE YOURSELF
+					
+				var noticeText = svg.append("text")
+					.attr("class", "noticetext")
+					.attr("dx", width/2)
+					.attr("dy", height/2)
+					.attr("text-anchor", "middle")
+					.attr("font-size",30)
+					.text(goalTitle);
+					
+				var green = d3.scale.linear()
+					.domain([0, 10])
+					.range(["white", "lightgreen"])
+					.interpolate(d3.interpolateLab);
+					
+				var display = svg.append("rect")
+					.attr("width", 260)
+					.attr("height", 380)
+					.attr("fill", "steelblue")
+					.attr("stroke", "black")
+					.attr("transform", "translate(700,0)")
+			
+				var editButton = svg.append("rect")
+					.attr("width", 260)
+					.attr("height", 60)
+					.attr("fill", "darkolivegreen")
+					.attr("stroke", "black")
+					.attr("transform", "translate(700,380)")
+					
+				if (completed) {
+					var completeButton = svg.append("rect")
+						.attr("width", 260)
+						.attr("height", 60)
+						.attr("transform", "translate(700,440)")
+						.attr("stroke", "black")
+						.attr("fill", "lightgreen");
+				} else {
+					var completeButton = svg.append("rect")
+						.attr("width", 260)
+						.attr("height", 60)
+						.attr("transform", "translate(700,440)")
+						.attr("stroke", "black")
+						.attr("fill", "darkgreen")
+						.on("click", function() {
+							notice.transition()
+								.duration(500)
+								.delay(0)
+								.attr("fill", "darkolivegreen");
+							
+							start = false;
+							
+							hexagon = hexagon
+								.data(hexbin(points), function(d) { return d.i + "," + d.j; });
+								
+							hexagon.exit().remove();
+								
+							hexagon.enter().append("path")
+								.attr("d", hexbin.hexagon(19.5))
+								.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+								
+							hexagon
+								.transition()
+								.duration(800)
+								.delay( function(d,i) { return 2*i })
+								.style("fill", function(d) { return green(d.length); });
+								
+							setTimeout(function() {
+								start = true;
+								color = green;
+							}, 1600);
+						});	
+				}	
+				
+				//Transition + Animation
+				var step = function() {
+					if (start) {
+						θ += δθ;
+						randomX = d3.random.normal(width/2 + 80 * Math.cos(θ), 160),
+						randomY = d3.random.normal(height/2 + 80 * Math.sin(θ), 160);
+						
+						for (var j = 0; j < k; ++j) {
+							i = (i + 1) % n;
+							points[i][0] = randomX();
+							points[i][1] = randomY();
+						}
+
+						hexagon = hexagon
+							.data(hexbin(points), function(d) { return d.i + "," + d.j; });
+							
+						hexagon.exit().remove();
+
+						hexagon.enter().append("path")
+							.attr("d", hexbin.hexagon(19.5))
+							.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+						hexagon
+							.style("fill", function(d) { return color(d.length); });
+					}
+					else {
+						return false
+					}
+				};
+					
+				var timer = d3.timer(step,500);
+			
+				var topBox = svg.append("rect")
+					.attr("class", "glass")
+					.attr("width", svgWidth)
+					.attr("height", svgHeight)
+					.attr("fill", "none")
+					.attr("stroke", "black")
+					.attr("rx", "30");
+			
+			}
+			//element("goalvisual", "3","Goal 1", "This is the description", "yes", false, "");
+	</script>
+	
+	<style>
+	</style>
+	<script>	
+		var visualDonutChart = function(divID, goal, msSet){	
+			//find depths
+			var count = 0;
+			var depthArray = [1,0];
+			var currentDepth = 2;
+			
+			var findSizeNArray = function(arr) {
+				if (depthArray.length >= currentDepth) {
+					var ele = currentDepth - 1; 
+					depthArray[ele] += 1;
+				}
+				else {
+					depthArray.push(1);
+				};
+				var subs = arr.submilestones;
+				var subLength = subs.length;
+				if (subLength > 0) {
+					currentDepth++;
+					for (var i = 0; i < subLength; i++) {
+						findSizeNArray(subs[i]);
+					};
+					currentDepth--;
+				}
+				else {
+				}
+			};
+			
+			for (var i = 0; i < msSet.length; i++) {
+				findSizeNArray(msSet[i]);
+			};
+			
+			//draw pie
+			var color = d3.scale.ordinal()
+				.domain([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16])
+				.range(["#1f77b4","#aec7e8","#ffbb78","#d62728","#ff9896","#9467bd","#c5b0d5","#8c564b","#c49c94","#e377c2","#f7b6d2","#7f7f7f","#c7c7c7","#bcbd22","#dbdb8d","#17becf","#9edae5"]);
+			
+			//var color = d3.scale.category20();
+			var pie = d3.layout.pie();
+			var arc = d3.svg.arc().outerRadius(radius);
+			
+			//draw svg
+			var width = 700,
+				height = 500,
+				radius = Math.min(width, height)/2 - 10;
+			var iradius = radius*0.6;	
+			
+			var svgWidth = 960,
+				svgHeight = 500;
+		
+			var svg = d3.select("body").append("svg")
+				.attr("width", svgWidth)
+				.attr("height", svgHeight);
+			
+			var clipBox = svg.append("clipPath")
+				.attr("id", "clip-box");
+					
+			clipBox.append("rect")
+				.attr("class", "glass")
+				.attr("width", svgWidth)
+				.attr("height", svgHeight)
+				.attr("fill", "none")
+				.attr("rx", "30");
+					
+			svg.attr("clip-path", "url(#clip-box)");
+			
+			//draw display
+			var display = svg.append("rect")
+				.attr("width", 260)
+				.attr("height", 380)
+				.attr("fill", "steelblue")
+				.attr("stroke", "black")
+				.attr("transform", "translate(700,0)");
+			
+			var editButton = svg.append("rect")
+				.attr("width", 260)
+				.attr("height", 60)
+				.attr("fill", "darkolivegreen")
+				.attr("stroke", "black")
+				.attr("transform", "translate(700,380)");
+			
+			var completeButton = svg.append("rect")
+						.attr("width", 260)
+						.attr("height", 60)
+						.attr("transform", "translate(700,440)")
+						.attr("stroke", "black")
+						.attr("fill", "lightgreen");
+			
+			var border = svg.append("rect")
+				.attr("class", "glass")
+				.attr("width", svgWidth)
+				.attr("height", svgHeight)
+				.attr("fill", "none")
+				.attr("stroke", "grey")
+				.attr("stroke-width", "5px")
+				.attr("rx", "30");
+			
+			var infoText = svg.append("text")
+				.attr("dx", width+150)
+				.attr("dy", height/4)
+				.attr("text-anchor", "middle")
+				.attr("font-size",15)
+				.text(goal.title);
+				
+			//calculate size of donut arcs
+			var sizeArray = [];
+			var depths = [];
+			var sum = 0;
+			
+			for (var i = 0; i < depthArray.length; i++) {
+				sizeArray[i] = Math.pow(0.70, i); 
+				sizeArray[i] = sizeArray[i]*depthArray[i];
+				sum += sizeArray[i];
+				depths[i] = i+1;
+			};
+			
+			var rad = (2*Math.PI)/sum;
+			for (var i = 0; i < depthArray.length; i++) {
+				sizeArray[i] = sizeArray[i]*rad/depthArray[i];
+			};
+
+			var radScale = d3.scale.ordinal()
+				.domain(depths)
+				.range(sizeArray);
+			
+			//draw donut arcs
+			currentDepth = 0;
+			currentAngle = 0;
+			
+			var drawArcs = function(arr, clr) {
+				
+				if (arr.milestone_completed) {
+					var nColor = "darkolivegreen";
+					var radAdd = sizeArray[currentDepth];
+					var arc = d3.svg.arc()
+						.innerRadius(0)
+						.outerRadius(radius)
+						.startAngle(currentAngle)
+						.endAngle(radAdd + currentAngle);
+						
+					svg.append("path")
+						.attr("d", arc)
+						.attr("fill", nColor)
+						.attr("stroke", "white")
+						.attr("stroke-width", "3px")
+						.attr("transform", "translate(" + width/2 + "," + height/2+")")
+						.on("click", function() {
+							infoText.text(arr.milestone_title);
+						});
+						
+					currentAngle = radAdd+currentAngle
+				
+					var subs = arr.submilestones;
+					var subLength = subs.length;
+					if (subLength > 0) {
+						currentDepth++;
+						for (var i = 0; i < subLength; i++) {
+							drawArcs(subs[i],nColor);
+						};
+						currentDepth--;
+					}
+				}
+				
+				var radAdd = sizeArray[currentDepth];
+				var arc = d3.svg.arc()
+					.innerRadius(iradius)
+					.outerRadius(radius)
+					.startAngle(currentAngle)
+					.endAngle(radAdd + currentAngle);
+				
+				if (currentDepth == 1) {
+					var newColor = color((arr.milestone_id*11)%17)
+					svg.append("path")
+						.attr("d", arc)
+						.attr("fill", newColor)
+						.attr("stroke", "white")
+						.attr("stroke-width", "3px")
+						.attr("transform", "translate(" + width/2 + "," + height/2+")")
+						.on("click", function() {
+							infoText.text(arr.milestone_title);
+						});
+						
+						currentAngle = radAdd+currentAngle
+				
+					var subs = arr.submilestones;
+					var subLength = subs.length;
+					if (subLength > 0) {
+						currentDepth++;
+						for (var i = 0; i < subLength; i++) {
+							drawArcs(subs[i],newColor);
+						};
+						currentDepth--;
+					}
+				} else {
+					svg.append("path")
+						.attr("d", arc)
+						.attr("fill", clr)
+						.attr("stroke", "white")
+						.attr("stroke-width", "3px")
+						.attr("transform", "translate(" + width/2 + "," + height/2+")")
+						.on("click", function() {
+							infoText.text(arr.milestone_title);
+						});
+						
+					currentAngle = radAdd+currentAngle
+				
+					var subs = arr.submilestones;
+					var subLength = subs.length;
+					if (subLength > 0) {
+						currentDepth++;
+						for (var i = 0; i < subLength; i++) {
+							drawArcs(subs[i],clr);
+						};
+						currentDepth--;
+					}
+				}
+			};
+			
+			var gArc = d3.svg.arc()
+				.innerRadius(radius*0.5)
+				.outerRadius(radius)
+				.startAngle(0)
+				.endAngle(sizeArray[0]);
+				
+			svg.append("path")
+				.attr("d", gArc)
+				.attr("fill", "lightgreen")
+				.attr("stroke", "white")
+				.attr("stroke-width", "3px")
+				.attr("transform", "translate(" + width/2 + "," + height/2+")")
+				.on("click", function() {
+					infoText.text(goal.title);
+				})
+
+			currentAngle += sizeArray[currentDepth];
+			currentDepth++;
+			
+			for (var i = 0; i < msSet.length; i++) {
+				drawArcs(msSet[i]);
+			};
+			
+			function tweenPie(d, i, a) {
+				console.log(a);
+				console.log(d);
+				console.log(i.innerRadius);
+				var i = d3.interpolate({startAngle:0, endAngle:0}, a);
+				return function(t) { return arc(i(t)); };
+			}
+			
+			function tweenDonut(b) {
+				b.innerRadius = radius * .6;
+				var i = d3.interpolate({innerRadius:0}, b);
+				return i;
+			}
+			
+			
+		};
+		
+		var goal = {title:"Milestone Goal 1", description:"Description 1", g_private:false, completed:false, date_completed: null, id:2};
+		var msSet = [{milestone_title:"Milestone 1", milestone_description:"Milestone 1 Description", milestone_private:false, milestone_completed:false, milestone_date_completed: null, milestone_id: 3, milestone_parent_id: 2,
+			submilestones:[{milestone_title:"Sub-milestone 1", milestone_description:"Description", milestone_private:false, milestone_completed:false, milestone_date_completed: null, milestone_id: 6, milestone_parent_id: 3,
+				submilestones:[{milestone_title:"Sub-Sub-Milestone 1", milestone_description:"Description", milestone_private:false, milestone_completed:false, milestone_date_completed: null, milestone_id: 7, milestone_parent_id: 6, submilestones:[]}]
+			}]},
+			{milestone_title:"Milestone 2", milestone_description:"Milestone 2 Description", milestone_private:false, milestone_completed:false, milestone_date_completed: null, milestone_id: 4, milestone_parent_id: 2,
+				submilestones:[{milestone_title:"Sub-milestone 2", milestone_description:"Description", milestone_private:false, milestone_completed:false, milestone_date_completed: null, milestone_id: 8, milestone_parent_id: 4, submilestones:[]},
+				{milestone_title:"Sub-milestone 3", milestone_description:"Description", milestone_private:false, milestone_completed:false, milestone_date_completed: null, milestone_id: 9, milestone_parent_id: 4, submilestones:[]}]
+			},
+			{milestone_title:"Milestone 3", milestone_description:"Milestone 3 Description", milestone_private:false, milestone_completed:false, milestone_date_completed: null, milestone_id: 5, milestone_parent_id: 2, submilestones:[]}
+			];
+			
+		visualDonutChart("donutVisual", goal, msSet);	
+	</script>
 </body>
 </html>

@@ -15,7 +15,35 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script type="text/javascript" src="{{STATIC_URL}}bootstrap/js/bootstrap.min.js"></script>
 	<!-- js file of the plugin -->
-	<script type="text/javascript" src="{{STATIC_URL}}js/jquery.leanModal.min.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery.leanModalOld.min.js"></script>
+	
+	<!-- Adding D3 files-->
+	<script type="text/javascript" src="{{STATIC_URL}}mbostock-d3/d3.min.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}hexbin-js-master/src/d3.hexbin.js"></script>
+	
+	<!-- Adding page scripts-->
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/addNewButton.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/checkCompletedCheckbox.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/cloneMore.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompleted.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedEdit.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedFS.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDeleteFS.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/prefillEditForm.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/processMilestone.js"></script>
+	
+	<!-- Adding Visualization js files -->
+	<script type="text/javascript" src="{{STATIC_URL}}visuals/visual_donut.js"></script>
+	
+	<!-- Adding Bootstrap -->
+	{% load bootstrap3 %}
+	{% load staticfiles %}
+    <link href="{{STATIC_URL}}bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    
+	<!-- Adding CSS -->
+	<link href="{{STATIC_URL}}css/cover.css" rel="stylesheet" type="text/css">
+    <link rel= "stylesheet" href = "{{STATIC_URL}}css/milestonegoals.css" type="text/css">
+	
 	<!-- Initializing the plugin for the signin popup -->
 	<script>
 		$(document).ready(function(){
@@ -25,113 +53,91 @@
 			$("a[rel*=milestonegoalnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 			$("a[rel*=milestone-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 			$("a[rel*=submilestone-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=deletesubmilestone-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 		});
 	</script>
-	<!-- cloning function for adding milestones -->
-	<script>
-		function cloneMore(selector, type) {
-			var newElement = $(selector).clone(true);
-			var total = $('#id_'+type+'-TOTAL_FORMS').val();
-			newElement.find(':input').each(function() {
-				var name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
-				var id = 'id_' + name;			
-				$(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
-			});
-			newElement.find('label').each(function() {
-				var newFor = $(this).attr('for').replace('-' + (total-1) + '-', '-' + total + '-');
-				$(this).attr('for', newFor);
-			});
-			total++;
-			$('#id_' + type + '-TOTAL_FORMS').val(total);
-			$(selector).after(newElement);
-		}
-	</script>
-	<script>
-		function addNewButton(selector, type, id, message) {
-			$('#'+selector).append('<a href="#submilestone-form" class="pure-button" rel="submilestone-form" id="'+type+'-'+id+'">'+message+'</a>');
-			$("#"+type+"-"+id).click(function() {
-				$('#id_milestone_id').val(id);
-			});
-		}
-	</script>
-
-	{% load bootstrap3 %}
-	{% load staticfiles %}
-
-    <!-- Bootstrap -->
-    <link href="{{STATIC_URL}}bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="{{STATIC_URL}}css/cover.css" rel="stylesheet" type="text/css">
-    <link rel= "stylesheet" href = "{{STATIC_URL}}css/milestonegoals.css" type="text/css">
 {% endblock %}
 
 {% block body %}
 	{% if user.is_authenticated %}
+		<nav class="navbar navbar-fixed-top" role="navigation">
+				<div class="container">
+					
+					<ul id="list-nav">
+						<a href="{% url 'homepage' %}" target="_blank"><img src="{{STATIC_URL}}img/G_White.png" border="0" id="home-logo"/></a>
+						<li><a id='logout_button-btn' href="/logout/">Logout</a></li>
+						<li><a id='profile-btn' href="#">Profile</a></li>
+						<li><a id='goals-btn' href="/user/{{ user.username }}">Goals</a></li>
+					</ul>
+				</div>
+		</nav>		
 		<a href="/user/{{ user.username }}/">Back</a><br />
-		<a href="#editmilestonegoal-form" class="pure-button" rel="editmilestonegoal-form">Edit Goal</a>
-		<a href="#deletemilestonegoal-form" class="pure-button" rel="deletemilestonegoal-form">Delete Goal</a>
-		<h1>{{ goal.title }}</h1>
-		<h2>Goal Description: {{ goal.description }}</h2>
-		<p>Private: {{ goal.private }}</p>
-		{% if goal.completed %}
-			<p>Status: Completed on {{ goal.date_completed }}</p>
-		{% else %}
-			<p>Status: Incomplete</p>
-		{% endif %}
-		<p>Created on: {{ goal.date_created }}</p>
-		<p>Last updated: {{ goal.last_updated }}<p>
-		<a href="#milestonegoaljournal-form" class="pure-button" rel="milestonegoaljournal-form">New Journal entry</a>
-		<a href="#milestonegoalnote-form" class="pure-button" rel="milestonegoalnote-form">Add a Note</a>
-		<p>{{ milestones }}</p>
-		<p>{{ subsList }}</p>
-		{% for msgjournal in milestonegoaljournal %}
-			<p>
-				{{ msgjournal.date }}: {{ msgjournal.entry }}
-			</p>
-		{% endfor %}
-		{% for msgnote in milestonegoalnote %}
-			<p>{{ msgnote.note }}</p>
-		{% endfor %}
-		<a href="#milestone-form" class="pure-button" rel="milestone-form">Add New Milestone</a>
-		{% for ms in milestones %}
-			<div id='milestone{{ ms.id }}'>
-				<h2>{{ ms.title }}</h2>
-				{% if ms.completed %}
-					<p>Status: Completed on {{ ms.date_completed }}</p>
-				{% else %}
-					<p>Status: Incomplete</p>
-				{% endif %}
-				<script>
-					addNewButton('milestone{{ ms.id }}', 'milestone', '{{ ms.id }}', 'Add New Sub-Milestone')
-				</script>
-				{% for sms in ms.submilestone.all %}
-					<p>FOR LOOP: Sub-Milestone: {{ sms.title }}</p>
-				{% endfor %}
-			</div>
-		{% endfor %}
+		<a id="editmilestonegoal-form-btn" href="#editmilestonegoal-form" class="pure-button" rel="editmilestonegoal-form" style="display:none">Edit Goal</a>
+		<a id="deletemilestonegoal-form-btn" href="#deletemilestonegoal-form" class="pure-button" rel="deletemilestonegoal-form" style="display:none">Delete Goal</a>		
+		<a id="milestone-form-btn" href="#milestone-form" class="pure-button" rel="milestone-form" style="display:none">Add New Milestone</a>
+		<a id="completed-form-btn" href="#completed-form" class="pure-button" rel="completed-form" style="display:none">Date Completed</a>
+		<div id='goal_visual'>
+		</div>
+		<script>
+			$("#completed-form-btn").click(function () {
+				$("#completed-form").show()
+			});
+			var gl = {{ goal1 }};
+			var msSet = {{ test_milestones1 }};
+			visualDonutChart("goal_visual", gl, msSet, "lightgreen");
+		</script>
+		<div id="completedBtn">
+		</div>
 		<!-- FORMS -->
 		<form id="deletemilestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
 			<p>Are You Sure?</p>
 			{% bootstrap_form deletemilestonegoalform %}
-			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteMSGoalSub"/>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete Milestone Goal" name="deleteMSGoalSub"/>
 		</form>
 		<form id="editmilestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
-			<p>Edit {{ goal.title }}</p>
-			{% bootstrap_form editmilestonegoalform %}
-			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="editMSGSub"/>
+			<p>Edit Milestone Goal?</p>
+			<div id="editmilestonegoalform">
+				{% bootstrap_form editmilestonegoalform %}
+			</div>
+			<script>
+				$("#id_completed", "#editmilestonegoalform").click(function() {
+					hideDateCompleted('editmilestonegoalform');
+				});
+				$(document).ready(function() {
+					hideDateCompleted('editmilestonegoalform');
+					hideDateCompletedEdit('editmilestonegoalform');
+				});
+			</script>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Save Changes" name="editMSGSub"/>
 		</form>
-		<form id="milestonegoaljournal-form" class="pure-form pure-form-stacked" action="" method="post">
+		<form id="deletemilestone-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
-			<p>New Journal Entry</p>
-			{% bootstrap_form milestonegoaljournalform %}
-			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="msgJournalSub"/>
+			{{ collectmilestoneidform.deletemilestone_id.as_hidden }}
+			{{ collectmilestoneidform.deletemilestone_isSub.as_hidden }}
+			<p>Are You Sure?</p>
+			{% bootstrap_form deletemilestoneform %}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteMSSub"/>
 		</form>
-		<form id="milestonegoalnote-form" class="pure-form pure-form-stacked" action="" method="post">
+		<form id="editmilestone-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
-			<p>New Note</p>
-			{% bootstrap_form milestonegoalnoteform %}
-			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="msgNoteSub"/>
+			{{ collectmilestoneidform.editmilestone_id.as_hidden }}
+			{{ collectmilestoneidform.editmilestone_isSub.as_hidden }}
+			<div id="editmilestoneform">
+				<p>Edit Milestone</p>
+				{% bootstrap_form editmilestoneform %}
+			</div>
+			<script>
+				$("#id_completed", "#editmilestoneform").click(function() {
+					hideDateCompleted('editmilestoneform');
+				});
+				$(document).ready(function() {
+					hideDateCompleted('editmilestoneform');
+					hideDateCompletedEdit('editmilestoneform');
+				});
+			</script>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Save Changes" name="editMSSub"/>
 		</form>
 		<form id="milestone-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
@@ -156,7 +162,8 @@
 		</form>
 		<form id="submilestone-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
-			{{ collectmilestoneidform.milestone_id }}
+			{{ collectmilestoneidform.milestone_id.as_hidden }}
+			{{ collectmilestoneidform.milestone_isSub.as_hidden }}
 			{{ submilestoneformset.management_form }}
 			<div id='submilestoneform_set'>
 				{% for form in submilestoneformset %}
@@ -164,6 +171,15 @@
 						<table class='no_error'>
 							<p>Sub-Milestone</p>
 							{{ form.as_table }}
+							<script>
+								$("#id_submilestone-0-completed", "#submilestoneform_set").click(function() {
+									hideDateCompletedFS('submilestoneform_set', 'submilestone', 0);
+								});
+								$(document).ready(function() {
+									hideDateCompletedFS('submilestoneform_set', 'submilestone', 0);
+									hideDeleteFS('submilestoneform_set', 'submilestone', 0);
+								});
+							</script>
 						</table>		
 					</div>
 				{% endfor %}
@@ -172,9 +188,26 @@
 			<script>
 				$('#add_submilestone').click(function() {
 					cloneMore('div.smstable:last', 'submilestone');
+					var total = $('#id_submilestone-TOTAL_FORMS').val()
+					total--;
+					$("#id_submilestone-"+total+"-completed", "#submilestoneform_set").click(function() {
+						hideDateCompletedFS('submilestoneform_set', 'submilestone', total);
+					});
+					$(document).ready(function() {
+						hideDateCompletedFS('submilestoneform_set', 'submilestone', total);
+						hideDeleteFS('submilestoneform_set', 'submilestone', total);
+					});
 				});
 			</script>
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="subMSSub"/>
+		</form>
+		<form id="completed-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			{{ collectmilestoneidform.completedmilestone_id.as_hidden }}
+			<div id="completedform">
+			{% bootstrap_form completedbuttonform %}
+			</div>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="INSERT ICON" name="completedMSSub"/>
 		</form>
 	{% else %}
 		<h1>No one's logged in...</h1>
