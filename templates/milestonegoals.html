@@ -25,6 +25,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/addNewButton.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/checkCompletedCheckbox.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/cloneMore.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/fillDisplay.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompleted.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedEdit.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedFS.js"></script>
@@ -33,7 +34,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/processMilestone.js"></script>
 	
 	<!-- Adding Visualization js files -->
-	<script type="text/javascript" src="{{STATIC_URL}}visuals/visual_donut.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}visuals/visualMilestoneDonutChart.js"></script>
 	
 	<!-- Adding Bootstrap -->
 	{% load bootstrap3 %}
@@ -62,12 +63,12 @@
 	{% if user.is_authenticated %}
 		<nav class="navbar navbar-fixed-top" role="navigation">
 				<div class="container">
-					
 					<ul id="list-nav">
 						<a href="{% url 'homepage' %}" target="_blank"><img src="{{STATIC_URL}}img/G_White.png" border="0" id="home-logo"/></a>
 						<li><a id='logout_button-btn' href="/logout/">Logout</a></li>
 						<li><a id='profile-btn' href="#">Profile</a></li>
 						<li><a id='goals-btn' href="/user/{{ user.username }}">Goals</a></li>
+						<li><a id='forum-btn' href="#">Forum</a></li>
 					</ul>
 				</div>
 		</nav>		
@@ -76,15 +77,44 @@
 		<a id="deletemilestonegoal-form-btn" href="#deletemilestonegoal-form" class="pure-button" rel="deletemilestonegoal-form" style="display:none">Delete Goal</a>		
 		<a id="milestone-form-btn" href="#milestone-form" class="pure-button" rel="milestone-form" style="display:none">Add New Milestone</a>
 		<a id="completed-form-btn" href="#completed-form" class="pure-button" rel="completed-form" style="display:none">Date Completed</a>
-		<div id='goal_visual'>
+		<div id="visual">
+			<div id='goal_visual'>
+			</div>
+			<div id='visual_text'>
+				<div id='visual_title'>
+				</div>
+				<div id='visual_body'>
+				</div>
+			</div>
+			<div id="completedform">
+				<form id="completed-form" class="pure-form pure-form-stacked" action="" method="post">
+					{% csrf_token %}
+					{{ collectmilestoneidform.completedmilestone_id.as_hidden }}
+					{{ collectmilestoneidform.completedmilestone_isGoal.as_hidden }}
+					{{ completedbuttonform }}
+					<input id='submit-complete-btn' class="pure-button pure-input-1 pure-button-primary" type="submit" value="Complete!" name="completedMSSub"/>
+				</form>
+			</div>
+			<div id="42">
+			</div>
 		</div>
 		<script>
-			$("#completed-form-btn").click(function () {
-				$("#completed-form").show()
+			$("#42").hide();
+			$("#completed-form-btn").click( function () {
+				if ($("#42").is(":hidden")){
+					$("#completed-form").show();
+					$("#42").show()
+					$("#completed-form").animate({top:"530"});
+				} else {
+					$("#completed-form").show();
+					$("#completed-form").animate({top:"430"});
+					$("#42").hide();
+				}
 			});
-			var gl = {{ goal1 }};
+			var gl = {{ goalJSON }};
 			var msSet = {{ test_milestones1 }};
-			visualDonutChart("goal_visual", gl, msSet, "lightgreen");
+			fillDisplay(gl.goal_title, gl.goal_description, gl.goal_completed, gl.goal_date_completed, gl.goal_last_updated);
+			visualMilestone("goal_visual", gl, msSet, "lightgreen");
 		</script>
 		<div id="completedBtn">
 		</div>
@@ -115,7 +145,6 @@
 		<form id="deletemilestone-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
 			{{ collectmilestoneidform.deletemilestone_id.as_hidden }}
-			{{ collectmilestoneidform.deletemilestone_isSub.as_hidden }}
 			<p>Are You Sure?</p>
 			{% bootstrap_form deletemilestoneform %}
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteMSSub"/>
@@ -123,7 +152,6 @@
 		<form id="editmilestone-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
 			{{ collectmilestoneidform.editmilestone_id.as_hidden }}
-			{{ collectmilestoneidform.editmilestone_isSub.as_hidden }}
 			<div id="editmilestoneform">
 				<p>Edit Milestone</p>
 				{% bootstrap_form editmilestoneform %}
@@ -163,7 +191,6 @@
 		<form id="submilestone-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
 			{{ collectmilestoneidform.milestone_id.as_hidden }}
-			{{ collectmilestoneidform.milestone_isSub.as_hidden }}
 			{{ submilestoneformset.management_form }}
 			<div id='submilestoneform_set'>
 				{% for form in submilestoneformset %}
@@ -200,14 +227,6 @@
 				});
 			</script>
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="subMSSub"/>
-		</form>
-		<form id="completed-form" class="pure-form pure-form-stacked" action="" method="post">
-			{% csrf_token %}
-			{{ collectmilestoneidform.completedmilestone_id.as_hidden }}
-			<div id="completedform">
-			{% bootstrap_form completedbuttonform %}
-			</div>
-			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="INSERT ICON" name="completedMSSub"/>
 		</form>
 	{% else %}
 		<h1>No one's logged in...</h1>

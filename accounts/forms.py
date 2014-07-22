@@ -129,16 +129,6 @@ class MilestoneGoalForm(forms.ModelForm):
 		model = MilestoneGoal
 		fields = ('title', 'description', 'private', 'completed', 'date_completed',)
 	
-	def clean_title(self):
-		"""
-		Validate title
-		"""
-		title = self.cleaned_data['title']
-		if not title.strip():
-			raise forms.ValidationError("Cannot just be whitespace.")
-		elif (title[0] == ' '):
-			raise forms.ValidationError("Please don't lead with whitespace.")
-	
 	def clean_private(self):
 		"""
 		Validate private
@@ -218,21 +208,6 @@ class MilestoneForm(forms.ModelForm):
 	class Meta:
 		model = Milestone
 		fields = ('title', 'description', 'private', 'completed', 'date_completed',)
-
-	def clean_title(self):
-		"""
-		Validate title
-		"""
-		if 'title' not in self.cleaned_data:
-			raise ValidationError('Please enter a title.')
-		else:
-			title = self.cleaned_data['title']
-			if not title.strip():
-				raise forms.ValidationError("Cannot just be whitespace.")
-			elif (title[0] == ' '):
-				raise forms.ValidationError("Please don't lead with whitespace.")
-			else:
-				return title
 		
 	def clean_private(self):
 		"""
@@ -292,22 +267,17 @@ class CompletedButtonForm(forms.Form):
 	"""
 	Form for completing milestones
 	"""
-	date_completed = forms.DateField(required=False, label='MM/DD/YYYY')
+	date_completed = forms.DateField(required=True, label='', widget=forms.TextInput(attrs={'placeholder': 'Date of Completion(MM/DD/YYYY)*'}))
 		
 class CollectMilestoneIDForm(forms.Form):
 	"""
 	Form for creating Sub-Milestones
 	"""
 	milestone_id = forms.CharField(required = False)
-	milestone_isSub = forms.BooleanField(required = False)
-	
 	editmilestone_id = forms.CharField(required = False)
-	editmilestone_isSub = forms.BooleanField(required = False)
-	
 	deletemilestone_id = forms.CharField(required = False)
-	deletemilestone_isSub = forms.BooleanField(required = False)
-	
 	completedmilestone_id = forms.CharField(required = False)
+	completedmilestone_isGoal = forms.BooleanField(required = False)
 
 #Milestone Goal formsets
 class RequiredInlineFormSet(BaseInlineFormSet):

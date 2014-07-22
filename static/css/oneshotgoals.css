@@ -1,11 +1,54 @@
-@import url(http://fonts.googleapis.com/css?family=Roboto);
+/*@import url(http://fonts.googleapis.com/css?family=Roboto);
 @import url(http://fonts.googleapis.com/css?family=Inconsolata);
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
-@import url(http://fonts.googleapis.com/css?family=Montserrat);
+@import url(http://fonts.googleapis.com/css?family=Montserrat);*/
 
 #home-logo{
 	width: 40px;
-	height:auto;
+	height: auto;
+	float:left;
+	vertical-align: middle;
+}
+
+ul {
+	width: 940px;
+	height: 40px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0;
+}
+
+ul#list-nav  {
+	margin-right: 20px;
+	list-style: none;
+	width: 940px;
+}
+
+ul#list-nav li {
+	display: inline;
+	float:right;
+	vertical-align: middle;
+}
+
+ul#list-nav li a {
+	font-weight: bold;
+	text-decoration: none;
+	padding: 10px 1px;
+	width: 60px;
+	background: #FFFFFF;
+	color: #47a938;
+	float: left;
+	text-align: center;
+	border-left:1px solid #fff;
+	text-shadow: #FFFFFF 2px 2px 3px;
+}
+
+ul#list-nav li a:hover{
+	text-shadow: #CCCCCC 1px 1px 1px;
+}
+
+.container {
+	height:40px;
 }
 
 body{
@@ -39,6 +82,51 @@ a{
     display: none;
 }
 
+#visual {
+	position:relative;
+	width: 960px;
+	height: 500px;
+	margin-top: 20px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#goal_visual {
+	position: absolute;
+	width: 960px;
+	height: 500px;
+	margin-top: 40px;
+	z-index:10;
+}
+
+#completed-form{
+	position: absolute;
+	left: 655px;
+	top: 430px;
+	width: 190px;
+	z-index: 9;
+	display: block;
+}
+
+#visual_text {
+	position:absolute;
+	width: 250px;
+	height: 490px;
+	margin-top: 45px;
+	left: 655px;
+	z-index:11;
+}
+
+#visual_title {
+	text-align: center;
+	color: #000000;
+	text-shadow: #CCCCCC 2px 2px 2px;
+}
+
+#visual_body {
+	color: #000000;
+}
+
 #deleteoneshot-form{
 	display:none;
 }
@@ -48,10 +136,6 @@ a{
 }
 
 #oneshotjournal-form{
-	display:none;
-}
-
-#editoneshotjournal-form{
 	display:none;
 }
 

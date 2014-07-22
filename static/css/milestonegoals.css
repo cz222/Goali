@@ -82,12 +82,48 @@ a{
     display: none;
 }
 
+#visual {
+	position:relative;
+	width: 960px;
+	height: 500px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 #goal_visual {
+	position: absolute;
 	width: 960px;
 	height: 500px;
 	margin-top: 40px;
-	margin-left: auto;
-	margin-right: auto;
+	z-index:10;
+}
+
+#completed-form{
+	position: absolute;
+	left: 655px;
+	top: 430px;
+	width: 190px;
+	z-index: 9;
+	display: block;
+}
+
+#visual_text {
+	position:absolute;
+	width: 250px;
+	height: 490px;
+	margin-top: 45px;
+	left: 655px;
+	z-index:11;
+}
+
+#visual_title {
+	text-align: center;
+	color: #000000;
+	text-shadow: #CCCCCC 2px 2px 2px;
+}
+
+#visual_body {
+	color: #000000;
 }
 
 #deletemilestonegoal-form{
@@ -112,13 +148,6 @@ a{
 
 #submilestone-form{
 	display:none;
-}
-
-#completed-form{
-	position: absolute;
-	display:none;
-	width: 260px;
-	height: 50px;
 }
 
 .modal_close{
