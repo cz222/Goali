@@ -1,8 +1,7 @@
-	var visualOneShot = function(divID, goal, cColor){
+	var visualTimeOneShot = function(divID, goal, cColor){
 			//draw svg
 			var width = 650,
-				height = 500,
-				radius = Math.min(width, height)/2 - 10;
+				height = 500;
 
 			var svgWidth = 960,
 				svgHeight = 500;
@@ -28,12 +27,95 @@
 				.attr("height", svgHeight)
 				.attr("fill", "white");
 			
+			var isComplete = goal.goal_completed;
+			
+			//Draw Arcs
+			var radius = Math.min(width, height)/2 - 10;
+			var mRadius = .85*radius; //meter inner radius
 			var full = 2*Math.PI;
 			
-			//Draw outer circle
-			var arc = d3.svg.arc().innerRadius(radius*.9).outerRadius(radius).startAngle(0);
+			if (isComplete) {
+				var mArc = d3.svg.arc()
+					.innerRadius(mRadius)
+					.outerRadius(radius)
+					.startAngle(0);
+					
+				var background = svg.append("path")
+				  .datum({endAngle: 0})
+					.attr("id", "backgroundArc")
+					.style("fill", cColor)
+					.attr("d", mArc)
+					.attr("transform", "translate(" + width/2 + "," + height/2+")");
+					
+				background.transition()
+					.duration(1000)
+					.call(tweenMeter, full);
+			} else {
+				//Draw Background Meter Circle
+				var mArc = d3.svg.arc()
+					.innerRadius(mRadius)
+					.outerRadius(radius)
+					.startAngle(0);
+					
+				var background = svg.append("path")
+					.datum({endAngle: full})
+					.style("fill", "#ff9896")
+					.attr("d", mArc)
+					.attr("transform", "translate(" + width/2 + "," + height/2+")");
+						
+				//Calculate time passed
+				var startDate = goal.goal_date_created;
+				startDate = new Date(startDate.replace(/-/g, '/'));
+				var finishDate = goal.goal_complete_by;
+				finishDate = new Date(finishDate.replace(/-/g, '/'));
+				var range = Math.abs(finishDate-startDate);
+				var now = new Date();
+				var diff = Math.abs(now-startDate);
+				var percentUsed = diff/range;
+				if (percentUsed > 1) {
+					percentUsed = 1;
+				}
+				
+				//Draw meter arc
+				var meterArc = svg.append("path")
+					.datum({endAngle: 0})
+					.style("fill", "#ddd")
+					.attr("d", mArc)
+					.attr("transform", "translate(" + width/2 + "," + height/2+")");
+		
+				meterArc.transition()
+					.duration(500)
+					.delay(750)
+					.call(tweenMeter, (percentUsed*full));
+				
+				function tweenMeter(transition, newAngle) {
+					transition.attrTween("d", function(d) {
+						var interpolate = d3.interpolate(d.endAngle, newAngle);
+						return function(t) {
+							d.endAngle = interpolate(t);
+							return mArc(d);
+						};
+					});
+				};
+				
+				setInterval(function() {
+					if (!(isComplete)) {
+						var now = new Date();
+						var diff = Math.abs(now-startDate);
+						var percentUsed = diff/range;
+						if (percentUsed > 1) {
+							percentUsed = 1;
+						};
+						meterArc.transition()
+							.duration(750)
+							.call(tweenMeter, (percentUsed*full));
+					}
+				}, 2000);
+			};
+			//Draw inner circle
+			var arc = d3.svg.arc().innerRadius(0).outerRadius(radius*.8).startAngle(0);
 			
-			var goalArc = svg.append("path")
+			var mainArc = svg.append("path")
 				.datum({endAngle: 0})
 				.style("fill", function() { 
 					if (goal.goal_completed) {
@@ -43,10 +125,6 @@
 					};})
 				.attr("d", arc)
 				.attr("transform", "translate(" + width/2 + "," + height/2+")");
-			
-			goalArc.transition()
-				.duration(1000)
-				.call(tweenCircle, full);
 			
 			function tweenCircle(transition, newAngle) {
 				transition.attrTween("d", function(d) {
@@ -58,36 +136,10 @@
 				});
 			};
 			
-			//Draw inner circle
-			var arcb = d3.svg.arc().innerRadius(0).outerRadius(radius*.87).startAngle(0);
-			
-			var goalArcb = svg.append("path")
-				.datum({endAngle: 0})
-				.style("fill", function() { 
-					if (goal.goal_completed) {
-						return cColor;
-					} else {
-						return "#ff9896";
-					};})
-				.attr("d", arcb)
-				.attr("transform", "translate(" + width/2 + "," + height/2+")");
-			
-			function tweenCircleB(transition, newAngle) {
-				transition.attrTween("d", function(d) {
-					var interpolate = d3.interpolate(d.endAngle, newAngle);
-					return function(t) {
-						d.endAngle = interpolate(t);
-						return arcb(d);
-					};
-				});
-			};
-			
-			goalArcb.transition()
+			mainArc.transition()
 				.duration(1000)
-				.call(tweenCircleB, full);
-			
-			var isComplete = goal.goal_completed;
-			
+				.call(tweenCircle, 2*Math.PI);
+				
 			//draw buttons
 			var convertButton = svg.append("rect")
 				.attr("class", "v-button")
@@ -117,7 +169,7 @@
 				.attr("stroke", "black")
 				.attr("transform", "translate("+(width+260)+",175)")
 				.on("click", function() {
-					$("#editoneshot-form-btn").click();
+					$("#edittimeoneshot-form-btn").click();
 				});
 
 			var deleteButton = svg.append("rect")
@@ -128,7 +180,7 @@
 				.attr("stroke", "black")
 				.attr("transform", "translate("+(width+260)+",262.5)")
 				.on("click", function() {
-					$("#deleteoneshot-form-btn").click();
+					$("#deletetimeoneshot-form-btn").click();
 				});
 			
 			var completeButton = svg.append("rect")
@@ -142,9 +194,7 @@
 				.on("click", function() {
 					$("#completed-form-btn").click();
 					if (!(isComplete)) {
-						goalArc.remove();
-						goalArcb.remove();
-						
+						isComplete = true;					
 						var completeArc = svg.append("path")
 							.datum({endAngle: 0})
 							.style("fill", cColor)
@@ -152,24 +202,13 @@
 							.attr("transform", "translate(" + width/2 + "," + height/2+")");
 		
 						completeArc.transition()
-							.duration(1500)
-							.attr("fill", cColor)
-							.call(tweenCircle, 2*Math.PI);
+							.duration(1000)
+							.call(tweenCircle, full);
 						
-						var completeArcb = svg.append("path")
-							.datum({endAngle: 0})
-							.style("fill", cColor)
-							.attr("d", arcb)
-							.attr("stroke", "white")
-							.attr("stroke-width", "6px")
-							.attr("transform", "translate(" + width/2 + "," + height/2+")");
-							
-						completeArcb.transition()
-							.duration(1500)
-							.attr("fill", cColor)
-							.call(tweenCircleB, 2*Math.PI);
-						
-						isComplete = false;
+						background.transition()
+							.delay(1000)
+							.duration(500)
+							.style("fill", cColor);
 					} else {
 					}
 				});

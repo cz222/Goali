@@ -265,15 +265,14 @@
 				
 				var radAdd = sizeArray[currentDepth];
 				var arcData = {endAngle: (radAdd + currentAngle)};
-				var arc = d3.svg.arc().outerRadius(radius)
-				var arc2 = d3.svg.arc().innerRadius(iradius).outerRadius(radius).startAngle(currentAngle);
+				var arc = d3.svg.arc().innerRadius(iradius).outerRadius(radius).startAngle(currentAngle);
 				
 				var tweenDonut = function(transition, newAngle) {
 					transition.attrTween("d", function(d) {
 						var interpolate = d3.interpolate(d.endAngle, newAngle);
 						return function(t) {
 							d.endAngle = interpolate(t);
-							return arc2(d);
+							return arc(d);
 						};
 					});
 				};
@@ -325,15 +324,14 @@
 			
 			//Draw goal arc
 			var gArcData = {endAngle: (sizeArray[0]/2)};
-			var gArc = d3.svg.arc().outerRadius(radius)
-			var gArc2 = d3.svg.arc().innerRadius(radius*0.5).outerRadius(radius).startAngle(0-(sizeArray[0]/2));
+			var gArc = d3.svg.arc().innerRadius(radius*0.5).outerRadius(radius).startAngle(0-(sizeArray[0]/2));
 
 			var gTweenDonut = function(transition, newAngle) {
 				transition.attrTween("d", function(d) {
 					var interpolate = d3.interpolate(d.endAngle, newAngle);
 					return function(t) {
 						d.endAngle = interpolate(t);
-						return gArc2(d);
+						return gArc(d);
 					};
 				});
 			};

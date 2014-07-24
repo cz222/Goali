@@ -11,16 +11,17 @@ from django.contrib.auth import login, logout
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.utils.safestring import mark_safe
+from django.utils.timezone import utc
 
 from django.contrib.auth.models import User
 from models import OneShotGoal, OneShotJournal, OneShotNote, MilestoneGoal, Milestone
 from forms import OneShotGoalForm, OneShotJournalForm, OneShotNoteForm, DeleteOneShotForm, DeleteOneShotJournalForm, EditOneShotJournalForm
 from forms import MilestoneGoalForm, DeleteMilestoneGoalForm, MilestoneGoalJournalForm, MilestoneGoalNoteForm, MilestoneForm, MilestoneFormSet, SubMilestoneFormSet, DeleteMilestoneForm, DeleteSubMilestoneForm, CollectMilestoneIDForm, CompletedButtonForm
-
+from forms import TimeOneShotGoalForm, DeleteTimeOneShotForm
 import json
 
 @login_required
-def myprofile(request, username):
+def goals(request, username):
 	"""
 	Page that displays User Profile and Goals
 	"""
@@ -32,27 +33,24 @@ def myprofile(request, username):
 	oneshotgoalcount = request.user.oneshotgoal.count()
 	oneshotgoals = request.user.oneshotgoal.all()
 	milestonegoals = request.user.milestonegoal.all()
-	
-	editoneshotjournalform = EditOneShotJournalForm()
+	timeoneshotgoals = request.user.timeoneshotgoal.all()
 	
 	oneshotgoalform = OneShotGoalForm()
 	milestonegoalform = MilestoneGoalForm()
 	milestoneformset = MilestoneFormSet(prefix='milestone', queryset=Milestone.objects.none())
 	
+	timeoneshotgoalform = TimeOneShotGoalForm()
+	
 	#handle forms
 	if request.method == 'POST':
-		#handle one shot goal
 		if 'osgoalSub' in request.POST:
 			oneshotgoalform = OneShotGoalForm(request.POST)
-			milestonegoalform = MilestoneGoalForm()
-			milestoneformset = MilestoneFormSet(prefix='milestone', queryset=Milestone.objects.none())
 			if oneshotgoalform.is_valid():
 				osGoal = oneshotgoalform.save(commit=False)
 				osGoal.owner = user
 				osGoal.save()
 				return HttpResponseRedirect('/user/%s/'%request.user.username)
 		elif 'msgoalSub' in request.POST:
-			oneshotgoalform = OneShotGoalForm()
 			milestonegoalform = MilestoneGoalForm(request.POST)
 			if milestonegoalform.is_valid():
 				msGoal = milestonegoalform.save(commit=False)
@@ -64,15 +62,17 @@ def myprofile(request, username):
 					return HttpResponseRedirect('/user/%s/'%request.user.username)
 				else:
 					return HttpResponseRedirect('SNAFU')
-		else:
-			oneshotgoalform = OneShotGoalForm()
-			milestonegoalform = MilestoneGoalForm()
-			milestoneformset = MilestoneFormSet(prefix='milestone', queryset=Milestone.objects.none())
-	else:
-		oneshotgoalform = OneShotGoalForm()
-		milestonegoalform = MilestoneGoalForm()
-		milestoneformset = MilestoneFormSet()
-	return render(request, 'profile.html', {'user' : user, 'oneshotgoalcount': oneshotgoalcount, 'oneshotgoals': oneshotgoals, 'oneshotgoalform': oneshotgoalform, 'milestonegoals': milestonegoals, 'milestonegoalform': milestonegoalform, 'milestoneformset': milestoneformset })
+		elif 'tosgoalSub' in request.POST:
+			timeoneshotgoalform = TimeOneShotGoalForm(request.POST)
+			if timeoneshotgoalform.is_valid():
+				tGoal = timeoneshotgoalform.save(commit=False)
+				tGoal.owner = user
+				tGoal.save()
+				return HttpResponseRedirect('/user/%s/'%request.user.username)
+	return render(request, 'goals.html', {'user' : user, 'oneshotgoalcount': oneshotgoalcount, 'oneshotgoals': oneshotgoals, 
+				'oneshotgoalform': oneshotgoalform, 'milestonegoals': milestonegoals, 'milestonegoalform': milestonegoalform, 
+				'milestoneformset': milestoneformset, 'timeoneshotgoalform': timeoneshotgoalform, 
+				'timeoneshotgoals': timeoneshotgoals })
 
 @login_required
 def osgoals(request, username, title, id):
@@ -333,6 +333,61 @@ def msgoals(request, username, title, id):
 				'submilestoneformset': submilestoneformset, 'collectmilestoneidform': collectmilestoneidform,
 				'deletemilestoneform': deletemilestoneform, 'editmilestoneform': editmilestoneform,
 				'completedbuttonform': completedbuttonform})
+
+@login_required
+def tosgoals(request, username, title, id):
+	"""
+	Displays a single Time One Shot Goal
+	"""
+	user = request.user
+	
+	#goal variables
+	goal = request.user.timeoneshotgoal.get(id=id)
+	
+	#Form variables
+	edittimeoneshotform = TimeOneShotGoalForm(instance=goal)
+	deletetimeoneshotform = DeleteTimeOneShotForm()
+	completedbuttonform = CompletedButtonForm()
+	
+	#converts datetime object for forms
+	def getDateTime(date):
+		if date is None:
+			return date
+		else:
+			return str(date)
+	
+	gl = {"goal_title": goal.title, "goal_description": goal.description, "goal_private": goal.private, "goal_completed": goal.completed, "goal_complete_by": getDateTime(goal.complete_by), "goal_date_completed": getDateTime(goal.date_completed), "goal_last_updated": getDateTime(goal.last_updated), "goal_date_created": getDateTime(goal.date_created), "goal_id": goal.id}
+	goalJSON = json.dumps(gl)
+	
+	#handle forms
+	if request.method == 'POST':
+		#handle one shot goal
+		if 'editSub' in request.POST:
+			edittimeoneshotform = TimeOneShotGoalForm(request.POST, instance=goal)
+			if edittimeoneshotform.is_valid():
+				edittimeoneshotform.save()
+				return HttpResponseRedirect('/user/%s/tosgoals/%s%d/'%(request.user.username, title, goal.id))
+		elif 'deleteSub' in request.POST:
+			toDelete = get_object_or_404(TimeOneShotGoal, id=id)
+			deletetimeoneshotform = DeleteTimeOneShotForm(request.POST, instance=toDelete)
+			if deleteoneshotform.is_valid():
+				toDelete.delete()
+				return HttpResponseRedirect('/user/%s/'%request.user.username)
+		elif 'completedTOSGSub' in request.POST:
+			completedbuttonform = CompletedButtonForm(request.POST)
+			if completedbuttonform.is_valid():
+				date = completedbuttonform.cleaned_data['date_completed']
+				timeoneshotgoalform = TimeOneShotGoalForm({'title':goal.title, 'complete_by': goal.complete_by}, instance=goal)
+				if timeoneshotgoalform.is_valid():
+					tosgform = timeoneshotgoalform.save(commit=False)
+					tosgform.completed = True
+					tosgform.date_completed = date
+					tosgform.save()
+					return HttpResponseRedirect('/user/%s/tosgoals/%s%d/'%(request.user.username, title, goal.id))
+				else:
+					return HttpResponseRedirect('fuck')
+	return render(request, 'timeoneshotgoals.html', {'user' : user, 'title' : title, 'goalJSON': mark_safe(goalJSON), 'goal' : goal, 
+				'edittimeoneshotform' : edittimeoneshotform, 'deletetimeoneshotform' : deletetimeoneshotform, 'completedbuttonform':completedbuttonform})				
 
 def test_view(request):
 	return render(request, 'testview.html')

@@ -152,15 +152,18 @@ class TimeOneShotGoal(models.Model):
 	title = models.CharField(max_length=75)
 	description = models.TextField()
 	private = models.BooleanField()
-	date_to_complete = models.DateField(blank=True, null=True, editable=True)
+	complete_by = models.DateTimeField(blank=True, null=True, editable=True)
 	completed = models.BooleanField()
-	date_created = models.DateField(auto_now_add=True)
+	date_created = models.DateTimeField(auto_now_add=True)
 	date_completed = models.DateField(blank=True, null=True, editable=True)
 	last_updated = models.DateField(auto_now=True)
 	
 	def __unicode__(self):
 		return self.title
+
 #TIME GOALS-MILESTONE GOALS
+
+#VALUE GOALS
 
 #RECURRANT GOALS-ONE SHOT GOALS
 

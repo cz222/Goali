@@ -19,10 +19,8 @@
 	<!-- Initializing the plugin for the signin popup -->
 	<script>
 		$(document).ready(function(){
-			$("a[rel*=oneshotjournal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=oneshotnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=deleteoneshot-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=editoneshot-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=deletetimeoneshot-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=edittimeoneshot-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 		});
 	</script>
 	
@@ -35,7 +33,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/checkCompletedCheckbox.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/cloneMore.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/fillDisplay.js"></script>
-	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompleted.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompleted2.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedEdit.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedFS.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDeleteFS.js"></script>
@@ -43,7 +41,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/processMilestone.js"></script>
 	
 	<!-- Adding Visualization js files -->
-	<script type="text/javascript" src="{{STATIC_URL}}visuals/visualOneShotGoalCircle.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}visuals/visualTimeOneShotGoalCircle.js"></script>
 	
 	<!-- Adding Bootstrap -->
 	{% load bootstrap3 %}
@@ -52,7 +50,7 @@
     
 	<!-- Adding CSS -->
 	<link href="{{STATIC_URL}}css/cover.css" rel="stylesheet" type="text/css">
-    <link rel= "stylesheet" href = "{{STATIC_URL}}css/oneshotgoals.css" type="text/css">
+    <link rel= "stylesheet" href = "{{STATIC_URL}}css/timeoneshotgoals.css" type="text/css">
 {% endblock %}
 
 {% block body %}
@@ -68,8 +66,8 @@
 					</ul>
 				</div>
 		</nav>	
-		<a id="editoneshot-form-btn" href="#editoneshot-form" class="pure-button" rel="editoneshot-form" style="display:none">Edit Goal</a>
-		<a id="deleteoneshot-form-btn" href="#deleteoneshot-form" class="pure-button" rel="deleteoneshot-form" style="display:none">Delete Goal</a>
+		<a id="edittimeoneshot-form-btn" href="#edittimeoneshot-form" class="pure-button" rel="edittimeoneshot-form" style="display:none">Edit Goal</a>
+		<a id="deletetimeoneshot-form-btn" href="#deletetimeoneshot-form" class="pure-button" rel="deletetimeoneshot-form" style="display:none">Delete Goal</a>
 		<a id="completed-form-btn" href="#completed-form" class="pure-button" rel="completed-form" style="display:none">Date Completed</a>
 		<div id="visual">
 			<div id='goal_visual'>
@@ -83,10 +81,8 @@
 			<div id="completedform">
 				<form id="completed-form" class="pure-form pure-form-stacked" action="" method="post">
 					{% csrf_token %}
-					{{ collectmilestoneidform.completedmilestone_id.as_hidden }}
-					{{ collectmilestoneidform.completedmilestone_isGoal.as_hidden }}
 					{{ completedbuttonform }}
-					<input id='submit-complete-btn' class="pure-button pure-input-1 pure-button-primary" type="submit" value="Complete!" name="completedOSGSub"/>
+					<input id='submit-complete-btn' class="pure-button pure-input-1 pure-button-primary" type="submit" value="Complete!" name="completedTOSGSub"/>
 				</form>
 			</div>
 			<div id="42">
@@ -106,42 +102,31 @@
 				}
 			});
 			var gl = {{ goalJSON }};
+			console.log(gl);
 			fillDisplay(gl.goal_title, gl.goal_description, gl.goal_completed, gl.goal_date_completed, gl.goal_last_updated);
-			visualOneShot("goal_visual", gl, "lightgreen");
+			visualTimeOneShot("goal_visual", gl, "lightgreen");
 		</script>
 		<!-- FORMS -->
-		<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotjournal-form">
-			{% csrf_token %}
-			<p>New Journal Entry</p>
-			{% bootstrap_form oneshotjournalform %}
-			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osjournalSub"/>
-		</form>
-		<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotnote-form">
-			{% csrf_token %}
-			<p>Add Note</p>
-			{% bootstrap_form oneshotnoteform %}
-			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osnoteSub"/>
-		</form>
-		<form id="editoneshot-form" class="pure-form pure-form-stacked" action="" method="post">
+		<form id="edittimeoneshot-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
 			<p>Edit {{ goal.title }}</p>
-			<div id='editoneshotgoal'>
-				{% bootstrap_form editoneshotform %}
+			<div id='edittimeoneshotgoal'>
+				{{ edittimeoneshotform }}
 			</div>
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="editSub"/>
 			<script>
-				$("#id_completed", "#editoneshot-form").click(function() {
-					hideDateCompleted('editoneshot-form');
+				$("#id_completed", "#edittimeoneshot-form").click(function() {
+					hideDateCompleted('edittimeoneshot-form');
 				});
 				$(document).ready(function() {
-					hideDateCompletedEdit('editoneshot-form');
+					hideDateCompletedEdit('edittimeoneshot-form');
 				});
 			</script>
 		</form>
-		<form id="deleteoneshot-form" class="pure-form pure-form-stacked" action="" method="post">
+		<form id="deletetimeoneshot-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
 			<p>Are You Sure?</p>
-			{% bootstrap_form deleteoneshotform %}
+			{% bootstrap_form deletetimeoneshotform %}
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteSub"/>
 		</form>
 	{% else %}

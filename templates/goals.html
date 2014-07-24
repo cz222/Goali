@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% comment %}
+	User Profile Page
+{% endcomment %}
+
+{% block head %}
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.4.2/pure-min.css" type="text/css">
+	
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery-2.1.0.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script type="text/javascript" src="{{STATIC_URL}}bootstrap/js/bootstrap.min.js"></script>
+	<!-- js file of the plugin -->
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery.leanModal.min.js"></script>
+	<!-- Initializing the plugin for the goal popup -->
+	<script>
+		$(document).ready(function(){
+			$("a[rel*=oneshotgoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=milestonegoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=timeoneshotgoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+		});
+	</script>
+	{% load bootstrap3 %}
+	{% load staticfiles %}
+
+    <!-- Bootstrap -->
+    <link href="{{STATIC_URL}}bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="{{STATIC_URL}}css/cover.css" rel="stylesheet" type="text/css">
+    <link rel= "stylesheet" href = "{{STATIC_URL}}css/goals.css" type="text/css">
+	
+	<!-- Adding page scripts-->
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/addNewButton.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/checkCompletedCheckbox.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/cloneMore.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/fillDisplay.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompleted.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedEdit.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedFS.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDeleteFS.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/prefillEditForm.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/processMilestone.js"></script>
+{% endblock %}
+
+{% block body %}
+	{% if user.is_authenticated %}
+		<nav class="navbar navbar-fixed-top" role="navigation">
+				<div class="container">	
+					<ul id="list-nav">
+						<a href="{% url 'homepage' %}" target="_blank"><img src="{{STATIC_URL}}img/G_White.png" border="0" id="home-logo"/></a>
+						<li><a id='logout_button-btn' href="/logout/">Logout</a></li>
+						<li><a id='profile-btn' href="#">Profile</a></li>
+						<li><a id='goals-btn' href="/user/{{ user.username }}">Goals</a></li>
+					</ul>
+				</div>
+		</nav>	
+		<h1>Hey, {{ user.username }}!</h1>
+		<a href="/logout/">Logout</a><br />
+		<h2>Profile:</h2>
+		{% if user.profile.user_image %}
+			<p>change password</p>
+			<p>Would you like to upload a new profile image?</p><br/>
+		{% else %}
+			<p>change password</p>
+			<p>It looks like you don't have a profile image.</p>
+			<p>Would you like to upload one?</p><br/>
+		{% endif %}
+		<h3>Goals:</h3>
+		{% if oneshotgoalcount == 0 %}
+			<p>Hey it looks like you don't have any One Shot Goals.</p>
+			<p>Would you like to add one?</p>
+			<a href="#oneshotgoal-form" class="pure-button" rel="oneshotgoal-form">New One Shot Goal</a>
+			<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotgoal-form">
+				{% csrf_token %}
+				<p>New One Shot Goal</p>
+				{% bootstrap_form oneshotgoalform %}
+				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osgoalSub"/>
+			</form>
+		{% else %}
+			<!-- ONE SHOT GOALS -->
+			<p>One Shot Goals:</p>
+			{% for osgoal in oneshotgoals %}
+				<a href="/user/{{ user.username }}/osgoals/{{ osgoal.title|slugify }}{{ osgoal.id }}">{{ osgoal.title }}{{ osgoal.id }}</a>
+			{% endfor %}
+			<a href="#oneshotgoal-form" class="pure-button" id="newoneshotgoal-button" rel="oneshotgoal-form">New One Shot Goal</a>
+			<!-- MILESTONE GOALS -->
+			<p>Milestone Goals:</p>
+			{% for msgoal in milestonegoals %}
+				<a href="/user/{{ user.username }}/msgoals/{{ msgoal.title|slugify }}{{ msgoal.id }}">{{ msgoal.title }}</a>
+			{% endfor %}
+			<a href="#milestonegoal-form" class="pure-button" rel="oneshotgoal-form">New Milestone Goal</a>
+			<!-- TIME ONE SHOT GOALS -->
+			<p>Time One Shot Goals:</p>
+			{% for tosgoal in timeoneshotgoals %}
+				<a href="/user/{{ user.username }}/tosgoals/{{ tosgoal.title|slugify }}{{ tosgoal.id }}">{{ tosgoal.title }}</a>
+			{% endfor %}
+			<a href="#timeoneshotgoal-form" class="pure-button" id="newtimeoneshotgoal-button" rel="timeoneshotgoal-form">New Time One Shot Goal</a>
+			
+			<!-- FORMS -->
+			<form id="oneshotgoal-form" class="pure-form pure-form-stacked" action="" method="post">
+				{% csrf_token %}
+				<p>New One Shot Goal</p>
+				<div id='oneshotgoal'>
+					{% bootstrap_form oneshotgoalform %}
+				</div>
+				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osgoalSub"/>
+				<script>
+					$('#id_completed', '#oneshotgoal').click(function() {
+						hideDateCompleted('oneshotgoal');
+					});
+					$(document).ready(function() {
+						hideDateCompleted('oneshotgoal');
+					});
+				</script>
+			</form>
+			<form id="milestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
+				{% csrf_token %}
+				<p>Milestone Goal</p>
+				<div id='milestonegoal'>
+					{% bootstrap_form milestonegoalform %}
+				</div>
+				{{ milestoneformset.management_form }}
+				<div id='milestoneform_set'>
+					{% for form in milestoneformset %}
+						<div class='table'>
+							<table class='no_error'>
+								<p>Milestone</p>
+								{{ form.as_table }}
+							</table>		
+						</div>
+					{% endfor %}
+				</div>
+				<input type="button" value="Add Milestone" id="add_milestone"/>
+				<script>
+					$('#add_milestone').click(function() {
+						cloneMore('div.table:last', 'milestone');
+					});
+				</script>
+				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="msgoalSub"/>
+			</form>
+			<form id="timeoneshotgoal-form" class="pure-form pure-form-stacked" action="" method="post">
+				{% csrf_token %}
+				<p>New Time One Shot Goal</p>
+				<div id='timeoneshotgoal'>
+					{{  timeoneshotgoalform }}
+				</div>
+				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="tosgoalSub"/>
+				<script>
+					//$("#id_completed", "#timeoneshotgoal").click(function() {
+					//	hideDateCompleted('timeoneshotgoal');
+					//});
+					//$(document).ready(function() {
+					//	hideDateCompleted('timeoneshotgoal');
+					//});
+				</script>
+			</form>
+		{% endif %}
+	{% else %}
+		<h1>No one's logged in...</h1>
+		<a href="{% url 'homepage' %}">Login?</a><br />
+	{% endif %}
+{% endblock %}

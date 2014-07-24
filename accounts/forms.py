@@ -4,10 +4,13 @@ from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.contrib import auth
 from django.forms.formsets import formset_factory
+from django.forms import extras
+from django.contrib.admin.widgets import AdminSplitDateTime
 
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from models import OneShotGoal, OneShotJournal, OneShotNote
 from models import MilestoneGoal, MilestoneGoalJournal, MilestoneGoalNote, Milestone
+from models import TimeOneShotGoal
 
 class OneShotGoalForm(forms.ModelForm):
 	"""
@@ -263,6 +266,8 @@ class DeleteSubMilestoneForm(forms.ModelForm):
 		model = Milestone
 		fields = []
 
+#UNIVERSAL FORMS
+
 class CompletedButtonForm(forms.Form):
 	"""
 	Form for completing milestones
@@ -290,3 +295,80 @@ class RequiredInlineFormSet(BaseInlineFormSet):
 
 MilestoneFormSet = inlineformset_factory(MilestoneGoal, Milestone, form=MilestoneForm, extra=1, formset=RequiredInlineFormSet)
 SubMilestoneFormSet = inlineformset_factory(Milestone, Milestone, form=MilestoneForm, extra=1, formset=RequiredInlineFormSet)
+
+#Time Goals
+class TimeOneShotGoalForm(forms.ModelForm):
+	"""
+	Form for creating Time Goals
+	"""
+	title = forms.CharField(required = True, label='', widget=forms.TextInput(attrs={'placeholder': 'Title*'}), max_length=75)
+	description = forms.CharField(max_length=300, required = False, label='', widget=forms.Textarea(attrs={'placeholder': 'Goal Description'}))
+	private = forms.BooleanField(required=False, label='Private')
+	complete_by = forms.DateTimeField(required=True, label='Date To Complete By')
+	completed = forms.BooleanField(required=False, label='Completed')
+	date_completed = forms.DateField(required=False, label='Date Completed', widget=extras.SelectDateWidget(years=range(1950,2015)))
+
+	class Meta:
+		model = TimeOneShotGoal
+		fields = ('title', 'description', 'private', 'complete_by', 'completed', 'date_completed',)
+	
+	def clean_title(self):
+		title = self.cleaned_data['title']
+		if (title[0] == ' '):
+			raise ValidationError('Please do not lead with whitespace')
+		else:
+			return title
+	
+	def clean_private(self):
+		"""
+		Validate private
+		"""
+		private = self.cleaned_data['private']
+		if private is None:
+			return False
+		else:
+			return private
+	
+	def clean_complete_by(self):
+		"""
+		Raise Error if complete_by is less than the current date.
+		"""
+		complete_by = self.cleaned_data.get('complete_by')
+		if (datetime.now() > complete_by):
+			raise forms.ValidationError('Time travel is not allowed.')
+		else:
+			return complete_by
+	
+	def clean_completed(self):
+		"""
+		Raise Error if date_completed has something when the goal is not yet completed and vice versa
+		"""
+		completed = self.cleaned_data.get('completed')
+		date_completed = self.cleaned_data.get('date_completed')
+		if completed is None:
+			completed = False
+		return completed
+	
+	def clean_date_completed(self):
+		"""
+		Raise Error if date_completed is greater than the current date.
+		"""
+		date_completed = self.cleaned_data.get('date_completed')
+		completed = self.cleaned_data.get('completed')
+		if (not completed) and (not (date_completed is None)):
+			raise forms.ValidationError('Please mark the goal as completed.')
+		elif completed and (date_completed is None):
+			raise forms.ValidationError('Please enter a date of completion.')
+		elif (date_completed is None):
+			return date_completed
+		else:
+			if (datetime.now().date() < date_completed):
+				raise forms.ValidationError('Time travel is not allowed.')
+			else:
+				return date_completed
+
+class DeleteTimeOneShotForm(forms.ModelForm):
+	class Meta:
+		model = TimeOneShotGoal
+		fields = []
+#Stacked Time Goal
