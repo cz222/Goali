@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% comment %}
+	One Shot Goal Page
+{% endcomment %}
+
+{% block head %}
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.4.2/pure-min.css" type="text/css">
+	
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery-2.1.0.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script type="text/javascript" src="{{STATIC_URL}}bootstrap/js/bootstrap.min.js"></script>
+	<!-- js file of the plugin -->
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery.leanModalOld.min.js"></script>
+	<!-- Initializing the plugin for the signin popup -->
+	<script>
+		$(document).ready(function(){
+			$("a[rel*=editvalue-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=deletevalue-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=valueupdate-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=editupdate-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+		});
+	</script>
+	
+	<!-- Adding D3 files-->
+	<script type="text/javascript" src="{{STATIC_URL}}mbostock-d3/d3.min.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}hexbin-js-master/src/d3.hexbin.js"></script>
+	
+	<!-- Adding page scripts-->
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/addNewButtonValue.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/checkCompletedCheckbox.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/fillDisplayValue.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompleted2.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedEdit.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedFS.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDeleteFS.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/prefillEditFormValue.js"></script>
+	
+	<!-- Adding Visualization js files -->
+	<script type="text/javascript" src="{{STATIC_URL}}visuals/visualProgressGoal{{ visual }}.js"></script>
+	
+	<!-- Adding Bootstrap -->
+	{% load bootstrap3 %}
+	{% load staticfiles %}
+    <link href="{{STATIC_URL}}bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    
+	<!-- Adding CSS -->
+	<link href="{{STATIC_URL}}css/cover.css" rel="stylesheet" type="text/css">
+    <link rel= "stylesheet" href = "{{STATIC_URL}}css/valuegoals.css" type="text/css">
+{% endblock %}
+
+{% block body %}
+	{% if user.is_authenticated %}
+		<nav class="navbar navbar-fixed-top" role="navigation">
+				<div class="container">
+					<ul id="list-nav">
+						<a href="{% url 'homepage' %}" target="_blank"><img src="{{STATIC_URL}}img/G_White.png" border="0" id="home-logo"/></a>
+						<li><a id='logout_button-btn' href="/logout/">Logout</a></li>
+						<li><a id='profile-btn' href="#">Profile</a></li>
+						<li><a id='goals-btn' href="/user/{{ user.username }}">Goals</a></li>
+						<li><a id='forum-btn' href="#">Forum</a></li>
+					</ul>
+				</div>
+		</nav>	
+		<a id="editvalue-form-btn" href="#editvalue-form" class="pure-button" rel="editvalue-form" style="display:none">Edit Goal</a>
+		<a id="deletevalue-form-btn" href="#deletevalue-form" class="pure-button" rel="deletevalue-form" style="display:none">Delete Goal</a>
+		<a id="valueupdate-form-btn" href="#valueupdate-form" class="pure-button" rel="valueupdate-form" style="display:none">Add Update</a>
+		<div id="visual">
+			<div id='goal_visual'>
+			</div>
+			<div id='visual_text'>
+				<div id='visual_title'>
+				</div>
+				<div id='visual_body'>
+				</div>
+			</div>
+			<div id="visual_buttons">
+				<svg id="convertcontainer" width="80" height="80">
+					<defs id="buttondefs">
+						<pattern id="convertSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/convert.svg"></image>
+						</pattern>
+						<pattern id="addSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/add.svg"></image>
+						</pattern>
+						<pattern id="deleteSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/delete.svg"></image>
+						</pattern>
+						<pattern id="detailsSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/details.svg"></image>
+						</pattern>
+						<pattern id="downloadSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/download.svg"></image>
+						</pattern>
+						<pattern id="editSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/edit.svg"></image>
+						</pattern>
+						<pattern id="completeSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/complete.svg"></image>
+						</pattern>
+					</defs>
+			</div>
+			<div id="completedform">
+			</div>
+			<div id="42">
+			</div>
+		</div>
+		<script>
+			$("#42").hide();
+			$("#completed-form-btn").click( function () {
+				if ($("#42").is(":hidden")){
+					$("#completed-form").show();
+					$("#42").show()
+					$("#completed-form").animate({top:"530"});
+				} else {
+					$("#completed-form").show();
+					$("#completed-form").animate({top:"430"});
+					$("#42").hide();
+				}
+			});
+			var gl = {{ goalJSON }};
+			var updates = {{ updates }};
+			console.log(gl);
+			fillDisplayGoal(gl.goal_title, gl.goal_description, gl.goal_nozero, {{ presentValue }}, gl.goal_date_created, 
+				gl.goal_determinate, gl.goal_complete_by, gl.goal_completed, gl.goal_date_completed, gl.goal_last_updated);
+			visualValue("goal_visual", gl, updates, "lightgreen");
+		</script>
+		<!-- FORMS -->
+		<form id="editvalue-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>Edit {{ goal.title }}</p>
+			<div id='editvaluegoal'>
+				{% bootstrap_form editvaluegoalform %}
+			</div>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="editSub"/>
+			<script>
+				$("#id_completed", "#edittimeoneshot-form").click(function() {
+					hideDateCompleted('edittimeoneshot-form');
+				});
+				$(document).ready(function() {
+					hideDateCompletedEdit('edittimeoneshot-form');
+				});
+			</script>
+		</form>
+		<form id="deletevalue-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>Delete the Goal?</p>
+			{% bootstrap_form deletevaluegoalform %}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteSub"/>
+		</form>
+		<form id="valueupdate-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>Add Update</p>
+			{% bootstrap_form valueupdateform %}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="updateSub"/>
+		</form>
+		<form id="editupdate-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			{{ collectupdateidform.editupdate_id.as_hidden }}
+			<p>Edit Update</p>
+			<div id="editupdateform">
+				{% bootstrap_form editupdateform %}
+			</div>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="editUpdateSub"/>
+		</form>
+	{% else %}
+		<h1>No one's logged in...</h1>
+		<a href="{% url 'homepage' %}">Login?</a><br />
+	{% endif %}
+{% endblock %}

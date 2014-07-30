@@ -143,6 +143,10 @@ a{
 	display:none;
 }
 
+#uncomplete-form{
+	display:none;
+}
+
 .modal_close{
 	position: absolute;
 	top:12px;

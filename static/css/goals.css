@@ -91,6 +91,21 @@ a{
 	display:none;
 }
 
+#timeoneshotgoal-form{
+	display:none;
+}
+
+#timemilestonegoal-form{
+	display:none;
+}
+
+#valuegoal-form{
+	display:none;
+}
+
+#progressgoal-form{
+	display:none;
+}
 .hide {
 	display: none;
 }

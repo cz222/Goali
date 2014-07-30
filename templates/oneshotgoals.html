@@ -23,6 +23,7 @@
 			$("a[rel*=oneshotnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 			$("a[rel*=deleteoneshot-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 			$("a[rel*=editoneshot-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=uncomplete-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 		});
 	</script>
 	
@@ -43,7 +44,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/processMilestone.js"></script>
 	
 	<!-- Adding Visualization js files -->
-	<script type="text/javascript" src="{{STATIC_URL}}visuals/visualOneShotGoalCircle.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}visuals/visualOneShotGoal{{ visual }}.js"></script>
 	
 	<!-- Adding Bootstrap -->
 	{% load bootstrap3 %}
@@ -71,6 +72,7 @@
 		<a id="editoneshot-form-btn" href="#editoneshot-form" class="pure-button" rel="editoneshot-form" style="display:none">Edit Goal</a>
 		<a id="deleteoneshot-form-btn" href="#deleteoneshot-form" class="pure-button" rel="deleteoneshot-form" style="display:none">Delete Goal</a>
 		<a id="completed-form-btn" href="#completed-form" class="pure-button" rel="completed-form" style="display:none">Date Completed</a>
+		<a id="uncomplete-form-btn" href="#uncomplete-form" class="pure-button" rel="uncomplete-form" style="display:none">Uncomplete</a>
 		<div id="visual">
 			<div id='goal_visual'>
 			</div>
@@ -79,6 +81,35 @@
 				</div>
 				<div id='visual_body'>
 				</div>
+			</div>
+			<div id="visual_buttons">
+				<svg id="convertcontainer" width="80" height="80">
+					<defs id="buttondefs">
+						<pattern id="convertSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/convert.svg"></image>
+						</pattern>
+						<pattern id="addSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/add.svg"></image>
+						</pattern>
+						<pattern id="deleteSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/delete.svg"></image>
+						</pattern>
+						<pattern id="detailsSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/details.svg"></image>
+						</pattern>
+						<pattern id="downloadSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/download.svg"></image>
+						</pattern>
+						<pattern id="editSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/edit.svg"></image>
+						</pattern>
+						<pattern id="completeSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/complete.svg"></image>
+						</pattern>
+						<pattern id="uncompleteSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/uncomplete.svg"></image>
+						</pattern>
+					</defs>
 			</div>
 			<div id="completedform">
 				<form id="completed-form" class="pure-form pure-form-stacked" action="" method="post">
@@ -143,6 +174,12 @@
 			<p>Are You Sure?</p>
 			{% bootstrap_form deleteoneshotform %}
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteSub"/>
+		</form>
+		<form id="uncomplete-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>Are You Sure?</p>
+			{% bootstrap_form uncompleteoneshotform %}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Uncomplete" name="uncompleteOSGSub"/>
 		</form>
 	{% else %}
 		<h1>No one's logged in...</h1>

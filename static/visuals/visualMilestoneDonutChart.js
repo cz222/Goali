@@ -70,14 +70,16 @@
 					
 			clipBox.append("rect")
 				.attr("class", "glass")
-				.attr("width", svgWidth)
-				.attr("height", svgHeight)
+				.attr("width", width+50)
+				.attr("height", height)
 				.attr("fill", "none")
-				.attr("rx", "30");
-					
-			svg.attr("clip-path", "url(#clip-box)");
+				.attr("rx", "10px");
 			
-			var backdrop = svg.append("rect")
+			var visualContainer = svg.append("g");
+			
+			visualContainer.attr("clip-path", "url(#clip-box)");
+			
+			var backdrop = visualContainer.append("rect")
 				.attr("width", svgWidth)
 				.attr("height", svgHeight)
 				.attr("fill", "white");
@@ -118,13 +120,13 @@
 			var start = true;
 			
 			//Transitions
-			var completeTransHelp = function(obj, compl) {
+			var completeTransHelp = function(obj) {
 				if (obj.milestone_completed) {
 				} else {
 					var subs = obj.submilestones;
 					d3.select("#msArc_"+obj.milestone_id)
 						.transition()
-						.attr("fill", cColor)
+						.style("fill", cColor)
 						.duration(400)
 						.delay(delayCounter*300);
 					delayCounter++;
@@ -141,7 +143,7 @@
 					}
 					d3.select("#goal_arc")
 						.transition()
-						.attr("fill", cColor)
+						.style("fill", cColor)
 						.duration(400)
 						.delay(delayCounter*300);
 				} else {
@@ -158,12 +160,12 @@
 						d3.select("#msArc_"+obj.milestone_id)
 							.transition()
 							.style("opacity", "0.5")
-							.attr("fill", clr)
+							.style("fill", clr)
 							.duration(250);
 					} else {
 						d3.select("#msArc_"+obj.milestone_id)
 							.transition()
-							.attr("fill", clr)
+							.style("fill", clr)
 							.duration(250)
 							.style("opacity", "1.0");
 					}
@@ -176,13 +178,13 @@
 						d3.select("#msArc_"+obj.milestone_id)
 							.transition()
 							.style("opacity", "0.5")
-							.attr("fill", newColor)
+							.style("fill", newColor)
 							.duration(250)
 							.transition();
 					} else {
 						d3.select("#msArc_"+obj.milestone_id)
 							.transition()
-							.attr("fill", newColor)
+							.style("fill", newColor)
 							.duration(250)
 							.style("opacity", "1.0");
 					}
@@ -198,12 +200,12 @@
 						d3.select("#goal_arc")
 							.transition()
 							.style("opacity", "0.5")
-							.attr("fill", getGoalColor)
+							.style("fill", getGoalColor)
 							.duration(250);
 					} else {
 						d3.select("#goal_arc")
 							.transition()
-							.attr("fill", getGoalColor)
+							.style("fill", getGoalColor)
 							.duration(250)
 							.style("opacity", "1.0");
 					};
@@ -284,7 +286,7 @@
 				} else {
 					msClr = clr;
 				};
-				var msArc = svg.append("path")
+				var msArc = visualContainer.append("path")
 				  .datum({endAngle: currentAngle})
 					.attr("id", "msArc_"+arr.milestone_id)
 					.attr("d", arc)
@@ -336,7 +338,7 @@
 				});
 			};
 			
-			var goalArc = svg.append("path")
+			var goalArc = visualContainer.append("path")
 			  .datum({endAngle: (0-(sizeArray[0]/2))})
 				.attr("id", "goal_arc")
 				.attr("d", gArc)
@@ -371,107 +373,264 @@
 			$("#id_completedmilestone_isGoal").val(true);
 			
 			//draw buttons
-			var convertButton = svg.append("rect")
-				.attr("class", "v-button")
-				.attr("width", 50)
-				.attr("height", 70)
-				.attr("fill", "#9edae5")
-				.attr("stroke", "black")
-				.attr("transform", "translate("+(width+260)+",0)")
-				.on("click", function() {
-				});
+			var buttonWidth = 43;
+			var buttonHeight = 42;
+			var iconPadding = 6;
+			var displayBarWidth = (svgWidth-buttonWidth+iconPadding-2);
+			var displayBarHeight = (iconPadding+3);
 			
-			var detailsButton = svg.append("rect")
+			var convertContainer = svg.append("g");
+			var convertButton = convertContainer.append("rect")
 				.attr("class", "v-button")
-				.attr("width", 50)
-				.attr("height", 70)
-				.attr("fill", "#c5b0d5")
-				.attr("stroke", "black")
-				.attr("transform", "translate("+(width+260)+",70)")
-				.on("click", function() {
-				});
-			
-			var addMSButton = svg.append("rect")
-				.attr("class", "v-button")
-				.attr("width", 50)
-				.attr("height", 70)
-				.attr("fill", "#aec7e8")
-				.attr("stroke", "black")
-				.attr("transform", "translate("+(width+260)+",140)")
-				.on("click", function() {
-					if (isGoal) {
-						$("#milestone-form-btn").click()
-					} else {
-						$("#milestone-"+selected+"-btn").click()
-					};
+				.attr("width", buttonWidth)
+				.attr("height", buttonHeight)
+				.attr("fill", "none")
+				.attr("stroke", "none")
+				.attr("transform", "translate("+(svgWidth-buttonWidth)+",0)")
+			var convertIcon = convertContainer.append("rect")
+				.attr("id", "convert-button")
+				.attr("width", "50px")
+				.attr("height", "50px")
+				.attr("fill", "transparent")
+				.style("fill", "url(#convertSVG)")
+				.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(iconPadding+8)+")");
+			var displayRectConvert = convertContainer.append("rect")
+				.attr("height", (buttonHeight-iconPadding/2-4))
+				.attr("width", "5")
+				.attr("display", "none")
+				.attr("fill", "white")
+				.attr("transform", "translate("+displayBarWidth+","+(displayBarHeight)+")");
+			convertContainer.on("mouseover", function() {
+				displayRectConvert
+					.attr("display", "block");
+			});
+			convertContainer.on("mouseout", function() {
+				displayRectConvert
+					.attr("display", "none");
+			});
+			convertContainer.on("click", function() {
 			});
 			
-			var editButton = svg.append("rect")
+			var detailsContainer = svg.append("g");
+			var detailsButton = detailsContainer.append("rect")
 				.attr("class", "v-button")
-				.attr("width", 50)
-				.attr("height", 70)
-				.attr("fill", "#dbdb8d")
-				.attr("stroke", "black")
-				.attr("transform", "translate("+(width+260)+",210)")
-				.on("click", function() {
-					if (isGoal) {
-						$("#editmilestonegoal-form-btn").click()
-					} else {
-						$("#editmilestone-"+selected+"-btn").click()
-					}
-				});
-
-			var deleteButton = svg.append("rect")
-				.attr("class", "v-button")
-				.attr("width", 50)
-				.attr("height", 70)
-				.attr("fill", "#ff9896")
-				.attr("stroke", "black")
-				.attr("transform", "translate("+(width+260)+",280)")
-				.on("click", function() {
-					if (isGoal) {
-						$("#deletemilestonegoal-form-btn").click()
-					} else {
-						$("#deletemilestone-"+selected+"-btn").click()
-					};
-				});
+				.attr("width", buttonWidth)
+				.attr("height", buttonHeight)
+				.attr("fill", "none")
+				.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight)+")")
+			var detailsIcon = detailsContainer.append("rect")
+				.attr("id", "details-button")
+				.attr("width", "50px")
+				.attr("height", "50px")
+				.attr("fill", "transparent")
+				.style("fill", "url(#detailsSVG)")
+				.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight+iconPadding+8)+")");
+			var displayRectDetails = detailsContainer.append("rect")
+				.attr("height", (buttonHeight-iconPadding/2-4))
+				.attr("width", "5")
+				.attr("display", "none")
+				.attr("fill", "white")
+				.attr("transform", "translate("+displayBarWidth+","+(buttonHeight+displayBarHeight)+")");
+			detailsContainer.on("mouseover", function() {
+				displayRectDetails
+					.attr("display", "block");
+			});
+			detailsContainer.on("mouseout", function() {
+				displayRectDetails
+					.attr("display", "none");
+			});
+			detailsContainer.on("click", function() {
+			});
 			
-			var completeButton = svg.append("rect")
+			var addContainer = svg.append("g");
+			var addButton = addContainer.append("rect")
 				.attr("id", "cmplt-tab")
 				.attr("class", "v-button")
-				.attr("width", 50)
-				.attr("height", 150)
-				.attr("transform", "translate("+(width+260)+",350)")
-				.attr("stroke", "black")
-				.attr("fill", "lightgreen")
-				.on("click", function() {
-					completeTrans(selectedObj);
-					completedGoal = selectedObj;
-					completedColor = selectedColor;
-					if (isGoal) {
-						$("#id_completedmilestone_id").val(goal.goal_id);
-						$("#id_completedmilestone_isGoal").val(true);
-					} else {
-						$("#id_completedmilestone_id").val(selected);
-						$("#id_completedmilestone_isGoal").val(isGoal);
-					};
-					$("#completed-form-btn").click();
-				});
+				.attr("width", buttonWidth)
+				.attr("height", buttonHeight)
+				.attr("fill", "none")
+				.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*2)+")");
+			var addIcon = addContainer.append("rect")
+				.attr("id", "add-button")
+				.attr("width", "50px")
+				.attr("height", "50px")
+				.attr("fill", "transparent")
+				.style("fill", "url(#addSVG)")
+				.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*2+iconPadding+8)+")");
+			var displayRectAdd = addContainer.append("rect")
+				.attr("height", (buttonHeight-iconPadding/2-4))
+				.attr("width", "5")
+				.attr("display", "none")
+				.attr("fill", "white")
+				.attr("transform", "translate("+displayBarWidth+","+(buttonHeight*2+displayBarHeight)+")");
+			addContainer.on("mouseover", function() {
+				displayRectAdd
+					.attr("display", "block");
+			});
+			addContainer.on("mouseout", function() {
+				displayRectAdd
+					.attr("display", "none");
+			});
+			addContainer.on("click", function() {
+				if (isGoal) {
+					$("#milestone-form-btn").click()
+				} else {
+					$("#milestone-"+selected+"-btn").click()
+				};
+			});
+			
+			var editContainer = svg.append("g");
+			var editButton = editContainer.append("rect")
+				.attr("class", "v-button")
+				.attr("width", buttonWidth)
+				.attr("height", buttonHeight)
+				.attr("fill", "none")
+				.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*3)+")");				
+			var editIcon = editContainer.append("rect")
+				.attr("id", "edit-button")
+				.attr("width", "50px")
+				.attr("height", "50px")
+				.attr("fill", "transparent")
+				.style("fill", "url(#editSVG)")
+				.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*3+iconPadding+8)+")");
+			var displayRectEdit = editContainer.append("rect")
+				.attr("height", (buttonHeight-iconPadding/2-4))
+				.attr("width", "5")
+				.attr("display", "none")
+				.attr("fill", "white")
+				.attr("transform", "translate("+displayBarWidth+","+(buttonHeight*3+displayBarHeight)+")");
+			editContainer.on("mouseover", function() {
+				displayRectEdit
+					.attr("display", "block");
+			});
+			editContainer.on("mouseout", function() {
+				displayRectEdit
+					.attr("display", "none");
+			});
+			editContainer.on("click", function() {
+				if (isGoal) {
+					$("#editmilestonegoal-form-btn").click()
+				} else {
+					$("#editmilestone-"+selected+"-btn").click()
+				}
+			});
+			
+			var deleteContainer = svg.append("g");
+			var deleteButton = deleteContainer.append("rect")
+				.attr("class", "v-button")
+				.attr("width", buttonWidth)
+				.attr("height", buttonHeight)
+				.attr("fill", "none")
+				.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*4)+")");
+			var deleteIcon = deleteContainer.append("rect")
+				.attr("id", "delete-button")
+				.attr("width", "50px")
+				.attr("height", "50px")
+				.attr("fill", "transparent")
+				.style("fill", "url(#deleteSVG)")
+				.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*4+iconPadding+8)+")");
+			var displayRectDelete = deleteContainer.append("rect")
+				.attr("height", (buttonHeight-iconPadding/2-4))
+				.attr("width", "5")
+				.attr("display", "none")
+				.attr("fill", "white")
+				.attr("transform", "translate("+displayBarWidth+","+(buttonHeight*4+displayBarHeight-1)+")");
+			deleteContainer.on("mouseover", function() {
+				displayRectDelete
+					.attr("display", "block");
+			});
+			deleteContainer.on("mouseout", function() {
+				displayRectDelete
+					.attr("display", "none");
+			});
+			deleteContainer.on("click", function() {
+				if (isGoal) {
+					$("#deletemilestonegoal-form-btn").click()
+				} else {
+					$("#deletemilestone-"+selected+"-btn").click()
+				};
+			});
+			
+			var downloadContainer = svg.append("g");
+			var downloadButton = downloadContainer.append("rect")
+				.attr("class", "v-button")
+				.attr("width", buttonWidth)
+				.attr("height", buttonHeight)
+				.attr("fill", "none")
+				.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*5)+")");
+			var downloadIcon = downloadContainer.append("rect")
+				.attr("id", "download-button")
+				.attr("width", "50px")
+				.attr("height", "50px")
+				.attr("fill", "transparent")
+				.style("fill", "url(#downloadSVG)")
+				.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*5+iconPadding+8)+")");
+			var displayRectDownload = downloadContainer.append("rect")
+				.attr("height", (buttonHeight-iconPadding/2-4))
+				.attr("width", "5")
+				.attr("display", "none")
+				.attr("fill", "white")
+				.attr("transform", "translate("+displayBarWidth+","+(buttonHeight*5+displayBarHeight)+")");
+			downloadContainer.on("mouseover", function() {
+				displayRectDownload
+					.attr("display", "block");
+			});
+			downloadContainer.on("mouseout", function() {
+				displayRectDownload
+					.attr("display", "none");
+			});
+			downloadContainer.on("click", function() {
+			});
+			
+			var completeContainer = svg.append("g");
+			var completeButton = completeContainer.append("rect")
+				.attr("id", "cmplt-tab")
+				.attr("class", "v-button")
+				.attr("width", buttonWidth)
+				.attr("height", buttonHeight)
+				.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*6)+")")
+				.attr("fill", "none")
+			var completeIcon = completeContainer.append("rect")
+				.attr("id", "complete-button")
+				.attr("width", "50px")
+				.attr("height", "50px")
+				.attr("fill", "transparent")
+				.style("fill", "url(#completeSVG)")
+				.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*6+iconPadding+8)+")");
+			var displayRectComplete = completeContainer.append("rect")
+				.attr("height", (buttonHeight-iconPadding/2-4))
+				.attr("width", "5")
+				.attr("display", "none")
+				.attr("fill", "white")
+				.attr("transform", "translate("+displayBarWidth+","+(buttonHeight*6+displayBarHeight)+")");
+			completeContainer.on("mouseover", function() {
+				displayRectComplete
+					.attr("display", "block");
+			});
+			completeContainer.on("mouseout", function() {
+				displayRectComplete
+					.attr("display", "none");
+			});
+			completeContainer.on("click", function() {
+				completeTrans(selectedObj);
+				completedGoal = selectedObj;
+				completedColor = selectedColor;
+				if (isGoal) {
+					$("#id_completedmilestone_id").val(goal.goal_id);
+					$("#id_completedmilestone_isGoal").val(true);
+				} else {
+					$("#id_completedmilestone_id").val(selected);
+					$("#id_completedmilestone_isGoal").val(isGoal);
+				};
+				$("#completed-form-btn").click();
+			});
 			
 			//draw display
 			var display = svg.append("rect")
-				.attr("width", 260)
+				.attr("id", "visual_text_display")
+				.attr("width", 267)
 				.attr("height",  500)
 				.attr("fill", "white")
-				.attr("stroke", "black")
-				.attr("transform", "translate("+width+",0)");
-			
-			var border = svg.append("rect")
-				.attr("class", "glass")
-				.attr("width", svgWidth)
-				.attr("height", svgHeight)
-				.attr("fill", "none")
-				.attr("stroke", "grey")
-				.attr("stroke-width", "5px")
-				.attr("rx", "30");
+				.attr("transform", "translate("+width+",0)")
+				.attr("rx", "10");
 	};

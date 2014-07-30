@@ -15,13 +15,15 @@
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script type="text/javascript" src="{{STATIC_URL}}bootstrap/js/bootstrap.min.js"></script>
 	<!-- js file of the plugin -->
-	<script type="text/javascript" src="{{STATIC_URL}}js/jquery.leanModal.min.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery.leanModalOld.min.js"></script>
 	<!-- Initializing the plugin for the goal popup -->
 	<script>
 		$(document).ready(function(){
 			$("a[rel*=oneshotgoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 			$("a[rel*=milestonegoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 			$("a[rel*=timeoneshotgoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=timemilestonegoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=valuegoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 		});
 	</script>
 	{% load bootstrap3 %}
@@ -69,95 +71,158 @@
 			<p>Would you like to upload one?</p><br/>
 		{% endif %}
 		<h3>Goals:</h3>
-		{% if oneshotgoalcount == 0 %}
-			<p>Hey it looks like you don't have any One Shot Goals.</p>
-			<p>Would you like to add one?</p>
-			<a href="#oneshotgoal-form" class="pure-button" rel="oneshotgoal-form">New One Shot Goal</a>
-			<form class="pure-form pure-form-stacked" action="" method="post" id="oneshotgoal-form">
-				{% csrf_token %}
-				<p>New One Shot Goal</p>
+		<!-- ONE SHOT GOALS -->
+		<p>One Shot Goals:</p>
+		{% for osgoal in oneshotgoals %}
+			<a href="/user/{{ user.username }}/osgoals/{{ osgoal.title|slugify }}{{ osgoal.id }}">{{ osgoal.title }}</a>
+		{% endfor %}
+		<a href="#oneshotgoal-form" class="pure-button" id="newoneshotgoal-button" rel="oneshotgoal-form">New One Shot Goal</a>
+		<!-- MILESTONE GOALS -->
+		<p>Milestone Goals:</p>
+		{% for msgoal in milestonegoals %}
+			<a href="/user/{{ user.username }}/msgoals/{{ msgoal.title|slugify }}{{ msgoal.id }}">{{ msgoal.title }}</a>
+		{% endfor %}
+		<a href="#milestonegoal-form" class="pure-button" rel="milestonegoal-form">New Milestone Goal</a>
+		<!-- TIME ONE SHOT GOALS -->
+		<p>Time One Shot Goals:</p>
+		{% for tosgoal in timeoneshotgoals %}
+			<a href="/user/{{ user.username }}/tosgoals/{{ tosgoal.title|slugify }}{{ tosgoal.id }}">{{ tosgoal.title }}</a>
+		{% endfor %}
+		<a href="#timeoneshotgoal-form" class="pure-button" id="newtimeoneshotgoal-button" rel="timeoneshotgoal-form">New Time One Shot Goal</a>
+		<!--TIME MILESTONE GOALS -->
+		<p>Time Milestone Goals:</p>
+		{% for tmsgoal in timemilestonegoals %}
+			<a href="/user/{{ user.username }}/tmsgoals/{{ tmsgoal.title|slugify }}{{ tmsgoal.id }}">{{ tmsgoal.title }}</a>
+		{% endfor %}
+		<a href="#timemilestonegoal-form" class="pure-button" rel="timemilestonegoal-form">New Time Milestone Goal</a>
+		<!--VALUE GOALS -->
+		<p>Value Goals:</p>
+		{% for vgoal in valuegoals %}
+			<a href="/user/{{ user.username }}/vgoals/{{ vgoal.title|slugify }}{{ vgoal.id }}">{{ vgoal.title }}</a>
+		{% endfor %}
+		<a href="#valuegoal-form" class="pure-button" rel="valuegoal-form">New Value Goal</a>
+		<!--VALUE GOALS -->
+		<p>Progress Goals:</p>
+		{% for pgoal in progressgoals %}
+			<a href="/user/{{ user.username }}/pgoals/{{ pgoal.title|slugify }}{{ pgoal.id }}">{{ pgoal.title }}</a>
+		{% endfor %}
+		<a href="#progressgoal-form" class="pure-button" rel="progressgoal-form">New Progress Goal</a>
+		
+		<!-- FORMS -->
+		<form id="oneshotgoal-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>New One Shot Goal</p>
+			<div id='oneshotgoal'>
 				{% bootstrap_form oneshotgoalform %}
-				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osgoalSub"/>
-			</form>
-		{% else %}
-			<!-- ONE SHOT GOALS -->
-			<p>One Shot Goals:</p>
-			{% for osgoal in oneshotgoals %}
-				<a href="/user/{{ user.username }}/osgoals/{{ osgoal.title|slugify }}{{ osgoal.id }}">{{ osgoal.title }}{{ osgoal.id }}</a>
-			{% endfor %}
-			<a href="#oneshotgoal-form" class="pure-button" id="newoneshotgoal-button" rel="oneshotgoal-form">New One Shot Goal</a>
-			<!-- MILESTONE GOALS -->
-			<p>Milestone Goals:</p>
-			{% for msgoal in milestonegoals %}
-				<a href="/user/{{ user.username }}/msgoals/{{ msgoal.title|slugify }}{{ msgoal.id }}">{{ msgoal.title }}</a>
-			{% endfor %}
-			<a href="#milestonegoal-form" class="pure-button" rel="oneshotgoal-form">New Milestone Goal</a>
-			<!-- TIME ONE SHOT GOALS -->
-			<p>Time One Shot Goals:</p>
-			{% for tosgoal in timeoneshotgoals %}
-				<a href="/user/{{ user.username }}/tosgoals/{{ tosgoal.title|slugify }}{{ tosgoal.id }}">{{ tosgoal.title }}</a>
-			{% endfor %}
-			<a href="#timeoneshotgoal-form" class="pure-button" id="newtimeoneshotgoal-button" rel="timeoneshotgoal-form">New Time One Shot Goal</a>
-			
-			<!-- FORMS -->
-			<form id="oneshotgoal-form" class="pure-form pure-form-stacked" action="" method="post">
-				{% csrf_token %}
-				<p>New One Shot Goal</p>
-				<div id='oneshotgoal'>
-					{% bootstrap_form oneshotgoalform %}
-				</div>
-				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osgoalSub"/>
-				<script>
-					$('#id_completed', '#oneshotgoal').click(function() {
-						hideDateCompleted('oneshotgoal');
-					});
-					$(document).ready(function() {
-						hideDateCompleted('oneshotgoal');
-					});
-				</script>
-			</form>
-			<form id="milestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
-				{% csrf_token %}
-				<p>Milestone Goal</p>
-				<div id='milestonegoal'>
-					{% bootstrap_form milestonegoalform %}
-				</div>
-				{{ milestoneformset.management_form }}
-				<div id='milestoneform_set'>
-					{% for form in milestoneformset %}
-						<div class='table'>
-							<table class='no_error'>
-								<p>Milestone</p>
-								{{ form.as_table }}
-							</table>		
-						</div>
-					{% endfor %}
-				</div>
-				<input type="button" value="Add Milestone" id="add_milestone"/>
-				<script>
-					$('#add_milestone').click(function() {
-						cloneMore('div.table:last', 'milestone');
-					});
-				</script>
-				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="msgoalSub"/>
-			</form>
-			<form id="timeoneshotgoal-form" class="pure-form pure-form-stacked" action="" method="post">
-				{% csrf_token %}
-				<p>New Time One Shot Goal</p>
-				<div id='timeoneshotgoal'>
-					{{  timeoneshotgoalform }}
-				</div>
-				<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="tosgoalSub"/>
-				<script>
-					//$("#id_completed", "#timeoneshotgoal").click(function() {
-					//	hideDateCompleted('timeoneshotgoal');
-					//});
-					//$(document).ready(function() {
-					//	hideDateCompleted('timeoneshotgoal');
-					//});
-				</script>
-			</form>
-		{% endif %}
+			</div>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="osgoalSub"/>
+			<script>
+				$('#id_completed', '#oneshotgoal').click(function() {
+					hideDateCompleted('oneshotgoal');
+				});
+				$(document).ready(function() {
+					hideDateCompleted('oneshotgoal');
+				});
+			</script>
+		</form>
+		<form id="milestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>Milestone Goal</p>
+			<div id='milestonegoal'>
+				{% bootstrap_form milestonegoalform %}
+			</div>
+			{{ milestoneformset.management_form }}
+			<div id='milestoneform_set'>
+				{% for form in milestoneformset %}
+					<div class='table'>
+						<table class='no_error'>
+							<p>Milestone</p>
+							{{ form.as_table }}
+						</table>		
+					</div>
+				{% endfor %}
+			<input type="button" value="Add Milestone" id="add_milestone"/>
+			</div>
+			<script>
+				$('#add_milestone', '#milestoneform_set').click(function() {
+					cloneMore('div.table:last', 'milestone');
+				});
+			</script>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="msgoalSub"/>
+		</form>
+		<form id="timeoneshotgoal-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>New Time One Shot Goal</p>
+			<div id='timeoneshotgoal'>
+				{{  timeoneshotgoalform }}
+			</div>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="tosgoalSub"/>
+			<script>
+				//$("#id_completed", "#timeoneshotgoal").click(function() {
+				//	hideDateCompleted('timeoneshotgoal');
+				//});
+				//$(document).ready(function() {
+				//	hideDateCompleted('timeoneshotgoal');
+				//});
+			</script>
+		</form>
+		<form id="timemilestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>Time Milestone Goal</p>
+			<div id='timemilestonegoal'>
+				{% bootstrap_form timemilestonegoalform %}
+			</div>
+			{{ timemilestoneformset.management_form }}
+			<div id='timemilestoneform_set'>
+				{% for form in timemilestoneformset %}
+					<div class='table'>
+						<table class='no_error'>
+							<p>Time Milestone</p>
+							{{ form.as_table }}
+						</table>		
+					</div>
+				{% endfor %}
+			<input type="button" value="Add Milestone" id="add_milestone"/>
+			</div>
+			<script>
+				$('#add_milestone', '#timemilestoneform_set').click(function() {
+					cloneMore('div.table:last', 'timemilestone');
+				});
+			</script>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="tmsgoalSub"/>
+		</form>
+		<form id="valuegoal-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>New Value Goal</p>
+			<div id='valuegoal'>
+				{% bootstrap_form valuegoalform %}
+			</div>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="vgoalSub"/>
+			<script>
+				//$("#id_completed", "#timeoneshotgoal").click(function() {
+				//	hideDateCompleted('timeoneshotgoal');
+				//});
+				//$(document).ready(function() {
+				//	hideDateCompleted('timeoneshotgoal');
+				//});
+			</script>
+		</form>
+		<form id="progressgoal-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>New Progress Goal</p>
+			<div id='progressgoal'>
+				{% bootstrap_form progressgoalform %}
+			</div>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="pgoalSub"/>
+			<script>
+				//$("#id_completed", "#timeoneshotgoal").click(function() {
+				//	hideDateCompleted('timeoneshotgoal');
+				//});
+				//$(document).ready(function() {
+				//	hideDateCompleted('timeoneshotgoal');
+				//});
+			</script>
+		</form>
 	{% else %}
 		<h1>No one's logged in...</h1>
 		<a href="{% url 'homepage' %}">Login?</a><br />

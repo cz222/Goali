@@ -34,7 +34,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/processMilestone.js"></script>
 	
 	<!-- Adding Visualization js files -->
-	<script type="text/javascript" src="{{STATIC_URL}}visuals/visualMilestoneDonutChart.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}visuals/visualMilestone{{ visual }}.js"></script>
 	
 	<!-- Adding Bootstrap -->
 	{% load bootstrap3 %}
@@ -85,6 +85,32 @@
 				</div>
 				<div id='visual_body'>
 				</div>
+			</div>
+			<div id="visual_buttons">
+				<svg id="convertcontainer" width="80" height="80">
+					<defs id="buttondefs">
+						<pattern id="convertSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/convert.svg"></image>
+						</pattern>
+						<pattern id="addSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/add.svg"></image>
+						</pattern>
+						<pattern id="deleteSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/delete.svg"></image>
+						</pattern>
+						<pattern id="detailsSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/details.svg"></image>
+						</pattern>
+						<pattern id="downloadSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/download.svg"></image>
+						</pattern>
+						<pattern id="editSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/edit.svg"></image>
+						</pattern>
+						<pattern id="completeSVG" x="0" y="0" height="40" width="40">
+							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/complete.svg"></image>
+						</pattern>
+					</defs>
 			</div>
 			<div id="completedform">
 				<form id="completed-form" class="pure-form pure-form-stacked" action="" method="post">
@@ -143,7 +169,7 @@
 		</form>
 		<form id="deletemilestone-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
-			{{ collectmilestoneidform.deletemilestone_id.as_hidden }}
+			{{ collectmilestoneidform.deletemilestone_id }}
 			<p>Are You Sure?</p>
 			{% bootstrap_form deletemilestoneform %}
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteMSSub"/>

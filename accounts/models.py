@@ -31,8 +31,9 @@ class OneShotGoal(models.Model):
 	private = models.BooleanField()
 	completed = models.BooleanField()
 	date_created = models.DateField(auto_now_add=True)
-	date_completed = models.DateField(blank=True, null=True, editable=True)
+	date_completed = models.DateTimeField(blank=True, null=True, editable=True)
 	last_updated = models.DateField(auto_now=True)
+	visual = models.CharField(max_length=70);
 	
 	def __unicode__(self):
 		return self.title
@@ -77,7 +78,7 @@ class OneShotNote(models.Model):
 		return self.note
 
 		
-#MILESTONE GOAL OPTIONS
+#MILESTONE GOALs
 class MilestoneGoal(models.Model):
 	"""
 	Model for Milestone Goals
@@ -91,8 +92,9 @@ class MilestoneGoal(models.Model):
 	private = models.BooleanField()
 	completed = models.BooleanField()
 	date_created = models.DateField(auto_now_add=True)
-	date_completed = models.DateField(blank=True, null=True, editable=True)
+	date_completed = models.DateTimeField(blank=True, null=True, editable=True)
 	last_updated = models.DateField(auto_now=True)
+	visual = models.CharField(max_length=70);
 	
 	def __unicode__(self):
 		return self.title
@@ -134,7 +136,7 @@ class Milestone(models.Model):
 	private = models.BooleanField()
 	completed = models.BooleanField()
 	date_created = models.DateField(auto_now_add=True)
-	date_completed = models.DateField(blank=True, null=True, editable=True)
+	date_completed = models.DateTimeField(blank=True, null=True, editable=True)
 	last_updated = models.DateField(auto_now=True)
 	
 	def __unicode__(self):
@@ -155,16 +157,144 @@ class TimeOneShotGoal(models.Model):
 	complete_by = models.DateTimeField(blank=True, null=True, editable=True)
 	completed = models.BooleanField()
 	date_created = models.DateTimeField(auto_now_add=True)
-	date_completed = models.DateField(blank=True, null=True, editable=True)
+	date_completed = models.DateTimeField(blank=True, null=True, editable=True)
 	last_updated = models.DateField(auto_now=True)
+	visual = models.CharField(max_length=70);
 	
 	def __unicode__(self):
 		return self.title
 
 #TIME GOALS-MILESTONE GOALS
+class TimeMilestoneGoal(models.Model):
+	"""
+	Main Milestone Goal with a Time Limit.
+	"""
+	#Link to a User
+	owner = models.ForeignKey(User, blank=True, related_name="timemilestonegoal")
+	
+	#attributes
+	title = models.CharField(max_length=75)
+	description = models.TextField()
+	private = models.BooleanField()
+	complete_by = models.DateTimeField(blank=True, null=True, editable=True)
+	completed = models.BooleanField()
+	date_created = models.DateTimeField(auto_now_add=True)
+	date_completed = models.DateTimeField(blank=True, null=True, editable=True)
+	last_updated = models.DateField(auto_now=True)
+	visual = models.CharField(max_length=70);
+	
+	def __unicode__(self):
+		return self.title
+
+class TimeMilestone(models.Model):
+	"""
+	Model for Time Milestones.
+	"""
+	#Link to a Milestone Goal
+	goal = models.ForeignKey(TimeMilestoneGoal, blank=True, null=True, related_name="timemilestone")
+	milestone = models.ForeignKey('self', blank=True, null=True, related_name="timesubmilestone")
+	
+	#attributes
+	title = models.CharField(max_length=75)
+	description = models.TextField()
+	private = models.BooleanField()
+	complete_by = models.DateTimeField(blank=True, null=True, editable=True)
+	completed = models.BooleanField()
+	date_created = models.DateTimeField(auto_now_add=True)
+	date_completed = models.DateTimeField(blank=True, null=True, editable=True)
+	last_updated = models.DateField(auto_now=True)
+	
+	def __unicode__(self):
+		return self.title
 
 #VALUE GOALS
+class ValueGoal(models.Model):	
+	"""
+	Model for Value Goals. Keeps track of a value over time. Unlike a progress goal, users input a 
+	new increase or decrease.
+	"""
+	#Link to a User
+	owner = models.ForeignKey(User, blank=True, related_name="valuegoal")
+	
+	#attributes
+	title = models.CharField(max_length=75)
+	description = models.TextField()
+	determinate = models.BooleanField()
+	valueType = models.CharField(max_length=20)
+	startValue = models.DecimalField(max_digits = 22, decimal_places=10)
+	endValue = models.DecimalField(blank=True, null=True, max_digits = 22, decimal_places=10)
+	private = models.BooleanField()
+	complete_by = models.DateTimeField(blank=True, null=True, editable=True)
+	completed = models.BooleanField()
+	date_created = models.DateTimeField(auto_now_add=True)
+	date_completed = models.DateTimeField(blank=True, null=True, editable=True)
+	last_updated = models.DateTimeField(auto_now=True)
+	visual = models.CharField(max_length=70);
+	
+	def __unicode__(self):
+		return self.title
 
+class ValueUpdate(models.Model):
+	"""
+	Update for value goal.
+	"""
+	#Link to a User
+	goal = models.ForeignKey(ValueGoal, blank=True, related_name="valueupdate")
+	
+	#attributes
+	value = models.DecimalField(max_digits = 22, decimal_places=10)
+	description = models.TextField()
+	date_created = models.DateTimeField(auto_now_add=True)
+	last_updated = models.DateTimeField(auto_now=True)
+	
+	def __unicode__(self):
+		return self.date_created
+
+#PROGRESS GOALS		
+class ProgressGoal(models.Model):	
+	"""
+	Model for Progress Goals
+	Keeps track of a value over time. Unlike value goals, users input a new
+	value which overrides the old value.
+	"""
+	#Link to a User
+	owner = models.ForeignKey(User, blank=True, related_name="progressgoal")
+	
+	#attributes
+	title = models.CharField(max_length=75)
+	description = models.TextField()
+	determinate = models.BooleanField()
+	valueType = models.CharField(max_length=20)
+	startValue = models.DecimalField(max_digits = 22, decimal_places=10)
+	endValue = models.DecimalField(blank=True, null=True, max_digits = 22, decimal_places=10)
+	private = models.BooleanField()
+	complete_by = models.DateTimeField(blank=True, null=True, editable=True)
+	completed = models.BooleanField()
+	date_created = models.DateTimeField(auto_now_add=True)
+	date_completed = models.DateTimeField(blank=True, null=True, editable=True)
+	last_updated = models.DateTimeField(auto_now=True)
+	visual = models.CharField(max_length=70);
+	
+	def __unicode__(self):
+		return self.title
+		
+class ProgressUpdate(models.Model):
+	"""
+	Update for value goal.
+	"""
+	#Link to a User
+	goal = models.ForeignKey(ProgressGoal, blank=True, related_name="progressupdate")
+	
+	#attributes
+	value = models.DecimalField(max_digits = 22, decimal_places=10)
+	description = models.TextField()
+	date_created = models.DateTimeField(auto_now_add=True)
+	last_updated = models.DateTimeField(auto_now=True)
+	
+	def __unicode__(self):
+		return self.date_created
 #RECURRANT GOALS-ONE SHOT GOALS
 
 #RECURRANT GOALS-MILESTONE GOALS
+
+#Special Goals
