@@ -3,94 +3,20 @@
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
 @import url(http://fonts.googleapis.com/css?family=Montserrat);*/
 
-#goalContainer {
-	width: 900px;
-	height: 700px;
-	margin-left: auto;
-	margin-right: auto;
-	padding: 0;
-	margin-top: 40px;
-}
-#goal-owner {
-	width: 900px;
-	height: 100px;
-	position: relative;
-	float: left;
-	font-weight: bold;
-	font-size: 30px;
-}
-ul.tabs {
-	margin:0;
-	padding: 0;
-	float: left;
-	list-style: none;
-	height:32px;
-	border-bottom: 1px solid #999999;
-	border-left: 1px solid #999999;
-	width: 100%;
-}
-ul.tabs li{
-	float: left;
-	margin: 0;
-	cursor: pointer;
-	padding: 0px 18px;
-	height: 31px;
-	line-height: 31px;
-	border: 1px solid #999999;
-	border-left: none;
-	font-weight: bold;
-	background: #EEEEEE;
-	overflow: hidden;
-	position: relative;
-	text-shadow: #FFFFFF 0px 0px 0px;
-	color: #000000;
-}
-ul.tabs li:hover{
-	background: #CCCCCC;
-}
-ul.tabs li:active{
-	background: #FFFFFF;
-	border-bottom: 1px solid #FFFFFF;
-}
-.tab_container {
-	border: 1px solid #999999;
-	border-top: none;
-	clear: both;
-	float: left;
-	width: 100%;
-	background: #FFFFFF;
-	width: 960px;
-	height: 700px;
-}
-.tab_content {
-	padding: 20px;
-	font-size: 1.2em;
-	display: none;
-	
-}
-.tab_text a {
-	color: #000000;
-	text-shadow: #FFFFFF 0px;
-}
-.tab_text h1{
-	color: #000000;
-	text-shadow: #FFFFFF 0px;
-}
 
+/*top nav bar*/
 #home-logo{
 	width: 40px;
 	height: auto;
 	float:left;
 	vertical-align: middle;
 }
-ul {
+ul#list-nav  {
 	width: 940px;
 	height: 40px;
 	margin-left: auto;
 	margin-right: auto;
 	padding: 0;
-}
-ul#list-nav  {
 	margin-right: 20px;
 	list-style: none;
 	width: 940px;
@@ -98,7 +24,7 @@ ul#list-nav  {
 ul#list-nav li {
 	display: inline;
 	float:right;
-	vertical-align: middle;
+	vertical-align: middle; 
 }
 ul#list-nav li a {
 	font-weight: bold;
@@ -115,12 +41,12 @@ ul#list-nav li a {
 ul#list-nav li a:hover{
 	text-shadow: #CCCCCC 1px 1px 1px;
 }
+
 .container {
 	height:40px;
 }
 
 body{
-	margin-top: 40px;
 	background-color:#47a938; 
 	font-family:'Open Sans', Arial, sans-serif;
 }
@@ -129,6 +55,7 @@ a{
 	color:#fff;
 }
 
+/*lean overlay*/
 .wrap{
 	position: absolute;
 	top: 0px;
@@ -138,7 +65,6 @@ a{
 	display: none;
 	overflow: auto;
 }
-
 #lean_overlay {
     position: absolute;
     z-index:100;
@@ -151,27 +77,14 @@ a{
     display: none;
 }
 
-#oneshotgoal-form{
+/*forms*/
+#signin-form{
 	display:none;
 }
-#milestonegoal-form{
+#register-form{
 	display:none;
 }
-#timeoneshotgoal-form{
-	display:none;
-}
-#timemilestonegoal-form{
-	display:none;
-}
-#valuegoal-form{
-	display:none;
-}
-#progressgoal-form{
-	display:none;
-}
-.hide {
-	display: none;
-}
+
 
 .modal_close{
 	position: absolute;
@@ -218,25 +131,6 @@ form{
     background: linear-gradient(#ddd,#fff);
     border:1px solid #47a938;
     box-shadow:0 0 10px rgba(0,0,0,.5);
-}
-
-#id_date_completed_month {
-	position: absolute;
-	width: 90px;
-}
-
-#id_date_completed_day {
-	position: relative;
-	width: 30px;
-	left: 95px;
-	top: 3px;
-}
-
-#id_date_completed_year {
-	position: relative;
-	width: 60px;
-	left: 130px;
-	top: -30px;
 }
 
 form p{

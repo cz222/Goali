@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base-goals.html" %}
 
 {% comment %}
 	One Shot Goal Page
@@ -60,19 +60,20 @@
 {% endblock %}
 
 {% block body %}
-	{% if user.is_authenticated %}
+	{% if user.is_authenticated %}	
+	
 		<nav class="navbar navbar-fixed-top" role="navigation">
-				<div class="container">
-					<ul id="list-nav">
-						<a href="{% url 'homepage' %}" target="_blank"><img src="{{STATIC_URL}}img/G_White.png" border="0" id="home-logo"/></a>
-						<li><a id='logout_button-btn' href="/logout/">Logout</a></li>
-						<li><a id='profile-btn' href="#">Profile</a></li>
-						<li><a id='goals-btn' href="/user/{{ user.username }}">Goals</a></li>
-						<li><a id='forum-btn' href="#">Forum</a></li>
-					</ul>
-				</div>
-		</nav>		
-		<a href="/user/{{ user.username }}/">Back</a><br />
+			<div class="container">
+				<ul id="list-nav">
+					<a href="{% url 'homepage' %}" target="_blank"><img src="{{STATIC_URL}}img/G_White.png" border="0" id="home-logo"/></a>
+					<li><a id='logout_button-btn' href="/logout/">Logout</a></li>
+					<li><a id='profile-btn' href="#">Profile</a></li>
+					<li><a id='goals-btn' href="/user/{{ user.username }}">Goals</a></li>
+					<li><a id='forum-btn' href="#">Forum</a></li>
+				</ul>
+			</div>
+		</nav>	
+
 		<a id="editmilestonegoal-form-btn" href="#editmilestonegoal-form" class="pure-button" rel="editmilestonegoal-form" style="display:none">Edit Goal</a>
 		<a id="deletemilestonegoal-form-btn" href="#deletemilestonegoal-form" class="pure-button" rel="deletemilestonegoal-form" style="display:none">Delete Goal</a>		
 		<a id="milestone-form-btn" href="#milestone-form" class="pure-button" rel="milestone-form" style="display:none">Add New Milestone</a>
@@ -169,7 +170,7 @@
 		</form>
 		<form id="deletemilestone-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
-			{{ collectmilestoneidform.deletemilestone_id }}
+			{{ collectmilestoneidform.deletemilestone_id.as_hidden }}
 			<p>Are You Sure?</p>
 			{% bootstrap_form deletemilestoneform %}
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteMSSub"/>

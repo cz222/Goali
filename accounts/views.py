@@ -15,13 +15,14 @@ from django.utils.timezone import utc
 
 from django.contrib.auth.models import User
 from models import OneShotGoal, OneShotJournal, OneShotNote, MilestoneGoal, Milestone, TimeOneShotGoal, TimeMilestoneGoal, TimeMilestone, ValueGoal, ValueUpdate
-from forms import CollectMilestoneIDForm, CompletedButtonForm
-from forms import OneShotGoalForm, OneShotJournalForm, OneShotNoteForm, DeleteOneShotForm, DeleteOneShotJournalForm, EditOneShotJournalForm
-from forms import MilestoneGoalForm, DeleteMilestoneGoalForm, MilestoneGoalJournalForm, MilestoneGoalNoteForm, MilestoneForm, MilestoneFormSet, SubMilestoneFormSet, DeleteMilestoneForm
+from forms import CollectMilestoneIDForm, CompletedButtonForm, CollectNoteJournalID
+from forms import OneShotGoalForm, DeleteOneShotForm
+from forms import OneShotNoteForm, DeleteOneShotNoteForm, OneShotJournalForm, DeleteOneShotJournalForm
+from forms import MilestoneGoalForm, DeleteMilestoneGoalForm, MilestoneForm, MilestoneFormSet, SubMilestoneFormSet, DeleteMilestoneForm
 from forms import TimeOneShotGoalForm, DeleteTimeOneShotForm
 from forms import TimeMilestoneGoalForm, TimeMilestoneForm, TimeMilestoneFormSet, TimeSubMilestoneFormSet, DeleteTimeMilestoneGoalForm, DeleteTimeMilestoneForm
 from forms import ValueGoalForm, ValueUpdateForm, DeleteValueGoalForm, CollectUpdateIDForm
-from forms import ProgressGoalForm, ProgressUpdateForm, ProgressGoalForm, DeleteProgressGoalForm
+from forms import ProgressGoalForm, ProgressUpdateForm, ProgressGoalForm, DeleteProgressGoalForm, ProgressUncompleteForm
 import json
 
 @login_required
@@ -30,8 +31,6 @@ def goals(request, username):
 	Page that displays User Profile and Goals
 	"""
 	user = request.user
-	
-	#NEED TO ADD MORE PROFILE STUFF
 	
 	#goal variables
 	oneshotgoalcount = request.user.oneshotgoal.count()
@@ -125,19 +124,28 @@ def osgoals(request, username, title, id):
 	
 	#goal variables
 	goal = request.user.oneshotgoal.get(id=id)
-	oneshotjournal = goal.oneshotgoaljournal.all()
-	oneshotnote = goal.oneshotgoalnote.all()
+	oneshotnotes = goal.oneshotgoalnote.all()
+	oneshotjournal = goal.oneshotgoaljournal.all().order_by("date")
 	
 	#visual
 	visual = goal.visual
+	#link
+	link = ('/user/%s/osgoals/%s%d/'%(request.user.username, title, goal.id))
 	
 	#Form variables
 	editoneshotform = OneShotGoalForm(instance=goal)
 	deleteoneshotform = DeleteOneShotForm()
 	uncompleteoneshotform = DeleteOneShotForm()
 	completedbuttonform = CompletedButtonForm()
-	oneshotjournalform = OneShotJournalForm()
+	
+	#display forms
 	oneshotnoteform = OneShotNoteForm()
+	editoneshotnoteform = OneShotNoteForm()
+	collectnotejournalid = CollectNoteJournalID()
+	deleteoneshotnoteform = DeleteOneShotNoteForm()
+	oneshotjournalform = OneShotJournalForm()
+	editoneshotjournalform = OneShotJournalForm()
+	deleteoneshotjournalform = DeleteOneShotJournalForm()
 	
 	#converts datetime object for forms
 	def getDateTime(date):
@@ -146,8 +154,27 @@ def osgoals(request, username, title, id):
 		else:
 			return str(date)
 	
-	gl = {"goal_title": goal.title, "goal_description": goal.description, "goal_private": goal.private, "goal_completed": goal.completed, "goal_date_completed": getDateTime(goal.date_completed), "goal_last_updated": getDateTime(goal.last_updated), "goal_id": goal.id}
+	#get goal in JSON
+	gl = {"goal_title": goal.title, "goal_description": goal.description, "goal_private": goal.private, "goal_completed": goal.completed, "goal_date_created": getDateTime(goal.date_created), "goal_date_completed": getDateTime(goal.date_completed), "goal_last_updated": getDateTime(goal.last_updated), "goal_id": goal.id}
 	goalJSON = json.dumps(gl)
+	
+	#get notes in JSON
+	def notesProcess(nt):
+		nt = {'note_id': nt.id, 'note_note': nt.note}
+		return nt
+	notes = []
+	for note in oneshotnotes:
+		notes.append(notesProcess(note))
+	noteJSON = json.dumps(notes)
+	
+	#get journal in JSON
+	def journalProcess(jnl):
+		jnl = {'journal_entry': jnl.entry, 'journal_title': jnl.title, 'journal_date': getDateTime(jnl.date), 'journal_id': jnl.id}
+		return jnl
+	journals = []
+	for journal in oneshotjournal:
+		journals.append(journalProcess(journal))
+	journalJSON = json.dumps(journals)
 	
 	#handle forms
 	if request.method == 'POST':
@@ -158,19 +185,19 @@ def osgoals(request, username, title, id):
 				osJournal = oneshotjournalform.save(commit=False)
 				osJournal.goal = goal
 				oneshotjournalform.save()
-				return HttpResponseRedirect('/user/%s/osgoals/%s%d/'%(request.user.username, title, goal.id))
+				return HttpResponseRedirect(link)
 		elif 'osnoteSub' in request.POST:
 			oneshotnoteform = OneShotNoteForm(request.POST)
 			if oneshotnoteform.is_valid():
 				osNote = oneshotnoteform.save(commit=False)
 				osNote.goal = goal
 				oneshotnoteform.save()
-				return HttpResponseRedirect('/user/%s/osgoals/%s%d/'%(request.user.username, title, goal.id))
+				return HttpResponseRedirect(link)
 		elif 'editSub' in request.POST:
 			editoneshotform = OneShotGoalForm(request.POST, instance=goal)
 			if editoneshotform.is_valid():
 				editoneshotform.save()
-				return HttpResponseRedirect('/user/%s/osgoals/%s%d/'%(request.user.username, title, goal.id))
+				return HttpResponseRedirect(link)
 		elif 'deleteSub' in request.POST:
 			toDelete = get_object_or_404(OneShotGoal, id=id)
 			deleteoneshotform = DeleteOneShotForm(request.POST, instance=toDelete)
@@ -187,39 +214,87 @@ def osgoals(request, username, title, id):
 					oneshotgoalform.completed = True
 					oneshotgoalform.date_completed = date
 					oneshotgoalform.save()
-					return HttpResponseRedirect('/user/%s/osgoals/%s%d/'%(request.user.username, title, goal.id))
+					return HttpResponseRedirect(link)
 		elif 'uncompleteOSGSub' in request.POST:
 			uncompleteoneshotform = DeleteOneShotForm(request.POST, instance=goal)
 			if uncompleteoneshotform.is_valid():
 				goal.completed = False
 				goal.date_completed = None
 				goal.save()
-				return HttpResponseRedirect('/user/%s/osgoals/%s%d/'%(request.user.username, title, goal.id))
-	return render(request, 'oneshotgoals.html', {'user' : user, 'title' : title, 'goalJSON': mark_safe(goalJSON), 'goal' : goal, 'oneshotjournalform' : oneshotjournalform, 
+				return HttpResponseRedirect(link)
+		#Display subs
+		elif 'noteSub' in request.POST:
+			oneshotnoteform = OneShotNoteForm(request.POST)
+			if oneshotnoteform.is_valid():
+				osnote = oneshotnoteform.save(commit=False)
+				osnote.goal = goal
+				osnote.save()
+				return HttpResponseRedirect(link)
+		elif 'enoteSub' in request.POST:
+			collectnotejournalid = CollectNoteJournalID(request.POST)
+			if collectnotejournalid.is_valid():
+				note_id = collectnotejournalid.cleaned_data['note_id']
+				noteObj = goal.oneshotgoalnote.get(id=note_id)
+				editoneshotnoteform = OneShotNoteForm(request.POST, instance=noteObj)
+				if editoneshotnoteform.is_valid():
+					editoneshotnoteform.save()
+					return HttpResponseRedirect(link)
+		elif 'dnoteSub' in request.POST:
+			collectnotejournalid = CollectNoteJournalID(request.POST)
+			if collectnotejournalid.is_valid():
+				note_id = collectnotejournalid.cleaned_data['note_id']
+				noteToDelete = goal.oneshotgoalnote.get(id=note_id)
+				deleteoneshotnoteform = DeleteOneShotNoteForm(request.POST, instance=noteToDelete)
+				if deleteoneshotnoteform.is_valid():
+					noteToDelete.delete()
+					return HttpResponseRedirect(link)
+		elif 'journalSub' in request.POST:
+			oneshotjournalform = OneShotJournalForm(request.POST)
+			if oneshotjournalform.is_valid():
+				osjrnl = oneshotjournalform.save(commit=False)
+				osjrnl.goal = goal
+				osjrnl.save()
+				return HttpResponseRedirect(link)
+		elif 'ejournalSub' in request.POST:
+			collectnotejournalid = CollectNoteJournalID(request.POST)
+			if collectnotejournalid.is_valid():
+				journal_id = collectnotejournalid.cleaned_data['journal_id']
+				journalObj = goal.oneshotgoaljournal.get(id=journal_id)
+				editoneshotjournalform = OneShotJournalForm(request.POST, instance=journalObj)
+				if editoneshotjournalform.is_valid():
+					editoneshotjournalform.save()
+					return HttpResponseRedirect(link)
+		elif 'djournalSub' in request.POST:
+			collectnotejournalid = CollectNoteJournalID(request.POST)
+			if collectnotejournalid.is_valid():
+				journal_id = collectnotejournalid.cleaned_data['journal_id']
+				journalToDelete = goal.oneshotgoaljournal.get(id=journal_id)
+				deleteoneshotjournalform = DeleteOneShotJournalForm(request.POST, instance=journalToDelete)
+				if deleteoneshotjournalform.is_valid():
+					journalToDelete.delete()
+					return HttpResponseRedirect(link)
+	return render(request, 'goals/oneshotgoals.html', {'user' : user, 'title' : title, 'goalJSON': mark_safe(goalJSON), 'goal' : goal, 'oneshotjournalform' : oneshotjournalform, 
 				'oneshotnoteform' : oneshotnoteform, 'editoneshotform' : editoneshotform, 'oneshotjournal' : oneshotjournal, 
-				'oneshotnote' : oneshotnote, 'deleteoneshotform' : deleteoneshotform, 'completedbuttonform':completedbuttonform,
-				'visual': visual, 'uncompleteoneshotform': uncompleteoneshotform})
-
+				'noteJSON' : mark_safe(noteJSON), 'deleteoneshotform' : deleteoneshotform, 'completedbuttonform':completedbuttonform,
+				'visual': visual, 'uncompleteoneshotform': uncompleteoneshotform, 'link': str(link), 'editoneshotnoteform': editoneshotnoteform,
+				'collectnotejournalid': collectnotejournalid, 'deleteoneshotnoteform': deleteoneshotnoteform, 'deleteoneshotjournalform': deleteoneshotjournalform,
+				'editoneshotjournalform': editoneshotjournalform, 'journalJSON': mark_safe(journalJSON)})
+				
 @login_required
 def msgoals(request, username, title, id):
 	"""
 	Displays a single Milestone Goal
 	"""
-	
 	user = request.user
 	
 	#goal variables
 	goal = request.user.milestonegoal.get(id=id)
 	allMS = goal.milestone.all()
-	milestonegoaljournal = goal.milestonegoaljournal.all()
-	milestonegoalnote = goal.milestonegoalnote.all()
 	
 	#visual
 	visual = goal.visual
 	
 	#Form variables
-	milestonegoaljournalform = MilestoneGoalJournalForm(request.POST)
-	milestonegoalnoteform = MilestoneGoalNoteForm()
 	editmilestonegoalform = MilestoneGoalForm(instance=goal)
 	deletemilestonegoalform = DeleteMilestoneGoalForm()
 	milestoneform = MilestoneForm()
@@ -247,6 +322,21 @@ def msgoals(request, username, title, id):
 			subs = ms.submilestone.all()
 			for sms in subs:
 				completeMilestones(sms, date)
+	
+	#uncomplete milestones
+	def uncompleteParents(ms):
+		"""
+		Complete all parents in the milestone, including the goal
+		"""
+		if ms.milestone is None:
+			ms.completed = False
+			ms.save()
+			goal.completed = False
+			goal.save()
+		else:
+			ms.completed = False
+			ms.save()
+			uncompleteParents(ms.milestone)
 	
 	#converts datetime object for forms
 	def getDateTime(date):
@@ -284,27 +374,13 @@ def msgoals(request, username, title, id):
 		test_milestones.append(find_SubMilestones(ms))
 	
 	test_milestones1 = json.dumps(test_milestones)
-
+	
 	gl = {"goal_title": goal.title, "goal_description": goal.description, "goal_private": goal.private, "goal_completed": goal.completed, "goal_date_completed": getDateTime(goal.date_completed), "goal_last_updated": getDateTime(goal.last_updated), "goal_id": goal.id}
 	goalJSON = json.dumps(gl)
 	
 	#handle forms
 	if request.method == 'POST':
-		if 'msgJournalSub' in request.POST:
-			milestonegoaljournalform = MilestoneGoalJournalForm(request.POST)
-			if milestonegoaljournalform.is_valid():
-				msgJournal = milestonegoaljournalform.save(commit=False)
-				msgJournal.goal = goal
-				milestonegoaljournalform.save()
-				return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
-		elif 'msgNoteSub' in request.POST:
-			milestonegoalnoteform = MilestoneGoalNoteForm(request.POST)
-			if milestonegoalnoteform.is_valid():
-				msgNote = milestonegoalnoteform.save(commit=False)
-				msgNote.goal = goal
-				msgNote.save()
-				return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
-		elif 'editMSGSub' in request.POST:
+		if 'editMSGSub' in request.POST:
 			editmilestonegoalform = MilestoneGoalForm(request.POST, instance=goal)
 			if editmilestonegoalform.is_valid():
 				editmilestonegoalform.save()
@@ -316,8 +392,12 @@ def msgoals(request, username, title, id):
 				clean_ms = goal.milestone.get(id=editmilestone_id)
 				editmilestoneform = MilestoneForm(request.POST, instance=clean_ms)
 				if editmilestoneform.is_valid():
-					editmilestoneform.save()
-					return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
+					ems = editmilestoneform.save()
+					if (ems.completed):
+						return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
+					else:
+						uncompleteParents(ems)
+						return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
 		elif 'deleteMSGoalSub' in request.POST:
 			goalToDelete = get_object_or_404(MilestoneGoal, id=id)
 			deletemilestonegoalform = DeleteMilestoneGoalForm(request.POST, instance=goalToDelete)
@@ -336,8 +416,16 @@ def msgoals(request, username, title, id):
 		elif 'msSub' in request.POST:
 			milestoneformset = MilestoneFormSet(request.POST, request.FILES, prefix='milestone', queryset=Milestone.objects.none(), instance=goal)
 			if milestoneformset.is_valid():
-				milestoneformset.save()
-				return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
+				newobj = milestoneformset.save()
+				incomplete = True
+				for form in newobj:
+					incomplete = incomplete and (form.completed)
+				if incomplete:
+					return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
+				else:
+					goal.completed = False
+					goal.save()
+					return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
 		elif 'subMSSub' in request.POST:
 			collectmilestoneidform = CollectMilestoneIDForm(request.POST)
 			if collectmilestoneidform.is_valid():
@@ -345,8 +433,17 @@ def msgoals(request, username, title, id):
 				clean_ms = goal.milestone.get(id=milestone_id)
 				submilestoneformset = SubMilestoneFormSet(request.POST, request.FILES, prefix='submilestone', queryset=Milestone.objects.none(), instance=clean_ms)
 				if submilestoneformset.is_valid():
-					submilestoneformset.save()
-					return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
+					incomplete = True
+					subfm = submilestoneformset.save()
+					for form in subfm:
+						incomplete = incomplete and (form.completed)
+						form.goal = goal
+						form.save()
+					if incomplete:
+						return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
+					else:
+						uncompleteParents(clean_ms)
+						return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
 		elif 'completedMSSub' in request.POST:
 			collectmilestoneidform = CollectMilestoneIDForm(request.POST)
 			if collectmilestoneidform.is_valid():
@@ -365,22 +462,14 @@ def msgoals(request, username, title, id):
 							msgform.date_completed = date
 							msgform.save()
 							return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
-						else:
-							return HttpResponseRedirect()
 					else:
 						clean_ms = goal.milestone.get(id=milestone_id)
 						completeMilestones(clean_ms, date)
 						return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
-		else:
-			oneshotgoalform = OneShotGoalForm()
-			milestonegoalform = MilestoneGoalForm()
-			milestoneformset = MilestoneFormSet(prefix='milestone', queryset=Milestone.objects.none())
-			submilestoneformset = SubMilestoneFormSet(prefix='submilestone', queryset=Milestone.objects.none())
 	return render(request, 'milestonegoals.html', {'goalJSON': mark_safe(goalJSON), 'test_milestones1': mark_safe(test_milestones1), 
-				'test_milestones': test_milestones, 'user' : user, 'title' : title, 'goal' : goal, 'milestonegoalnote': milestonegoalnote, 
-				'milestonegoaljournal': milestonegoaljournal, 'milestones' : milestones, 'deletemilestonegoalform': deletemilestonegoalform, 
-				'editmilestonegoalform': editmilestonegoalform, 'milestonegoaljournalform': milestonegoaljournalform, 
-				'milestonegoalnoteform': milestonegoalnoteform, 'milestoneformset': milestoneformset, 
+				'test_milestones': test_milestones, 'user' : user, 'title' : title, 'goal' : goal,
+				'milestones' : milestones, 'deletemilestonegoalform': deletemilestonegoalform, 
+				'editmilestonegoalform': editmilestonegoalform, 'milestoneformset': milestoneformset, 
 				'submilestoneformset': submilestoneformset, 'collectmilestoneidform': collectmilestoneidform,
 				'deletemilestoneform': deletemilestoneform, 'editmilestoneform': editmilestoneform,
 				'completedbuttonform': completedbuttonform, 'visual': visual})
@@ -486,6 +575,21 @@ def tmsgoals(request, username, title, id):
 			for sms in subs:
 				completeMilestones(sms, date)
 	
+	#uncomplete milestones
+	def uncompleteParents(ms):
+		"""
+		Complete all parents in the milestone, including the goal
+		"""
+		if ms.milestone is None:
+			ms.completed = False
+			ms.save()
+			goal.completed = False
+			goal.save()
+		else:
+			ms.completed = False
+			ms.save()
+			uncompleteParents(ms.milestone)
+	
 	#converts datetime object for forms
 	def getDateTime(date):
 		if date is None:
@@ -540,8 +644,12 @@ def tmsgoals(request, username, title, id):
 				clean_ms = goal.timemilestone.get(id=editmilestone_id)
 				editmilestoneform = TimeMilestoneForm(request.POST, instance=clean_ms)
 				if editmilestoneform.is_valid():
-					editmilestoneform.save()
-					return HttpResponseRedirect('/user/%s/tmsgoals/%s%d/'%(request.user.username, title, goal.id))
+					ems = editmilestoneform.save()
+					if (ems.completed):
+						return HttpResponseRedirect('/user/%s/tmsgoals/%s%d/'%(request.user.username, title, goal.id))
+					else:
+						uncompleteParents(ems)
+						return HttpResponseRedirect('/user/%s/tmsgoals/%s%d/'%(request.user.username, title, goal.id))
 		elif 'deleteMSGoalSub' in request.POST:
 			goalToDelete = get_object_or_404(TimeMilestoneGoal, id=id)
 			deletemilestonegoalform = DeleteTimeMilestoneGoalForm(request.POST, instance=goalToDelete)
@@ -560,8 +668,16 @@ def tmsgoals(request, username, title, id):
 		elif 'msSub' in request.POST:
 			milestoneformset = TimeMilestoneFormSet(request.POST, request.FILES, prefix='timemilestone', queryset=TimeMilestone.objects.none(), instance=goal)
 			if milestoneformset.is_valid():
-				milestoneformset.save()
-				return HttpResponseRedirect('/user/%s/tmsgoals/%s%d/'%(request.user.username, title, goal.id))
+				newobj = milestoneformset.save()
+				incomplete = True
+				for form in newobj:
+					incomplete = incomplete and (form.completed)
+				if incomplete:
+					return HttpResponseRedirect('/user/%s/tmsgoals/%s%d/'%(request.user.username, title, goal.id))
+				else:
+					goal.completed = False
+					goal.save()
+					return HttpResponseRedirect('/user/%s/tmsgoals/%s%d/'%(request.user.username, title, goal.id))
 		elif 'subMSSub' in request.POST:
 			collectmilestoneidform = CollectMilestoneIDForm(request.POST)
 			if collectmilestoneidform.is_valid():
@@ -569,7 +685,18 @@ def tmsgoals(request, username, title, id):
 				clean_ms = goal.timemilestone.get(id=milestone_id)
 				submilestoneformset = TimeSubMilestoneFormSet(request.POST, request.FILES, prefix='timesubmilestone', queryset=TimeMilestone.objects.none(), instance=clean_ms)
 				if submilestoneformset.is_valid():
-					submilestoneformset.save()
+					incomplete = True
+					subfm = submilestoneformset.save()
+					for form in subfm:
+						incomplete = incomplete and (form.completed)
+						form.goal = goal
+						form.save()
+					if incomplete:
+						return HttpResponseRedirect('/user/%s/tmsgoals/%s%d/'%(request.user.username, title, goal.id))
+					else:
+						uncompleteParents(clean_ms)
+						return HttpResponseRedirect('/user/%s/tmsgoals/%s%d/'%(request.user.username, title, goal.id))
+					
 					return HttpResponseRedirect('/user/%s/tmsgoals/%s%d/'%(request.user.username, title, goal.id))
 		elif 'completedMSSub' in request.POST:
 			collectmilestoneidform = CollectMilestoneIDForm(request.POST)
@@ -592,7 +719,7 @@ def tmsgoals(request, username, title, id):
 					else:
 						clean_ms = goal.timemilestone.get(id=milestone_id)
 						completeMilestones(clean_ms, date)
-						return HttpResponseRedirect('/user/%s/msgoals/%s%d/'%(request.user.username, title, goal.id))
+						return HttpResponseRedirect('/user/%s/tmsgoals/%s%d/'%(request.user.username, title, goal.id))
 	return render(request, 'timemilestonegoals.html', {'goalJSON': mark_safe(goalJSON), 'test_milestones1': mark_safe(test_milestones1), 
 				'test_milestones': test_milestones, 'user' : user, 'title' : title, 'goal' : goal, 'milestones' : milestones, 
 				'deletemilestonegoalform': deletemilestonegoalform, 'editmilestonegoalform': editmilestonegoalform, 

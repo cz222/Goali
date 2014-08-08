@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib import admin
 
 import json
 
@@ -15,6 +16,62 @@ class UserProfile(models.Model):
 	
 	def __unicode__(self):
 		return u'Profile of user: %s' %self.user.username
+
+#USER FORUM MODEL
+class Forum(models.Model):
+	title = models.CharField(max_length=70)
+	def __unicode__(self):
+		return self.title
+	def num_posts(self):
+		return sum([t.num_posts() for t in self.thread_set.all()])
+	def last_post(self):
+		if self.thread_set.count():
+			last = None
+			for t in self.thread_set.all():
+				lst = t.last_post()
+				if lst:
+					if not last: last = lst
+					elif lst.created > last.created: last = lst
+			return last
+		
+class Thread(models.Model):
+	title = models.CharField(max_length=70)
+	created = models.DateTimeField(auto_now_add=True)
+	creator = models.ForeignKey(User, blank=True, null=True)
+	forum = models.ForeignKey(Forum, related_name="thread")
+	def __unicode__(self):
+		return unicode(self.creator)+" - "+self.title
+	def num_posts(self):
+		return self.post_set.count()
+	def num_replies(self):
+		return self.post_set.count()-10
+	def last_post(self):
+		if self.post_set.count():
+			return self.post_set.order_by("created")[0]
+
+class Post(models.Model):
+	title = models.CharField(max_length=60)
+	created = models.DateTimeField(auto_now_add=True)
+	creator = models.ForeignKey(User, blank=True, null=True, related_name="post_creator")
+	thread = models.ForeignKey(Thread)
+	body = models.TextField(max_length=10000)
+	def __unicode__(self):
+		return u"%s - %s - %s" %(self.creator, self.thread, self.title)
+	def short(self):
+		return u"%s - %s\n%s" %(self.creator, self.title, self.created.strftime("%b %d, %I:%M %p"))
+	short.allow_tags = True
+	
+#ADMIN FORUM MODEL
+class ForumAdmin(admin.ModelAdmin):
+	pass
+
+class ThreadAdmin(admin.ModelAdmin):
+	list_display = ["title", "forum", "creator", "created"]
+	list_filter = ["forum", "creator"]
+	
+class PostAdmin(admin.ModelAdmin):
+	search_fields = ["title", "creator"]
+	list_display = ["title", "thread", "creator", "created"]
 
 
 #ONE SHOT GOAL MODELS		
@@ -60,8 +117,8 @@ class OneShotJournal(models.Model):
 	"""
 	goal = models.ForeignKey(OneShotGoal, blank=True, related_name="oneshotgoaljournal")
 	entry = models.TextField(max_length=500)
+	title = models.CharField(max_length=100, blank=True, null=True)
 	date = models.DateField(auto_now_add=True)
-	
 	def __unicode__(self):
 		return self.entry
 
@@ -73,10 +130,8 @@ class OneShotNote(models.Model):
 	goal = models.ForeignKey(OneShotGoal, blank=True, related_name="oneshotgoalnote")
 	note = models.TextField(max_length=300)
 	date = models.DateField(auto_now_add=True)
-	
 	def __unicode__(self):
 		return self.note
-
 		
 #MILESTONE GOALs
 class MilestoneGoal(models.Model):
@@ -98,29 +153,6 @@ class MilestoneGoal(models.Model):
 	
 	def __unicode__(self):
 		return self.title
-
-class MilestoneGoalJournal(models.Model):
-	"""
-	Journal entries for Milestone Goals
-	"""
-	#Link to Milestone Goal
-	goal = models.ForeignKey(MilestoneGoal, blank=True, related_name="milestonegoaljournal")
-	entry = models.TextField(max_length=500)
-	date = models.DateField(auto_now_add=True)
-	
-	def __unicode__(self):
-		return self.entry
-		
-class MilestoneGoalNote(models.Model):
-	"""
-	Notes for One Shot Goals
-	"""
-	goal = models.ForeignKey(MilestoneGoal, blank=True, related_name="milestonegoalnote")
-	note = models.TextField(max_length=300)
-	date = models.DateField(auto_now_add=True)
-	
-	def __unicode__(self):
-		return self.note
 	
 class Milestone(models.Model):
 	"""
@@ -138,6 +170,7 @@ class Milestone(models.Model):
 	date_created = models.DateField(auto_now_add=True)
 	date_completed = models.DateTimeField(blank=True, null=True, editable=True)
 	last_updated = models.DateField(auto_now=True)
+	parent_id = models.IntegerField(blank=True, null=True, editable=True)
 	
 	def __unicode__(self):
 		return self.title

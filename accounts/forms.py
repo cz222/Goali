@@ -9,7 +9,7 @@ from django.contrib.admin.widgets import AdminSplitDateTime
 
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from models import OneShotGoal, OneShotJournal, OneShotNote
-from models import MilestoneGoal, MilestoneGoalJournal, MilestoneGoalNote, Milestone
+from models import MilestoneGoal, Milestone
 from models import TimeOneShotGoal, TimeMilestoneGoal, TimeMilestone
 from models import ValueGoal, ValueUpdate
 from models import ProgressGoal, ProgressUpdate
@@ -73,44 +73,6 @@ class OneShotGoalForm(forms.ModelForm):
 				raise forms.ValidationError('Time travel is not allowed.')
 			else:
 				return date_completed
-	
-class OneShotJournalForm(forms.ModelForm):
-	"""
-	Form for creating journal entries for one shot goals
-	"""
-	
-	entry = forms.CharField(required=True, label='', widget=forms.Textarea(attrs={'placeholder': 'Journal Entry'}))
-
-	class Meta:
-		model = OneShotJournal
-		fields = ('entry',)
-
-class EditOneShotJournalForm(forms.Form):
-	"""
-	Form for creating journal entries for one shot goals
-	"""
-
-	edit_entry = forms.CharField(required=True, label='', widget=forms.Textarea(attrs={'placeholder': 'Journal Entry'}))
-	edit_journal_id = forms.CharField(required=True)
-	
-class OneShotNoteForm(forms.ModelForm):
-	"""
-	Form for creating notes for one shot goals
-	"""
-	
-	note = forms.CharField(required=True, label='', widget=forms.Textarea(attrs={'placeholder': 'Note'}))
-	
-	class Meta:
-		model = OneShotNote
-		fields = ('note',)
-		
-class DeleteOneShotJournalForm(forms.Form):
-	object_id = forms.CharField(max_length=500, required = False, label='', widget=forms.TextInput(attrs={'placeholder': 'Object_id'}))
-		
-class DeleteOneShotNoteForm(forms.ModelForm):
-	class Meta:
-		model = OneShotNote
-		fields = []
 
 class DeleteOneShotForm(forms.ModelForm):
 	"""
@@ -120,7 +82,37 @@ class DeleteOneShotForm(forms.ModelForm):
 	class Meta:
 		model = OneShotGoal
 		fields = []
+	
+class OneShotNoteForm(forms.ModelForm):
+	"""
+	Form for creating notes for one shot goals
+	"""
+	note = forms.CharField(required=True, label='', widget=forms.Textarea(attrs={'placeholder': 'Note'}))
+	class Meta:
+		model = OneShotNote
+		fields = ('note',)
 		
+class DeleteOneShotNoteForm(forms.ModelForm):
+	class Meta:
+		model = OneShotNote
+		fields = []
+
+class OneShotJournalForm(forms.ModelForm):
+	entry = forms.CharField(required=True, label='', widget=forms.Textarea(attrs={'placeholder': 'Journal Entry'}))
+	title = forms.CharField(required=False, label='', widget=forms.Textarea(attrs={'placeholder': 'Entry Title'}), max_length=75)
+	class Meta:
+		model = OneShotJournal
+		fields = ('entry','title',)
+		
+class DeleteOneShotJournalForm(forms.ModelForm):
+	class Meta:
+		model = OneShotJournal
+		fields = []
+		
+class CollectNoteJournalID(forms.Form):
+	note_id = forms.IntegerField(required = False)
+	journal_id = forms.IntegerField(required = False)
+
 #MilestoneGoal, Milestone, SubMilestone, SubSubMilestone
 #completed = forms.TypedChoiceField(required=False, label='Completed', coerce=lambda x: x =='True', choices=((False, 'No'), (True, 'Yes')), initial='No', widget=forms.RadioSelect)
 class MilestoneGoalForm(forms.ModelForm):
@@ -180,29 +172,7 @@ class DeleteMilestoneGoalForm(forms.ModelForm):
 	class Meta:
 		model = MilestoneGoal
 		fields = []
-		
-class MilestoneGoalJournalForm(forms.ModelForm):
-	"""
-	Form for creating journal entries for milestone goals
-	"""
-	
-	entry = forms.CharField(required=True, label='', widget=forms.Textarea(attrs={'placeholder': 'Journal Entry'}))
 
-	class Meta:
-		model = MilestoneGoalJournal
-		fields = ('entry',)
-		
-class MilestoneGoalNoteForm(forms.ModelForm):
-	"""
-	Form for creating notes milestone goals
-	"""
-	
-	note = forms.CharField(required=True, label='', widget=forms.Textarea(attrs={'placeholder': 'Note'}))
-	
-	class Meta:
-		model = MilestoneGoalNote
-		fields = ('note',)
-		
 class MilestoneForm(forms.ModelForm):
 	"""
 	Form for creating Milestones
@@ -724,7 +694,30 @@ class ProgressUpdateForm(forms.ModelForm):
 	class Meta:
 		model = ProgressUpdate
 		fields = ['value', 'description',]
+
+class ProgressUncompleteForm(forms.Form):
+	"""
+	Form for uncompleting Progress Goals
+	"""
+	endValue = forms.DecimalField(required=False, max_digits = 22, decimal_places=10, label='', widget=forms.TextInput(attrs={'placeholder': 'End Value*'}))
+	complete_by = forms.DateTimeField(required=False, label='Date To Complete By')
+
+	def clean_endValue(self):
+		endValue = self.cleaned_data.get('endValue')
+		return endValue
 	
+	def clean_complete_by(self):
+		"""
+		Raise Error if complete_by is less than the current date.
+		"""
+		complete_by = self.cleaned_data.get('complete_by')
+		if (complete_by is None):
+			return complete_by
+		elif (datetime.now() > complete_by):
+			raise forms.ValidationError('Time travel is not allowed.')
+		else:
+			return complete_by
+
 #UNIVERSAL FORMS
 class CompletedButtonForm(forms.Form):
 	"""

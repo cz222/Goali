@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% comment %}
+	Homepage of Goali.
+{% endcomment %}
+
+{% block head %}
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Goali</title>
+	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.4.2/pure-min.css" type="text/css">
+	
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery-2.1.0.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script type="text/javascript" src="{{STATIC_URL}}bootstrap/js/bootstrap.min.js"></script>
+	<!-- js file of the plugin -->
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery.leanModalOld.min.js"></script>
+	<!-- Initializing the plugin for the signin popup -->
+	<script>
+		$(document).ready(function(){
+			$("a[rel*=signin-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=register-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+		});
+	</script>
+
+	{% load bootstrap3 %}
+	{% load staticfiles %}
+    <!-- Bootstrap -->
+    <link href="{{STATIC_URL}}bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="{{STATIC_URL}}css/cover.css" rel="stylesheet" type="text/css">
+    <link rel= "stylesheet" href = "{{STATIC_URL}}css/lounge.css" type="text/css">
+{% endblock %}
+
+{% block body %}
+	<div class="site-wrapper">
+		<div id="list">
+			<table border="0" cellpadding="4" width="100%">
+			<tr>
+				<td></td>
+				<td>Posts</td>
+				<td>Last post</td>
+				<td></td>
+			</tr>
+			{% for forum in forums %}
+			<tr>
+				<td {% if forloop.last %}class="last"{% endif %}>
+					<div class="title">
+						<a href="{% url forum.views.forum forum.id %}">{{ forum.title }}</a>
+					</div>
+				</td>
+				<td {% if forloop.last %}class="last"{% endif %}>{{ forum.num_posts }}</td>
+				<td {% if forloop.last %}class="last"{% endif %}>{{ forum.last_post.short|linebreaksbr }}</td>
+				<td {% if forloop.last %}class="last"{% endif %}>
+					<a class="button" href="{% url forum.views.forum forum.id %}">VIEW</a>
+				</td>
+			</tr>
+			{% endfor %}
+		</div>
+
+		<!--footer-->
+		<div class="mastfoot">
+			<div class="inner">
+				<ul id="nav-bottom">
+					<li><a href="#">About</a></li>
+					<li><a href="#">Help</a></li>
+					<li><a href="#">Terms</a></li>
+					<li><a href="#">Contact</a></li>
+					<li>© 2014 Goali</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
