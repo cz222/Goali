@@ -1,7 +1,7 @@
 /*@import url(http://fonts.googleapis.com/css?family=Roboto);
 @import url(http://fonts.googleapis.com/css?family=Inconsolata);
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
-@import url(http://fonts.googleapis.com/css?family=Montserrat);*/
+@import url(http://fonts.googleapis.com/css?family=Montserrat); */
 
 /*top nav bar*/
 #home-logo{
@@ -367,13 +367,40 @@ ul.entry-bottom li{
 }
 
 /*forms*/
-#uncomplete-form{
+#deletemilestonegoal-form{
 	display:none;
 }
-#deleteoneshot-form{
+#editmilestonegoal-form{
 	display:none;
 }
-#editoneshot-form{
+#deletemilestone-form{
+	display:none;
+}
+#editmilestone-form{
+	display:none;
+}
+#milestone-form{
+	display:none;
+}
+#submilestone-form{
+	display:none;
+}
+#gnote-form {
+	display:none;
+}
+#egnote-form {
+	display:none;
+}
+#dgnote-form {
+	display:none;
+}
+#gjournal-form {
+	display:none;
+}
+#egjournal-form {
+	display:none;
+}
+#dgjournal-form {
 	display:none;
 }
 #note-form {
@@ -495,6 +522,7 @@ h3{
 
 .navbar-fixed-top{
 	background-color: #fff;
+	height: 40px;
 }
 
 #signin-button{

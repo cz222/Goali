@@ -19,9 +19,8 @@
 	<!-- Initializing the plugin for the signin popup -->
 	<script>
 		$(document).ready(function(){
-			$("a[rel*=deleteoneshot-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=editoneshot-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=uncomplete-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=deletetimeoneshot-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=edittimeoneshot-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 			$("a[rel*=note-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 			$("a[rel*=enote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 			$("a[rel*=dnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
@@ -39,8 +38,8 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/addNewButton.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/checkCompletedCheckbox.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/cloneMore.js"></script>
-	<script type="text/javascript" src="{{STATIC_URL}}js/functions/fillDisplayOneShot.js"></script>
-	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompleted.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/fillDisplayTimeOneShot.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompleted2.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedEdit.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedFS.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDeleteFS.js"></script>
@@ -48,7 +47,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/processMilestone.js"></script>
 	
 	<!-- Adding Visualization js files -->
-	<script type="text/javascript" src="{{STATIC_URL}}visuals/one_shot/visualOneShotGoal{{ visual }}.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}visuals/time_one_shot/visualTimeOneShotGoal{{ visual }}.js"></script>
 	
 	<!-- Adding Bootstrap -->
 	{% load bootstrap3 %}
@@ -57,26 +56,25 @@
     
 	<!-- Adding CSS -->
 	<link href="{{STATIC_URL}}css/cover.css" rel="stylesheet" type="text/css">
-    <link rel= "stylesheet" href = "{{STATIC_URL}}css/goals/oneshotgoals.css" type="text/css">
+    <link rel= "stylesheet" href = "{{STATIC_URL}}css/goals/timeoneshotgoals.css" type="text/css">
 {% endblock %}
 
 {% block body %}
 	{% if user.is_authenticated %}
 		<nav class="navbar navbar-fixed-top" role="navigation">
-			<div class="container">
-				<ul id="list-nav">
-					<a href="{% url 'homepage' %}" target="_blank"><img src="{{STATIC_URL}}img/G_White.png" border="0" id="home-logo"/></a>
-					<li><a id='logout_button-btn' href="/logout/">Logout</a></li>
-					<li><a id='profile-btn' href="#">Profile</a></li>
-					<li><a id='goals-btn' href="/user/{{ user.username }}">Goals</a></li>
-					<li><a id='forum-btn' href="#">Forum</a></li>
-				</ul>
-			</div>
+				<div class="container">
+					<ul id="list-nav">
+						<a href="{% url 'homepage' %}" target="_blank"><img src="{{STATIC_URL}}img/G_White.png" border="0" id="home-logo"/></a>
+						<li><a id='logout_button-btn' href="/logout/">Logout</a></li>
+						<li><a id='profile-btn' href="#">Profile</a></li>
+						<li><a id='goals-btn' href="/user/{{ user.username }}">Goals</a></li>
+						<li><a id='forum-btn' href="#">Forum</a></li>
+					</ul>
+				</div>
 		</nav>	
-		<a id="editoneshot-form-btn" href="#editoneshot-form" class="pure-button" rel="editoneshot-form" style="display:none">Edit Goal</a>
-		<a id="deleteoneshot-form-btn" href="#deleteoneshot-form" class="pure-button" rel="deleteoneshot-form" style="display:none">Delete Goal</a>
+		<a id="edittimeoneshot-form-btn" href="#edittimeoneshot-form" class="pure-button" rel="edittimeoneshot-form" style="display:none">Edit Goal</a>
+		<a id="deletetimeoneshot-form-btn" href="#deletetimeoneshot-form" class="pure-button" rel="deletetimeoneshot-form" style="display:none">Delete Goal</a>
 		<a id="completed-form-btn" href="#completed-form" class="pure-button" rel="completed-form" style="display:none">Date Completed</a>
-		<a id="uncomplete-form-btn" href="#uncomplete-form" class="pure-button" rel="uncomplete-form" style="display:none">Uncomplete</a>
 		<a id="note-form-btn" href="#note-form" class="pure-button" rel="note-form" style="display:none">Note</a>
 		<a id="enote-form-btn" href="#enote-form" class="pure-button" rel="enote-form" style="display:none">Note</a>
 		<a id="dnote-form-btn" href="#dnote-form" class="pure-button" rel="dnote-form" style="display:none">Note</a>
@@ -180,9 +178,6 @@
 						<pattern id="completeSVG" x="0" y="0" height="40" width="40">
 							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/complete.svg"></image>
 						</pattern>
-						<pattern id="uncompleteSVG" x="0" y="0" height="40" width="40">
-							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/uncomplete.svg"></image>
-						</pattern>
 						<pattern id="noteSVG" x="0" y="0" height="40" width="40">
 							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/note.svg"></image>
 						</pattern>
@@ -197,10 +192,8 @@
 			<div id="completedform">
 				<form id="completed-form" class="pure-form pure-form-stacked" action="" method="post">
 					{% csrf_token %}
-					{{ collectmilestoneidform.completedmilestone_id.as_hidden }}
-					{{ collectmilestoneidform.completedmilestone_isGoal.as_hidden }}
 					{{ completedbuttonform }}
-					<input id='submit-complete-btn' class="pure-button pure-input-1 pure-button-primary" type="submit" value="Complete!" name="completedOSGSub"/>
+					<input id='submit-complete-btn' class="pure-button pure-input-1 pure-button-primary" type="submit" value="Complete!" name="completedTOSGSub"/>
 				</form>
 			</div>
 			<div id="42">
@@ -212,21 +205,23 @@
 				if ($("#42").is(":hidden")){
 					$("#completed-form").show();
 					$("#42").show()
-					$("#completed-form").animate({top:"495"});
+					$("#completed-form").animate({top:"530"});
 				} else {
 					$("#completed-form").show();
-					$("#completed-form").animate({top:"390"});
+					$("#completed-form").animate({top:"430"});
 					$("#42").hide();
 				}
 			});
 			var gl = {{ goalJSON }};
-			fillDisplayDetails(gl.goal_title, gl.goal_description, gl.goal_private, gl.goal_completed, gl.goal_date_created, gl.goal_date_completed, gl.goal_last_updated);
+			fillDisplayDetails(gl.goal_title, gl.goal_description, gl.goal_private, gl.goal_completed, gl.goal_date_created, 
+				gl.goal_date_completed, gl.goal_last_updated);
 			var notes = {{ noteJSON }};
 			fillDisplayNote(gl.goal_title, notes);
 			var journal = {{ journalJSON }};
 			fillDisplayJournal(gl.goal_title, journal);
-			visualOneShot("goal_visual", gl, "lightgreen");
-
+			
+			visualTimeOneShot("goal_visual", gl, "lightgreen");
+			
 			$(document).ready(function() {
 				$(".vdtab-content").hide();
 				$(".vdtab-content:first").show();
@@ -259,72 +254,67 @@
 			});
 		</script>
 		<!-- FORMS -->
-		<form id="editoneshot-form" class="pure-form pure-form-stacked" action="" method="post">
+		<form id="edittimeoneshot-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
 			<p>Edit {{ goal.title }}</p>
-			<div id='editoneshotgoal'>
-				{% bootstrap_form editoneshotform %}
+			<div id='edittimeoneshotgoal'>
+				{{ edittimeoneshotform }}
 			</div>
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="editSub"/>
 			<script>
-				$("#id_completed", "#editoneshot-form").click(function() {
-					hideDateCompleted('editoneshot-form');
+				$("#id_completed", "#edittimeoneshot-form").click(function() {
+					hideDateCompleted('edittimeoneshot-form');
 				});
 				$(document).ready(function() {
-					hideDateCompletedEdit('editoneshot-form');
+					hideDateCompletedEdit('edittimeoneshot-form');
 				});
 			</script>
 		</form>
-		<form id="deleteoneshot-form" class="pure-form pure-form-stacked" action="" method="post">
+		<form id="deletetimeoneshot-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
 			<p>Are You Sure?</p>
-			{% bootstrap_form deleteoneshotform %}
+			{% bootstrap_form deletetimeoneshotform %}
 			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteSub"/>
 		</form>
-		<form id="uncomplete-form" class="pure-form pure-form-stacked" action="" method="post">
-			{% csrf_token %}
-			<p>Are You Sure?</p>
-			{% bootstrap_form uncompleteoneshotform %}
-			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Uncomplete" name="uncompleteOSGSub"/>
-		</form>
+		<!-- Notes -->
 		<form id="note-form" action="" method="post">
 			{% csrf_token %}
 			<p>Add New Note</p>
-			{% bootstrap_form oneshotnoteform %}
+			{% bootstrap_form timeoneshotnoteform %}
 			<input class="button" type="submit" value="Add" name="noteSub"/>
 		</form>
 		<form id="enote-form" action="" method="post">
 			{% csrf_token %}
 			{{ collectnotejournalid.note_id.as_hidden }}
 			<p>Edit Note</p>
-			{% bootstrap_form editoneshotnoteform %}
+			{% bootstrap_form edittimeoneshotnoteform %}
 			<input class="button" type="submit" value="Save" name="enoteSub"/>
 		</form>
 		<form id="dnote-form" action="" method="post">
 			{% csrf_token %}
 			{{ collectnotejournalid.note_id.as_hidden }}
 			<p>Are you sure?</p>
-			{% bootstrap_form deleteoneshotnoteform %}
+			{% bootstrap_form deletetimeoneshotnoteform %}
 			<input class="button" type="submit" value="Delete" name="dnoteSub"/>
 		</form>
 		<form id="journal-form" action="" method="post">
 			{% csrf_token %}
 			<p>Add New Journal</p>
-			{% bootstrap_form oneshotjournalform %}
+			{% bootstrap_form timeoneshotjournalform %}
 			<input class="button" type="submit" value="Add" name="journalSub"/>
 		</form>
 		<form id="ejournal-form" action="" method="post">
 			{% csrf_token %}
 			{{ collectnotejournalid.journal_id.as_hidden }}
 			<p>Edit Note</p>
-			{% bootstrap_form editoneshotjournalform %}
+			{% bootstrap_form edittimeoneshotjournalform %}
 			<input class="button" type="submit" value="Save" name="ejournalSub"/>
 		</form>
 		<form id="djournal-form" action="" method="post">
 			{% csrf_token %}
 			{{ collectnotejournalid.journal_id.as_hidden }}
 			<p>Are you sure?</p>
-			{% bootstrap_form deleteoneshotjournalform %}
+			{% bootstrap_form deletetimeoneshotjournalform %}
 			<input class="button" type="submit" value="Delete" name="djournalSub"/>
 		</form>
 	{% else %}

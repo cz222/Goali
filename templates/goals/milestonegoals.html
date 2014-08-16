@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base-goals.html" %}
 
 {% comment %}
 	One Shot Goal Page
@@ -16,20 +16,6 @@
 	<script type="text/javascript" src="{{STATIC_URL}}bootstrap/js/bootstrap.min.js"></script>
 	<!-- js file of the plugin -->
 	<script type="text/javascript" src="{{STATIC_URL}}js/jquery.leanModalOld.min.js"></script>
-	<!-- Initializing the plugin for the signin popup -->
-	<script>
-		$(document).ready(function(){
-			$("a[rel*=deleteoneshot-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=editoneshot-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=uncomplete-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=note-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=enote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=dnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=journal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=ejournal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-			$("a[rel*=djournal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
-		});
-	</script>
 	
 	<!-- Adding D3 files-->
 	<script type="text/javascript" src="{{STATIC_URL}}mbostock-d3/d3.min.js"></script>
@@ -39,7 +25,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/addNewButton.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/checkCompletedCheckbox.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/cloneMore.js"></script>
-	<script type="text/javascript" src="{{STATIC_URL}}js/functions/fillDisplayOneShot.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/fillDisplayMilestone.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompleted.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedEdit.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedFS.js"></script>
@@ -48,7 +34,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/processMilestone.js"></script>
 	
 	<!-- Adding Visualization js files -->
-	<script type="text/javascript" src="{{STATIC_URL}}visuals/one_shot/visualOneShotGoal{{ visual }}.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}visuals/milestone/visualMilestone{{ visual }}.js"></script>
 	
 	<!-- Adding Bootstrap -->
 	{% load bootstrap3 %}
@@ -57,11 +43,36 @@
     
 	<!-- Adding CSS -->
 	<link href="{{STATIC_URL}}css/cover.css" rel="stylesheet" type="text/css">
-    <link rel= "stylesheet" href = "{{STATIC_URL}}css/goals/oneshotgoals.css" type="text/css">
+    <link rel= "stylesheet" href = "{{STATIC_URL}}css/goals/milestonegoals.css" type="text/css">
+	
+	<!-- Initializing the plugin for the signin popup -->
+	<script>
+		$(document).ready(function(){
+			$("a[rel*=deletemilestonegoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=editmilestonegoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=milestonegoaljournal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=milestonegoalnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=milestone-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=submilestone-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=deletesubmilestone-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=gnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=egnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=dgnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=gjournal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=egjournal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=dgjournal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=note-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=enote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=dnote-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=journal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=ejournal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=djournal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+		});
+	</script>
 {% endblock %}
 
 {% block body %}
-	{% if user.is_authenticated %}
+	{% if user.is_authenticated %}	
 		<nav class="navbar navbar-fixed-top" role="navigation">
 			<div class="container">
 				<ul id="list-nav">
@@ -73,10 +84,17 @@
 				</ul>
 			</div>
 		</nav>	
-		<a id="editoneshot-form-btn" href="#editoneshot-form" class="pure-button" rel="editoneshot-form" style="display:none">Edit Goal</a>
-		<a id="deleteoneshot-form-btn" href="#deleteoneshot-form" class="pure-button" rel="deleteoneshot-form" style="display:none">Delete Goal</a>
+
+		<a id="editmilestonegoal-form-btn" href="#editmilestonegoal-form" class="pure-button" rel="editmilestonegoal-form" style="display:none">Edit Goal</a>
+		<a id="deletemilestonegoal-form-btn" href="#deletemilestonegoal-form" class="pure-button" rel="deletemilestonegoal-form" style="display:none">Delete Goal</a>		
+		<a id="milestone-form-btn" href="#milestone-form" class="pure-button" rel="milestone-form" style="display:none">Add New Milestone</a>
 		<a id="completed-form-btn" href="#completed-form" class="pure-button" rel="completed-form" style="display:none">Date Completed</a>
-		<a id="uncomplete-form-btn" href="#uncomplete-form" class="pure-button" rel="uncomplete-form" style="display:none">Uncomplete</a>
+		<a id="gnote-form-btn" href="#gnote-form" class="pure-button" rel="gnote-form" style="display:none">Note</a>
+		<a id="egnote-form-btn" href="#egnote-form" class="pure-button" rel="egnote-form" style="display:none">Note</a>
+		<a id="dgnote-form-btn" href="#dgnote-form" class="pure-button" rel="dgnote-form" style="display:none">Note</a>
+		<a id="gjournal-form-btn" href="#gjournal-form" class="pure-button" rel="gjournal-form" style="display:none">Note</a>
+		<a id="egjournal-form-btn" href="#egjournal-form" class="pure-button" rel="egjournal-form" style="display:none">Note</a>
+		<a id="dgjournal-form-btn" href="#dgjournal-form" class="pure-button" rel="dgjournal-form" style="display:none">Note</a>
 		<a id="note-form-btn" href="#note-form" class="pure-button" rel="note-form" style="display:none">Note</a>
 		<a id="enote-form-btn" href="#enote-form" class="pure-button" rel="enote-form" style="display:none">Note</a>
 		<a id="dnote-form-btn" href="#dnote-form" class="pure-button" rel="dnote-form" style="display:none">Note</a>
@@ -180,9 +198,6 @@
 						<pattern id="completeSVG" x="0" y="0" height="40" width="40">
 							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/complete.svg"></image>
 						</pattern>
-						<pattern id="uncompleteSVG" x="0" y="0" height="40" width="40">
-							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/uncomplete.svg"></image>
-						</pattern>
 						<pattern id="noteSVG" x="0" y="0" height="40" width="40">
 							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/note.svg"></image>
 						</pattern>
@@ -200,7 +215,7 @@
 					{{ collectmilestoneidform.completedmilestone_id.as_hidden }}
 					{{ collectmilestoneidform.completedmilestone_isGoal.as_hidden }}
 					{{ completedbuttonform }}
-					<input id='submit-complete-btn' class="pure-button pure-input-1 pure-button-primary" type="submit" value="Complete!" name="completedOSGSub"/>
+					<input id='submit-complete-btn' class="pure-button pure-input-1 pure-button-primary" type="submit" value="Complete!" name="completedMSSub"/>
 				</form>
 			</div>
 			<div id="42">
@@ -220,12 +235,13 @@
 				}
 			});
 			var gl = {{ goalJSON }};
-			fillDisplayDetails(gl.goal_title, gl.goal_description, gl.goal_private, gl.goal_completed, gl.goal_date_created, gl.goal_date_completed, gl.goal_last_updated);
-			var notes = {{ noteJSON }};
-			fillDisplayNote(gl.goal_title, notes);
-			var journal = {{ journalJSON }};
-			fillDisplayJournal(gl.goal_title, journal);
-			visualOneShot("goal_visual", gl, "lightgreen");
+			var msSet = {{ test_milestones1 }};
+			var alljournals = {{ alljournalsJSON }};
+			visualMilestone("goal_visual", gl, msSet, alljournals);
+			fillDisplayDetails(gl.goal_title, gl.goal_description, gl.goal_private, gl.goal_completed, gl.goal_date_created, 
+				gl.goal_date_completed, gl.goal_last_updated);
+			fillDisplayNote(gl.goal_title, gl.goal_notes, -15, true);
+			fillDisplayJournal(gl.goal_title, alljournals, -15, true);
 
 			$(document).ready(function() {
 				$(".vdtab-content").hide();
@@ -241,7 +257,7 @@
 				
 				//note add button
 				$("#nadd").click(function() {
-					$("#note-form-btn").click();
+					$("#gnote-form-btn").click();
 				});
 				//note setting button
 				$("#nsettings").click(function() {
@@ -249,7 +265,7 @@
 				
 				//journal add button
 				$("#jadd").click(function() {
-					$("#journal-form-btn").click();
+					$("#gjournal-form-btn").click();
 				});
 				$("#jsettings").click(function() {
 				});
@@ -258,73 +274,203 @@
 				$("#entrybottom").hide();
 			});
 		</script>
+		<div id="completedBtn">
+		</div>
 		<!-- FORMS -->
-		<form id="editoneshot-form" class="pure-form pure-form-stacked" action="" method="post">
+		<form id="deletemilestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
-			<p>Edit {{ goal.title }}</p>
-			<div id='editoneshotgoal'>
-				{% bootstrap_form editoneshotform %}
+			<p>Are You Sure?</p>
+			{% bootstrap_form deletemilestonegoalform %}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete Milestone Goal" name="deleteMSGoalSub"/>
+		</form>
+		<form id="editmilestonegoal-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>Edit Milestone Goal?</p>
+			<div id="editmilestonegoalform">
+				{% bootstrap_form editmilestonegoalform %}
 			</div>
-			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="editSub"/>
 			<script>
-				$("#id_completed", "#editoneshot-form").click(function() {
-					hideDateCompleted('editoneshot-form');
+				$("#id_completed", "#editmilestonegoalform").click(function() {
+					hideDateCompleted('editmilestonegoalform');
 				});
 				$(document).ready(function() {
-					hideDateCompletedEdit('editoneshot-form');
+					hideDateCompletedEdit('editmilestonegoalform');
 				});
 			</script>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Save Changes" name="editMSGSub"/>
 		</form>
-		<form id="deleteoneshot-form" class="pure-form pure-form-stacked" action="" method="post">
+		<form id="deletemilestone-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
+			{{ collectmilestoneidform.deletemilestone_id.as_hidden }}
 			<p>Are You Sure?</p>
-			{% bootstrap_form deleteoneshotform %}
-			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteSub"/>
+			{% bootstrap_form deletemilestoneform %}
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Delete" name="deleteMSSub"/>
 		</form>
-		<form id="uncomplete-form" class="pure-form pure-form-stacked" action="" method="post">
+		<form id="editmilestone-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}
-			<p>Are You Sure?</p>
-			{% bootstrap_form uncompleteoneshotform %}
-			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Uncomplete" name="uncompleteOSGSub"/>
+			{{ collectmilestoneidform.editmilestone_id.as_hidden }}
+			<div id="editmilestoneform">
+				<p>Edit Milestone</p>
+				{% bootstrap_form editmilestoneform %}
+			</div>
+			<script>
+				$("#id_completed", "#editmilestoneform").click(function() {
+					hideDateCompleted('editmilestoneform');
+				});
+				$(document).ready(function() {
+					hideDateCompleted('editmilestoneform');
+					hideDateCompletedEdit('editmilestoneform');
+				});
+			</script>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Save Changes" name="editMSSub"/>
 		</form>
-		<form id="note-form" action="" method="post">
+		<form id="milestone-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			{{ milestoneformset.management_form }}
+			<div id='milestoneform_set'>
+				{% for form in milestoneformset %}
+					<div class='mstable'>
+						<table class='no_error'>
+							<p>Milestone</p>
+							{{ form.as_table }}
+						</table>		
+					</div>
+				{% endfor %}
+			</div>
+			<input type="button" value="Add Milestone" id="add_milestone"/>
+			<script>
+				$('#add_milestone').click(function() {
+					cloneMore('div.mstable:last', 'milestone');
+				});
+			</script>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="msSub"/>
+		</form>
+		<form id="submilestone-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			{{ collectmilestoneidform.milestone_id.as_hidden }}
+			{{ submilestoneformset.management_form }}
+			<div id='submilestoneform_set'>
+				{% for form in submilestoneformset %}
+					<div class='smstable'>
+						<table class='no_error'>
+							<p>Sub-Milestone</p>
+							{{ form.as_table }}
+							<script>
+								$("#id_submilestone-0-completed", "#submilestoneform_set").click(function() {
+									hideDateCompletedFS('submilestoneform_set', 'submilestone', 0);
+								});
+								$(document).ready(function() {
+									hideDateCompletedFS('submilestoneform_set', 'submilestone', 0);
+									hideDeleteFS('submilestoneform_set', 'submilestone', 0);
+								});
+							</script>
+						</table>		
+					</div>
+				{% endfor %}
+			</div>
+			<input type="button" value="Add Sub-Milestone" id="add_submilestone"/>
+			<script>
+				$('#add_submilestone').click(function() {
+					cloneMore('div.smstable:last', 'submilestone');
+					var total = $('#id_submilestone-TOTAL_FORMS').val()
+					total--;
+					$("#id_submilestone-"+total+"-completed", "#submilestoneform_set").click(function() {
+						hideDateCompletedFS('submilestoneform_set', 'submilestone', total);
+					});
+					$(document).ready(function() {
+						hideDateCompletedFS('submilestoneform_set', 'submilestone', total);
+						hideDeleteFS('submilestoneform_set', 'submilestone', total);
+					});
+				});
+			</script>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="subMSSub"/>
+		</form>
+		<!-- milestone goal -->
+		<form id="gnote-form" action="" method="post">
 			{% csrf_token %}
 			<p>Add New Note</p>
-			{% bootstrap_form oneshotnoteform %}
+			{% bootstrap_form milestonegoalnoteform %}
+			<input class="button" type="submit" value="Add" name="gnoteSub"/>
+		</form>
+		<form id="egnote-form" action="" method="post">
+			{% csrf_token %}
+			{{ milestonecollectnotejournalid.note_id.as_hidden }}
+			<p>Edit Note</p>
+			{% bootstrap_form editmilestonegoalnoteform %}
+			<input class="button" type="submit" value="Save" name="egnoteSub"/>
+		</form>
+		<form id="dgnote-form" action="" method="post">
+			{% csrf_token %}
+			{{ milestonecollectnotejournalid.note_id.as_hidden }}
+			<p>Are you sure?</p>
+			{% bootstrap_form deletemilestonegoalnoteform %}
+			<input class="button" type="submit" value="Delete" name="dgnoteSub"/>
+		</form>
+		<form id="gjournal-form" action="" method="post">
+			{% csrf_token %}
+			<p>Add New Note</p>
+			{% bootstrap_form milestonegoaljournalform %}
+			<input class="button" type="submit" value="Add" name="gjournalSub"/>
+		</form>
+		<form id="egjournal-form" action="" method="post">
+			{% csrf_token %}
+			{{ milestonecollectnotejournalid.journal_id.as_hidden }}
+			<p>Edit Note</p>
+			{% bootstrap_form editmilestonegoaljournalform %}
+			<input class="button" type="submit" value="Save" name="egjournalSub"/>
+		</form>
+		<form id="dgjournal-form" action="" method="post">
+			{% csrf_token %}
+			{{ milestonecollectnotejournalid.journal_id.as_hidden }}
+			<p>Are you sure?</p>
+			{% bootstrap_form deletemilestonegoaljournalform %}
+			<input class="button" type="submit" value="Delete" name="dgjournalSub"/>
+		</form>
+		<!-- milestone -->
+		<form id="note-form" action="" method="post">
+			{% csrf_token %}
+			{{ milestonecollectnotejournalid.milestone_id.as_hidden }}
+			<p>Add New Note</p>
+			{% bootstrap_form milestonenoteform %}
 			<input class="button" type="submit" value="Add" name="noteSub"/>
 		</form>
 		<form id="enote-form" action="" method="post">
 			{% csrf_token %}
-			{{ collectnotejournalid.note_id.as_hidden }}
+			{{ milestonecollectnotejournalid.milestone_id.as_hidden }}
+			{{ milestonecollectnotejournalid.milestone_note_id.as_hidden }}
 			<p>Edit Note</p>
-			{% bootstrap_form editoneshotnoteform %}
+			{% bootstrap_form editmilestonenoteform %}
 			<input class="button" type="submit" value="Save" name="enoteSub"/>
 		</form>
 		<form id="dnote-form" action="" method="post">
 			{% csrf_token %}
-			{{ collectnotejournalid.note_id.as_hidden }}
+			{{ milestonecollectnotejournalid.milestone_id.as_hidden }}
+			{{ milestonecollectnotejournalid.milestone_note_id.as_hidden }}
 			<p>Are you sure?</p>
-			{% bootstrap_form deleteoneshotnoteform %}
+			{% bootstrap_form deletemilestonenoteform %}
 			<input class="button" type="submit" value="Delete" name="dnoteSub"/>
 		</form>
 		<form id="journal-form" action="" method="post">
 			{% csrf_token %}
-			<p>Add New Journal</p>
-			{% bootstrap_form oneshotjournalform %}
+			{{ milestonecollectnotejournalid.milestone_id.as_hidden }}
+			<p>Add New Note</p>
+			{% bootstrap_form milestonejournalform %}
 			<input class="button" type="submit" value="Add" name="journalSub"/>
 		</form>
 		<form id="ejournal-form" action="" method="post">
 			{% csrf_token %}
-			{{ collectnotejournalid.journal_id.as_hidden }}
+			{{ milestonecollectnotejournalid.milestone_id.as_hidden }}
+			{{ milestonecollectnotejournalid.milestone_journal_id.as_hidden }}
 			<p>Edit Note</p>
-			{% bootstrap_form editoneshotjournalform %}
+			{% bootstrap_form editmilestonejournalform %}
 			<input class="button" type="submit" value="Save" name="ejournalSub"/>
 		</form>
 		<form id="djournal-form" action="" method="post">
 			{% csrf_token %}
-			{{ collectnotejournalid.journal_id.as_hidden }}
+			{{ milestonecollectnotejournalid.milestone_id.as_hidden }}
+			{{ milestonecollectnotejournalid.milestone_journal_id.as_hidden }}
 			<p>Are you sure?</p>
-			{% bootstrap_form deleteoneshotjournalform %}
+			{% bootstrap_form deletemilestonejournalform %}
 			<input class="button" type="submit" value="Delete" name="djournalSub"/>
 		</form>
 	{% else %}

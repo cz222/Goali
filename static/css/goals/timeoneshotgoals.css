@@ -367,13 +367,10 @@ ul.entry-bottom li{
 }
 
 /*forms*/
-#uncomplete-form{
+#deletetimeoneshot-form{
 	display:none;
 }
-#deleteoneshot-form{
-	display:none;
-}
-#editoneshot-form{
+#edittimeoneshot-form{
 	display:none;
 }
 #note-form {

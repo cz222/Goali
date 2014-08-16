@@ -122,7 +122,6 @@ class OneShotJournal(models.Model):
 	def __unicode__(self):
 		return self.entry
 
-		
 class OneShotNote(models.Model):
 	"""
 	Notes for One Shot Goals
@@ -156,7 +155,7 @@ class MilestoneGoal(models.Model):
 	
 class Milestone(models.Model):
 	"""
-	Model for Milestone Goals
+	Model for Milestones
 	"""
 	#Link to a Milestone Goal
 	goal = models.ForeignKey(MilestoneGoal, blank=True, null=True, related_name="milestone")
@@ -174,7 +173,37 @@ class Milestone(models.Model):
 	
 	def __unicode__(self):
 		return self.title
-	
+
+class MilestoneGoalJournal(models.Model):
+	goal = models.ForeignKey(MilestoneGoal, blank=True, related_name="milestonegoaljournal")
+	entry = models.TextField(max_length=500)
+	title = models.CharField(max_length=100, blank=True, null=True)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.entry
+
+class MilestoneGoalNote(models.Model):
+	goal = models.ForeignKey(MilestoneGoal, blank=True, related_name="milestonegoalnote")
+	note = models.TextField(max_length=300)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.note
+
+class MilestoneJournal(models.Model):
+	milestone = models.ForeignKey(Milestone, blank=True, related_name="milestonejournal")
+	entry = models.TextField(max_length=500)
+	title = models.CharField(max_length=100, blank=True, null=True)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.entry
+
+class MilestoneNote(models.Model):
+	milestone = models.ForeignKey(Milestone, blank=True, related_name="milestonenote")
+	note = models.TextField(max_length=300)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.note
+
 #TIME GOALS-ONE SHOT GOALS
 class TimeOneShotGoal(models.Model):
 	"""
@@ -197,6 +226,27 @@ class TimeOneShotGoal(models.Model):
 	def __unicode__(self):
 		return self.title
 
+class TimeOneShotJournal(models.Model):
+	"""
+	Journal entries for Time One Shot Goals
+	"""
+	goal = models.ForeignKey(TimeOneShotGoal, blank=True, related_name="timeoneshotgoaljournal")
+	entry = models.TextField(max_length=500)
+	title = models.CharField(max_length=100, blank=True, null=True)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.entry
+		
+class TimeOneShotNote(models.Model):
+	"""
+	Notes for Time One Shot Goals
+	"""
+	goal = models.ForeignKey(TimeOneShotGoal, blank=True, related_name="timeoneshotgoalnote")
+	note = models.TextField(max_length=300)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.note
+		
 #TIME GOALS-MILESTONE GOALS
 class TimeMilestoneGoal(models.Model):
 	"""
@@ -240,6 +290,36 @@ class TimeMilestone(models.Model):
 	def __unicode__(self):
 		return self.title
 
+class TimeMilestoneGoalJournal(models.Model):
+	goal = models.ForeignKey(TimeMilestoneGoal, blank=True, related_name="timemilestonegoaljournal")
+	entry = models.TextField(max_length=500)
+	title = models.CharField(max_length=100, blank=True, null=True)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.entry
+
+class TimeMilestoneGoalNote(models.Model):
+	goal = models.ForeignKey(TimeMilestoneGoal, blank=True, related_name="timemilestonegoalnote")
+	note = models.TextField(max_length=300)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.note
+
+class TimeMilestoneJournal(models.Model):
+	milestone = models.ForeignKey(TimeMilestone, blank=True, related_name="timemilestonejournal")
+	entry = models.TextField(max_length=500)
+	title = models.CharField(max_length=100, blank=True, null=True)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.entry
+
+class TimeMilestoneNote(models.Model):
+	milestone = models.ForeignKey(TimeMilestone, blank=True, related_name="timemilestonenote")
+	note = models.TextField(max_length=300)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.note
+		
 #VALUE GOALS
 class ValueGoal(models.Model):	
 	"""
@@ -283,6 +363,27 @@ class ValueUpdate(models.Model):
 	def __unicode__(self):
 		return self.date_created
 
+class ValueJournal(models.Model):
+	"""
+	Journal entries for Value Goals
+	"""
+	goal = models.ForeignKey(ValueGoal, blank=True, related_name="valuejournal")
+	entry = models.TextField(max_length=500)
+	title = models.CharField(max_length=100, blank=True, null=True)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.entry
+		
+class ValueNote(models.Model):
+	"""
+	Notes for Value Goals
+	"""
+	goal = models.ForeignKey(ValueGoal, blank=True, related_name="valuenote")
+	note = models.TextField(max_length=300)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.note
+		
 #PROGRESS GOALS		
 class ProgressGoal(models.Model):	
 	"""
@@ -326,6 +427,27 @@ class ProgressUpdate(models.Model):
 	
 	def __unicode__(self):
 		return self.date_created
+
+class ProgressJournal(models.Model):
+	"""
+	Journal entries for Progress Goals
+	"""
+	goal = models.ForeignKey(ProgressGoal, blank=True, related_name="progressjournal")
+	entry = models.TextField(max_length=500)
+	title = models.CharField(max_length=100, blank=True, null=True)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.entry
+		
+class ProgressNote(models.Model):
+	"""
+	Notes for Progress Goals
+	"""
+	goal = models.ForeignKey(ProgressGoal, blank=True, related_name="progressnote")
+	note = models.TextField(max_length=300)
+	date = models.DateField(auto_now_add=True)
+	def __unicode__(self):
+		return self.note
 #RECURRANT GOALS-ONE SHOT GOALS
 
 #RECURRANT GOALS-MILESTONE GOALS

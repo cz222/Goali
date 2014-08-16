@@ -3,6 +3,78 @@
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
 @import url(http://fonts.googleapis.com/css?family=Montserrat);*/
 
+.x-label  {
+	font: 10px sans-serif;
+	opacity: 0.6;
+}
+
+.y-label  {
+	font: 10px sans-serif;
+	opacity: 0.6;
+}
+
+.t-axis {
+	shape-rendering: crispEdges;
+}
+
+.t-axis text {
+	display: none;
+}
+
+.t-axis line {
+	stroke: #fff;
+}
+
+.t-axis .minor {
+	stroke-opacity: 0.5;
+}
+
+.t-axis path {
+	display: none;
+}
+
+.x-axis {
+	shape-rendering: crispEdges;
+}
+
+.x-axis  text {
+	background: transparent;
+	font-weight: normal;
+	font: 10px sans-serif;
+	text-shadow: #FFFFFF 0px 0px 0px;
+	-webkit-font-smoothing: antialiased;
+}
+
+.x-axis path,
+.x-axis line{
+	fill: none;
+	stroke: #000;
+}
+
+.y-axis {
+	shape-rendering: crispEdges;
+}
+
+.y-axis  text {
+	background: transparent;
+	font-weight: normal;
+	font: 10px sans-serif;
+	text-shadow: #FFFFFF 0px 0px 0px;
+}
+
+.y-axis path,
+.y-axis  line{
+	fill: none;
+	stroke: #000;
+	stroke-width: px;
+	shape-rendering: crispEdges;
+}
+
+.mouse-text {
+	font: 10px sans-serif;
+	opacity: 0.8;
+}
+
 /*top nav bar*/
 #home-logo{
 	width: 40px;
@@ -366,15 +438,18 @@ ul.entry-bottom li{
 	margin-left: 217px;
 }
 
-/*forms*/
-#uncomplete-form{
+/* forms */
+#valueupdate-form {
 	display:none;
 }
-#deleteoneshot-form{
-	display:none;
+#deletevalue-form {
+	display: none;
 }
-#editoneshot-form{
-	display:none;
+#editvalue-form {
+	display: none;
+}
+#editupdate-form {
+	display: none;
 }
 #note-form {
 	display:none;
