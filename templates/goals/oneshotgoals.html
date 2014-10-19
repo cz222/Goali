@@ -46,6 +46,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDeleteFS.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/prefillEditForm.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/processMilestone.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/resizeGoalDivs.js"></script>
 	
 	<!-- Adding Visualization js files -->
 	<script type="text/javascript" src="{{STATIC_URL}}visuals/one_shot/visualOneShotGoal{{ visual }}.js"></script>
@@ -160,7 +161,7 @@
 				<svg id="convertcontainer" width="80" height="80">
 					<defs id="buttondefs">
 						<pattern id="convertSVG" x="0" y="0" height="40" width="40">
-							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/convert.svg"></image>
+							<image id="cnvrt" x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/convert.svg"></image>
 						</pattern>
 						<pattern id="addSVG" x="0" y="0" height="40" width="40">
 							<image x="0" y="0" width="22" height="22" xlink:href="{{STATIC_URL}}img/button_icons/add.svg"></image>
@@ -219,14 +220,21 @@
 					$("#42").hide();
 				}
 			});
+			//drawing display
+			var currentHeight = $(window).height()*.8;
+			var currentWidth = $(window).width()*.8;
+			var windowMax = Math.max(currentHeight, currentWidth);
+			var wWidth = windowMax;
+			var wHeight = windowMax*.5208;
+			resizeGoalDivs(wWidth, wHeight);
 			var gl = {{ goalJSON }};
 			fillDisplayDetails(gl.goal_title, gl.goal_description, gl.goal_private, gl.goal_completed, gl.goal_date_created, gl.goal_date_completed, gl.goal_last_updated);
 			var notes = {{ noteJSON }};
 			fillDisplayNote(gl.goal_title, notes);
 			var journal = {{ journalJSON }};
 			fillDisplayJournal(gl.goal_title, journal);
-			visualOneShot("goal_visual", gl, "lightgreen");
-
+			visualOneShot("goal_visual", currentHeight, currentWidth, gl);
+			
 			$(document).ready(function() {
 				$(".vdtab-content").hide();
 				$(".vdtab-content:first").show();
@@ -256,6 +264,7 @@
 				
 				//journal entry buttons
 				$("#entrybottom").hide();
+				
 			});
 		</script>
 		<!-- FORMS -->

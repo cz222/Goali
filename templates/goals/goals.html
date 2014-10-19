@@ -65,6 +65,7 @@
 
 {% block body %}
 	{% if user.is_authenticated %}
+		<!--nav bar-->
 		<nav class="navbar navbar-fixed-top" role="navigation">
 			<div class="container">	
 				<ul id="list-nav">
@@ -74,86 +75,189 @@
 					<li><a id='lounge-btn' href="/lounge/">Lounge</a></li>
 				</ul>
 			</div>
-		</nav>	
+		</nav>
 		
+		<!--tab structure-->
 		<div id="goalContainer" class="goal-container">
 			<div id="goal-owner">
 				<p>{{ user.username }}'s Goals</p>
 			</div>
 			<div id="goal-nav">
 				<ul class="tabs">
-					<li class="active" rel="oneshot">One Shot</li>
-					<li rel="milestone">Milestone</li>
-					<li rel="timeoneshot">Time One Shot</li>
-					<li rel="timemilestone">Time Milestone</li>
-					<li rel="value">Value</li>
-					<li rel="progress">Progress</li>
-					<li rel="recurrent">Recurrent</li>
-					<li rel="special">Special</li>
+					<li rel="all">All</li>
+					<li class="active" rel="ongoing">Ongoing</li>
+					<li rel="completed">Completed</li>
 				</ul>
 				<div class="tab_container">
-					<div id="oneshot" class="tab_content">
+					<div id="all" class="tab_content">
 						<p class="tab_text">
+						<p class="category-text">Special Goals</p>
+							<p class="goal-link">Not Available Yet!</p>
+						<p class="category-text">One Shot Goals</p>
 						{% for osgoal in oneshotgoals %}
-							<a href="/user/{{ user.username }}/osgoals/{{ osgoal.title|slugify }}{{ osgoal.id }}">{{ osgoal.title }}</a>
+							<p>
+							<a class="goal-link" href="/user/{{ user.username }}/osgoals/{{ osgoal.title|slugify }}{{ osgoal.id }}">{{ osgoal.title }}</a>
+							</p>
 						{% endfor %}
-						<a href="#oneshotgoal-form" class="pure-button" id="newoneshotgoal-button" rel="oneshotgoal-form">New One Shot Goal</a>
-						</p>
-					</div>
-					<div id="special" class="tab_content">
-						<h1 class="tab_text">
-							Not Available Yet!
-						</h1>
-					</div>
-					<div id="recurrent" class="tab_content">
-						<h1 class="tab_text">
-							Not Available Yet!
-						</h1>
-					</div>
-					<div id="milestone" class="tab_content">
-						<p class="tab_text">
-						{% for msgoal in milestonegoals %}
-							<a href="/user/{{ user.username }}/msgoals/{{ msgoal.title|slugify }}{{ msgoal.id }}">{{ msgoal.title }}</a>
-						{% endfor %}
-						<a href="#milestonegoal-form" class="pure-button" rel="milestonegoal-form">New Milestone Goal</a>
-						</p>
-					</div>
-					<div id="timeoneshot" class="tab_content">
-						<p class="tab_text">
 						{% for tosgoal in timeoneshotgoals %}
-							<a href="/user/{{ user.username }}/tosgoals/{{ tosgoal.title|slugify }}{{ tosgoal.id }}">{{ tosgoal.title }}</a>
+							<p>
+							<a class="goal-link" href="/user/{{ user.username }}/tosgoals/{{ tosgoal.title|slugify }}{{ tosgoal.id }}">{{ tosgoal.title }}</a>
+							</p>
 						{% endfor %}
+						<p class="category-text">Milestone Goals</p>
+						{% for msgoal in milestonegoals %}
+							<p>
+							<a class="goal-link" href="/user/{{ user.username }}/msgoals/{{ msgoal.title|slugify }}{{ msgoal.id }}">{{ msgoal.title }}</a>
+							</p>
+						{% endfor %}
+						{% for tmsgoal in timemilestonegoals %}
+							<p>
+							<a class="goal-link" href="/user/{{ user.username }}/tmsgoals/{{ tmsgoal.title|slugify }}{{ tmsgoal.id }}">{{ tmsgoal.title }}</a>
+							</p>
+						{% endfor %}
+						<p class="category-text">Value Goals</p>
+						{% for vgoal in valuegoals %}
+							<p>
+							<a class="goal-link" href="/user/{{ user.username }}/vgoals/{{ vgoal.title|slugify }}{{ vgoal.id }}">{{ vgoal.title }}</a>
+							</p>
+						{% endfor %}
+						<p class="category-text">Progress Goals</p>
+						{% for pgoal in progressgoals %}
+							<p>
+							<a class="goal-link" href="/user/{{ user.username }}/pgoals/{{ pgoal.title|slugify }}{{ pgoal.id }}">{{ pgoal.title }}</a>
+							</p>
+						{% endfor %}
+						<p class="category-text">Recurrent Goals</p>
+						<p class="goal-link">Not Available Yet!</p>
+						<a href="#oneshotgoal-form" class="pure-button" id="newoneshotgoal-button" rel="oneshotgoal-form">New One Shot Goal</a>
+						<a href="#progressgoal-form" class="pure-button" rel="progressgoal-form">New Progress Goal</a>
+						<a href="#valuegoal-form" class="pure-button" rel="valuegoal-form">New Value Goal</a>
+						<a href="#timemilestonegoal-form" class="pure-button" rel="timemilestonegoal-form">New Time Milestone Goal</a>
 						<a href="#timeoneshotgoal-form" class="pure-button" id="newtimeoneshotgoal-button" rel="timeoneshotgoal-form">New Time One Shot Goal</a>
 						</p>
 					</div>
-					<div id="timemilestone" class="tab_content">
+					<div id="completed" class="tab_content">
 						<p class="tab_text">
+						<p class="category-text">Special Goals</p>
+							<p class="goal-link">Not Available Yet!</p>
+						<p class="category-text">One Shot Goals</p>
+						{% for osgoal in oneshotgoals %}
+							{% if osgoal.completed %}
+								<p>
+								<a class="goal-link" href="/user/{{ user.username }}/osgoals/{{ osgoal.title|slugify }}{{ osgoal.id }}">{{ osgoal.title }}</a>
+								</p>
+							{% endif%}
+						{% endfor %}
+						{% for tosgoal in timeoneshotgoals %}
+							{% if tosgoal.completed %}
+								<p>
+								<a class="goal-link" href="/user/{{ user.username }}/tosgoals/{{ tosgoal.title|slugify }}{{ tosgoal.id }}">{{ tosgoal.title }}</a>
+								</p>
+							{% endif %}
+						{% endfor %}
+						<p class="category-text">Milestone Goals</p>
+						{% for msgoal in milestonegoals %}
+							{% if msgoal.completed %}
+								<p>
+								<a class="goal-link" href="/user/{{ user.username }}/msgoals/{{ msgoal.title|slugify }}{{ msgoal.id }}">{{ msgoal.title }}</a>
+								</p>
+							{% endif %}
+						{% endfor %}
 						{% for tmsgoal in timemilestonegoals %}
-							<a href="/user/{{ user.username }}/tmsgoals/{{ tmsgoal.title|slugify }}{{ tmsgoal.id }}">{{ tmsgoal.title }}</a>
+							{% if tmsgoal.completed %}
+								<p>
+								<a class="goal-link" href="/user/{{ user.username }}/tmsgoals/{{ tmsgoal.title|slugify }}{{ tmsgoal.id }}">{{ tmsgoal.title }}</a>
+								</p>
+							{% endif %}
 						{% endfor %}
-						<a href="#timemilestonegoal-form" class="pure-button" rel="timemilestonegoal-form">New Time Milestone Goal</a>
-						</p>
-					</div>
-					<div id="value" class="tab_content">
-						<p class="tab_text">
+						<p class="category-text">Value Goals</p>
 						{% for vgoal in valuegoals %}
-							<a href="/user/{{ user.username }}/vgoals/{{ vgoal.title|slugify }}{{ vgoal.id }}">{{ vgoal.title }}</a>
+							{% if vgoal.completed %}
+								<p>
+								<a class="goal-link" href="/user/{{ user.username }}/vgoals/{{ vgoal.title|slugify }}{{ vgoal.id }}">{{ vgoal.title }}</a>
+								</p>
+							{% endif %}
 						{% endfor %}
-						<a href="#valuegoal-form" class="pure-button" rel="valuegoal-form">New Value Goal</a>
-						</p>
-					</div>
-					<div id="progress" class="tab_content">
-						<p class="tab_text">
+						<p class="category-text">Progress Goals</p>
 						{% for pgoal in progressgoals %}
-							<a href="/user/{{ user.username }}/pgoals/{{ pgoal.title|slugify }}{{ pgoal.id }}">{{ pgoal.title }}</a>
+							{% if pgoal.completed %}
+								<p>
+								<a class="goal-link" href="/user/{{ user.username }}/pgoals/{{ pgoal.title|slugify }}{{ pgoal.id }}">{{ pgoal.title }}</a>
+								</p>
+							{% endif %}
 						{% endfor %}
+						<p class="category-text">Recurrent Goals</p>
+							<p class="goal-link">Not Available Yet!</p>
+						<a href="#oneshotgoal-form" class="pure-button" id="newoneshotgoal-button" rel="oneshotgoal-form">New One Shot Goal</a>
 						<a href="#progressgoal-form" class="pure-button" rel="progressgoal-form">New Progress Goal</a>
+						<a href="#valuegoal-form" class="pure-button" rel="valuegoal-form">New Value Goal</a>
+						<a href="#timemilestonegoal-form" class="pure-button" rel="timemilestonegoal-form">New Time Milestone Goal</a>
+						<a href="#timeoneshotgoal-form" class="pure-button" id="newtimeoneshotgoal-button" rel="timeoneshotgoal-form">New Time One Shot Goal</a>
 						</p>
 					</div>
-			</div>
-			<div id="goal-display">
+					<div id="ongoing" class="tab_content">
+						<p class="tab_text">
+						<p class="category-text">Special Goals</p>
+							<p class="goal-link">Not Available Yet!</p>
+						<p class="category-text">One Shot Goals</p>
+						{% for osgoal in oneshotgoals %}
+							{% if not osgoal.completed %}
+								<p>
+								<a class="goal-link" href="/user/{{ user.username }}/osgoals/{{ osgoal.title|slugify }}{{ osgoal.id }}">{{ osgoal.title }}</a>
+								</p>
+							{% endif%}
+						{% endfor %}
+						{% for tosgoal in timeoneshotgoals %}
+							{% if not tosgoal.completed %}
+								<p>
+								<a class="goal-link" href="/user/{{ user.username }}/tosgoals/{{ tosgoal.title|slugify }}{{ tosgoal.id }}">{{ tosgoal.title }}</a>
+								</p>
+							{% endif %}
+						{% endfor %}
+						<p class="category-text">Milestone Goals</p>
+						{% for msgoal in milestonegoals %}
+							{% if not msgoal.completed %}
+								<p>
+								<a class="goal-link" href="/user/{{ user.username }}/msgoals/{{ msgoal.title|slugify }}{{ msgoal.id }}">{{ msgoal.title }}</a>
+								</p>
+							{% endif %}
+						{% endfor %}
+						{% for tmsgoal in timemilestonegoals %}
+							{% if not tmsgoal.completed %}
+								<p>
+								<a class="goal-link" href="/user/{{ user.username }}/tmsgoals/{{ tmsgoal.title|slugify }}{{ tmsgoal.id }}">{{ tmsgoal.title }}</a>
+								</p>
+							{% endif %}
+						{% endfor %}
+						<p class="category-text">Value Goals</p>
+						{% for vgoal in valuegoals %}
+							{% if not vgoal.completed %}
+								<p>
+								<a class="goal-link" href="/user/{{ user.username }}/vgoals/{{ vgoal.title|slugify }}{{ vgoal.id }}">{{ vgoal.title }}</a>
+								</p>
+							{% endif %}
+						{% endfor %}
+						<p class="category-text">Progress Goals</p>
+						{% for pgoal in progressgoals %}
+							{% if not pgoal.completed %}
+								<p>
+								<a class="goal-link" href="/user/{{ user.username }}/pgoals/{{ pgoal.title|slugify }}{{ pgoal.id }}">{{ pgoal.title }}</a>
+								</p>
+							{% endif %}
+						{% endfor %}
+						<p class="category-text">Recurrent Goals</p>
+							<p class="goal-link">Not Available Yet!</p>
+						<a href="#oneshotgoal-form" class="pure-button" id="newoneshotgoal-button" rel="oneshotgoal-form">New One Shot Goal</a>
+						<a href="#progressgoal-form" class="pure-button" rel="progressgoal-form">New Progress Goal</a>
+						<a href="#valuegoal-form" class="pure-button" rel="valuegoal-form">New Value Goal</a>
+						<a href="#timemilestonegoal-form" class="pure-button" rel="timemilestonegoal-form">New Time Milestone Goal</a>
+						<a href="#timeoneshotgoal-form" class="pure-button" id="newtimeoneshotgoal-button" rel="timeoneshotgoal-form">New Time One Shot Goal</a>
+						</p>
+					</div>
+				</div>
 			</div>
 		</div>
+		
 		<!-- FORMS -->
 		<form id="oneshotgoal-form" class="pure-form pure-form-stacked" action="" method="post">
 			{% csrf_token %}

@@ -30,10 +30,23 @@ from forms import ProgressGoalForm, ProgressUpdateForm, ProgressGoalForm, Delete
 from forms import ProgressJournalForm, DeleteProgressJournalForm, ProgressNoteForm, DeleteProgressNoteForm
 import json
 
+#view pages
+@login_required
+def profile(request, username):
+	"""
+	Page that displays profile
+	"""
+	user = request.user
+	
+	
+	
+	return render(request, 'profile.html', {'user' : user})
+
+
 @login_required
 def goals(request, username):
 	"""
-	Page that displays User Profile and Goals
+	Page that displays user goals
 	"""
 	user = request.user
 	
@@ -114,7 +127,7 @@ def goals(request, username):
 				pGoal.visual = 'LineGraph'
 				pGoal.save()
 				return HttpResponseRedirect('/user/%s/'%request.user.username)
-	return render(request, 'goals.html', {'user' : user, 'oneshotgoalcount': oneshotgoalcount, 'oneshotgoals': oneshotgoals, 
+	return render(request, 'goals/goals.html', {'user' : user, 'oneshotgoalcount': oneshotgoalcount, 'oneshotgoals': oneshotgoals, 
 				'oneshotgoalform': oneshotgoalform, 'milestonegoals': milestonegoals, 'milestonegoalform': milestonegoalform, 
 				'milestoneformset': milestoneformset, 'timeoneshotgoalform': timeoneshotgoalform, 'timeoneshotgoals': timeoneshotgoals, 
 				'timemilestonegoalform': timemilestonegoalform, 'timemilestoneformset': timemilestoneformset, 'timemilestonegoals': timemilestonegoals,

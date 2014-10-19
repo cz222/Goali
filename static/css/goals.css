@@ -3,21 +3,63 @@
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
 @import url(http://fonts.googleapis.com/css?family=Montserrat);*/
 
+/*top nav bar*/
+#home-logo{
+	width: 40px;
+	height: auto;
+	float:left;
+	vertical-align: middle;
+}
+ul#list-nav  {
+	width: 940px;
+	height: 40px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0;
+	margin-right: 20px;
+	list-style: none;
+	width: 940px;
+}
+ul#list-nav li {
+	display: inline;
+	float:right;
+	vertical-align: middle; 
+}
+ul#list-nav li a {
+	font-weight: bold;
+	text-decoration: none;
+	padding: 10px 1px;
+	width: 60px;
+	background: #FFFFFF;
+	color: #47a938;
+	float: left;
+	text-align: center;
+	border-left:1px solid #fff;
+	text-shadow: #FFFFFF 2px 2px 3px;
+}
+ul#list-nav li a:hover{
+	text-shadow: #CCCCCC 1px 1px 1px;
+}
+.container {
+	height:40px;
+}
+
+/*tabbed section*/
 #goalContainer {
 	width: 900px;
-	height: 700px;
 	margin-left: auto;
 	margin-right: auto;
 	padding: 0;
 	margin-top: 40px;
 }
 #goal-owner {
-	width: 900px;
-	height: 100px;
+	margin-top: 30px;
+	width: 500px;
+	height: 50px;
 	position: relative;
 	float: left;
 	font-weight: bold;
-	font-size: 30px;
+	font-size: 40px;
 }
 ul.tabs {
 	margin:0;
@@ -76,47 +118,14 @@ ul.tabs li:active{
 	color: #000000;
 	text-shadow: #FFFFFF 0px;
 }
-
-#home-logo{
-	width: 40px;
-	height: auto;
-	float:left;
-	vertical-align: middle;
+.category-text {
+	text-shadow: #FFFFFF 0px 0px 0px;
+	color : #888888;
+	border-bottom: 2px solid #C8C8C8;
 }
-ul {
-	width: 940px;
-	height: 40px;
-	margin-left: auto;
-	margin-right: auto;
-	padding: 0;
-}
-ul#list-nav  {
-	margin-right: 20px;
-	list-style: none;
-	width: 940px;
-}
-ul#list-nav li {
-	display: inline;
-	float:right;
-	vertical-align: middle;
-}
-ul#list-nav li a {
-	font-weight: bold;
-	text-decoration: none;
-	padding: 10px 1px;
-	width: 60px;
-	background: #FFFFFF;
-	color: #47a938;
-	float: left;
-	text-align: center;
-	border-left:1px solid #fff;
-	text-shadow: #FFFFFF 2px 2px 3px;
-}
-ul#list-nav li a:hover{
-	text-shadow: #CCCCCC 1px 1px 1px;
-}
-.container {
-	height:40px;
+.goal-link{
+	text-shadow: #FFFFFF 0px 0px 0px;
+	color : #003300;
 }
 
 body{
@@ -267,10 +276,6 @@ h3{
 #home-container{
 	padding-top:0px;
 	width: 800px;
-}
-
-.pure-button-primary{
-
 }
 
 #username{
