@@ -32,6 +32,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDeleteFS.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/prefillEditFormTime.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/processMilestone.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/resizeGoalDivs.js"></script>
 	
 	<!-- Adding Visualization js files -->
 	<script type="text/javascript" src="{{STATIC_URL}}visuals/time_milestone/visualTimeMilestone{{ visual }}.js"></script>
@@ -101,6 +102,9 @@
 		<a id="journal-form-btn" href="#journal-form" class="pure-button" rel="journal-form" style="display:none">Note</a>
 		<a id="ejournal-form-btn" href="#ejournal-form" class="pure-button" rel="ejournal-form" style="display:none">Note</a>
 		<a id="djournal-form-btn" href="#djournal-form" class="pure-button" rel="djournal-form" style="display:none">Note</a>
+		<a id="editmilestone-form-btn" href="#editmilestone-form" class="pure-button" rel="editmilestone-form" style="display:none">Edit Milestone</a>
+		<a id="deletemilestone-form-btn" href="#deletemilestone-form" class="pure-button" rel="deletemilestone-form" style="display:none">Delete Milestone</a>
+		<a id="submilestone-form-btn" href="#submilestone-form" class="pure-button" rel="submilestone-form" style="display:none">Add New Sub-Milestone</a>
 		<div id="visual">
 			<div id='goal_visual'>
 			</div>
@@ -234,10 +238,19 @@
 					$("#42").hide();
 				}
 			});
+			
+			//Drawing display
+			var currentHeight = $(window).height()*.8;
+			var currentWidth = $(window).width()*.8;
+			var windowMax = Math.max(currentHeight, currentWidth);
+			var wWidth = windowMax;
+			var wHeight = windowMax*.5208;
+			resizeGoalDivs(wWidth, wHeight);
+			
 			var gl = {{ goalJSON }};
 			var msSet = {{ test_milestones1 }};
 			var alljournals = {{ alljournalsJSON }};
-			visualTimeMilestone("goal_visual", gl, msSet, alljournals);
+			visualTimeMilestone("goal_visual", gl, msSet, alljournals, wWidth, wHeight);
 			fillDisplayDetails(gl.goal_title, gl.goal_description, gl.goal_private, gl.goal_completed, gl.goal_date_created, 
 				gl.goal_date_completed, gl.goal_last_updated, gl.goal_complete_by);
 			fillDisplayNote(gl.goal_title, gl.goal_notes, -15, true);

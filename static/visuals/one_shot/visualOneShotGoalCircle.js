@@ -91,7 +91,7 @@ var visualOneShot = function(divID, wWidth, wHeight, goal){
 		.call(tweenCircleB, full);
 	
 	var isComplete = goal.goal_completed;
-
+	
 	//draw buttons
 	var buttonWidth = wMax*.0448;
 	var buttonHeight = wMax*.04375;

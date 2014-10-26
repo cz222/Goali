@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from Goali.views import homepage, login_new, logout, about, lounge, forums, forum, thread
-from accounts.views import goals, osgoals, msgoals, tosgoals, tmsgoals, vgoals, pgoals, test_view
+from accounts.views import profile, goals, osgoals, msgoals, tosgoals, tmsgoals, vgoals, pgoals, test_view
 from django.contrib import admin
 from django.conf import settings
 admin.autodiscover()
@@ -27,6 +27,9 @@ urlpatterns = patterns('',
 	url(r'^login_new/', login_new, name='login_new'),
 	url(r'^logout/', logout, name='logout'),	
 
+	#Profile page
+	url(r'^user/(?P<username>.+?)/profile/$', profile, name='profile'),
+	
 	#One Shot Goal Pages
 	url(r'^user/(?P<username>.+?)/osgoals/(?P<title>.+?)(?P<id>\d)/$', osgoals, name='osgoals'),
 	

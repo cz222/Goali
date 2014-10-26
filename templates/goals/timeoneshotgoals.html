@@ -45,6 +45,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDeleteFS.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/prefillEditForm.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/processMilestone.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/resizeGoalDivs.js"></script>
 	
 	<!-- Adding Visualization js files -->
 	<script type="text/javascript" src="{{STATIC_URL}}visuals/time_one_shot/visualTimeOneShotGoal{{ visual }}.js"></script>
@@ -212,6 +213,15 @@
 					$("#42").hide();
 				}
 			});
+			
+			//drawing display
+			var currentHeight = $(window).height()*.8;
+			var currentWidth = $(window).width()*.8;
+			var windowMax = Math.max(currentHeight, currentWidth);
+			var wWidth = windowMax;
+			var wHeight = windowMax*.5208;
+			resizeGoalDivs(wWidth, wHeight);
+			
 			var gl = {{ goalJSON }};
 			fillDisplayDetails(gl.goal_title, gl.goal_description, gl.goal_private, gl.goal_completed, gl.goal_date_created, 
 				gl.goal_date_completed, gl.goal_last_updated);
@@ -220,7 +230,7 @@
 			var journal = {{ journalJSON }};
 			fillDisplayJournal(gl.goal_title, journal);
 			
-			visualTimeOneShot("goal_visual", gl, "lightgreen");
+			visualTimeOneShot("goal_visual", gl, wWidth, wHeight);
 			
 			$(document).ready(function() {
 				$(".vdtab-content").hide();

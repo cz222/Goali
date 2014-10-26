@@ -3,7 +3,20 @@
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
 @import url(http://fonts.googleapis.com/css?family=Montserrat); */
 
+.container {
+	height:40px;
+}
+
+body{
+	background-color: #99D699; 
+	font-family:'Open Sans', Arial, sans-serif;
+}
+
 /*top nav bar*/
+.navbar-fixed-top{
+	background-color: #FFFFFF;
+	box-shadow: 0px 1px 0px #47a938;
+}
 #home-logo{
 	width: 40px;
 	height: auto;
@@ -32,22 +45,13 @@ ul#list-nav li a {
 	width: 60px;
 	background: #FFFFFF;
 	color: #47a938;
-	float: left;
+	float: left; 
 	text-align: center;
-	border-left:1px solid #fff;
+	border-left:1px solid #FFFFFF;
 	text-shadow: #FFFFFF 2px 2px 3px;
 }
 ul#list-nav li a:hover{
 	text-shadow: #CCCCCC 1px 1px 1px;
-}
-
-.container {
-	height:40px;
-}
-
-body{
-	background-color: #47a938; 
-	font-family:'Open Sans', Arial, sans-serif;
 }
 
 /*lean overlay*/
@@ -61,30 +65,26 @@ body{
 	overflow: auto;
 }
 #lean_overlay {
-    position: absolute;
-    z-index:100;
-    top: 0px;
-    left: 0px;
+	position: absolute;
+	z-index:100;
+	top: 0px;
+	left: 0px;
 	bottom: 0px;
-    height:100%;
-    width:100%;
-    background: #000;
-    display: none;
+	height:100%;
+	width:100%;
+	background: #000;
+	display: none;
 }
 
 /*visual*/
 #visual {
 	position:fixed;
-	width: 960px;
-	height: 500px;
 	margin-top: 60px;
-	left: 50%;
-	margin-left: -480px;
+	left: 10%;
+	margin-left: auto;
 }
 #goal_visual {
 	position: absolute;
-	width: 960px;
-	height: 500px;
 	z-index:10;
 }
 #completed-form{
@@ -95,13 +95,11 @@ body{
 	z-index: 9;
 	display: block;
 }
+/*VISUAL DATA DISPLAY*/
 #visual_texts {
 	position: absolute;
-	padding: 15px 15px 5px 15px;
-	width: 237px;
-	height: 480px;
-	left: 650px;
-	top: 0px;
+	left: 69.2%;
+	top: 3%;
 	z-index:11;
 }
 .visual-texts {
@@ -115,41 +113,32 @@ body{
 /*VISUAL DETAILS*/
 #visual_details {
 	position: relative;
-	width: 237px;
-	height: 480px;
 	overflow: auto;
 	word-wrap: break-word;
 }
 #visual_detailPages{
 	position: absolute;
-	width: 237px;
-	height: 450px;
+	bottom: 25px;
 	overflow: auto;
 	word-wrap: break-word;
 	border-top-style: solid;
-	border-top-color: #FFFFFF;
+	border-top-color: #B0B0B0;
 	border-bottom-style: solid;
-	border-bottom-color: #FFFFFF;
+	border-bottom-color: #B0B0B0;
 }
 #visual_detailsPage1{
 	position: absolute;
-	width: 237px;
-	height: 450px;
 	overflow: auto;
 	word-wrap: break-word;
 }
 #visual_detailsPage2{
 	position: absolute;
-	width: 237px;
-	height: 450px;
 	overflow: auto;
 	word-wrap: break-word;
 }
 ul#vdtabsid {
 	position: absolute;
-	width: 237px;
-	height: 15px;
-	top: 460px;
+	bottom: 2.5px;
 	display: inline-block;
 	overflow: hidden;
 	margin: auto;
@@ -177,48 +166,31 @@ ul.vdtabs li:hover{
 	background: #FFFFFF;
 }
 ul.vdtabs li:vdactive{
-	background: #666666;
+	color: #FFFFFF;
+	background: #FFFFFF;
 	-webkit-border-radius: 7.5px;
 	-moz-border-radius: 7.5px;
 	border-radius: 7.5px;
 }
-#page1 {
-	margin-left: 103.5px;
-}
-#page2 {
-	margin-left: 128.5px;
-}
 /*VISUAL NOTES*/
 #visual_notes{
 	position: relative;
-	width: 237px;
-	height: 480px;
 	overflow: auto;
 	word-wrap: break-word;
 }
 #note-container {
 	position: absolute;
-	width: 237px;
-	height: 450px;
+	bottom: 25px;
 	overflow: auto;
 	word-wrap: break-word;
 	border-top-style: solid;
-	border-top-color: #FFFFFF;
+	border-top-color: #B0B0B0;
 	border-bottom-style: solid;
-	border-bottom-color: #FFFFFF;
-}
-#notes-list{
-	position: absolute;
-	width: 237px;
-	height: 453px;
-	overflow: auto;
-	word-wrap: break-word;
+	border-bottom-color: #B0B0B0;
 }
 ul#notebottom {
 	position: absolute;
-	width: 237px;
-	height: 20px;
-	top: 456px;
+	bottom: 2.5px;
 	display: inline-block;
 	overflow: hidden;
 	margin: auto;
@@ -226,66 +198,55 @@ ul#notebottom {
 ul.notes-bottom {
 	display: inline-block;
 	float: left;
+	height: 15px;
 	width: 15px;
-	height: auto;
 	list-style: none;
 	overflow: hidden;
-	margin-top: 0px;
 }
 ul.notes-bottom li{
 	list-style: none;
 	display: inline-block;
-	top: 0px;
-	float:left;
-	height: auto;
+	vertical-align: middle;
+	height: 15px;
 	width: 15px;
+	float:left;
 	overflow: hidden;
 	position: relative;
 }
-#noteadd {
-	margin-left: 103.5px;
+#nadd {
+	margin-bottom: 99px;
 }
-#notesettings {
-	margin-left: 128.5px;
+#nsettings {
+	margin-bottom: 99px;
 }
 /*visual journal*/
 #visual_journal{
 	position: relative;
-	width: 237px;
-	height: 480px;
 	overflow: auto;
 	word-wrap: break-word;
 }
 #journal-container {
 	position: absolute;
-	width: 237px;
-	height: 450px;
 	overflow: auto;
 	word-wrap: break-word;
 	border-top-style: solid;
-	border-top-color: #FFFFFF;
+	border-top-color: #B0B0B0;
 	border-bottom-style: solid;
-	border-bottom-color: #FFFFFF;
+	border-bottom-color: #B0B0B0;
 }
 #journal-list{
 	position: absolute;
-	width: 237px;
-	height: 450px;
 	overflow: auto;
 	word-wrap: break-word;
 }
 #journal-entries{
 	position: absolute;
-	width: 237px;
-	height: 450px;
 	overflow: auto;
 	word-wrap: break-word;
 }
 ul#journalbottom {
 	position: absolute;
-	width: 237px;
-	height: 20px;
-	top: 456px;
+	bottom: 2.5px;
 	display: inline-block;
 	overflow: hidden;
 	margin: auto;
@@ -302,18 +263,13 @@ ul.journal-bottom {
 ul.journal-bottom li{
 	list-style: none;
 	display: inline-block;
-	top: 0px;
 	float:left;
-	height: auto;
-	width: 15px;
 	overflow: hidden;
 	position: relative;
 }
 ul#entrybottom {
 	position: absolute;
-	width: 237px;
-	height: 20px;
-	top: 456px;
+	bottom: 1px;
 	display: inline-block;
 	overflow: hidden;
 	margin: auto;
@@ -321,51 +277,37 @@ ul#entrybottom {
 ul.entry-bottom {
 	display: inline-block;
 	float: left;
-	width: 15px;
-	height: auto;
 	list-style: none;
 	overflow: hidden;
-	margin-top: 0px;
 }
 ul.entry-bottom li{
 	list-style: none;
 	display: inline-block;
-	top: 0px;
 	float:left;
-	height: auto;
-	width: 15px;
 	overflow: hidden;
-	position: relative;
-}
-#journaladd {
 	position: absolute;
-	margin-left: 103.5px;
 }
-#journalsettings {
-	position: absolute;
-	margin-left: 128.5px;
+#jadd {
+	margin-bottom: 99px;
 }
-#entryarrowl {
-	position: absolute;
-	margin-left: 5px;
+#jsettings {
+	margin-bottom: 99px;
 }
-#entrytrash {
-	position: absolute;
-	margin-left: 86px;
+#jhome {
+	margin-bottom: 99px;
 }
-#entryedit {
-	position: absolute;
-	margin-left: 111px;
+#jnext {
+	margin-bottom: 99px;
 }
-#entryhome {
-	position: absolute;
-	margin-left: 136px;
+#jprev {
+	margin-bottom: 99px;
 }
-#entryarrowr {
-	position: absolute;
-	margin-left: 217px;
+#jtrash {
+	margin-bottom: 99px;
 }
-
+#jedit {
+	margin-bottom: 99px;
+}
 /*forms*/
 #deletemilestonegoal-form{
 	display:none;
@@ -497,49 +439,4 @@ h3{
 #home-container{
 	padding-top:0px;
 	width: 800px;
-}
-
-.pure-button-primary{
-
-}
-
-#username{
-	margin-bottom:20px;
-}
-
-#password2{
-	margin-bottom: 10px;
-}
-
-#email-signin{
-	margin-bottom:15px;
-}
-
-#home-logo{
-	width: 40px;
-	height:auto;
-}
-
-.navbar-fixed-top{
-	background-color: #fff;
-	height: 40px;
-}
-
-#signin-button{
-	float:right;
-	margin-top: 5px;
-	color:#47a938;
-	padding:0.4em 0.5em;
-	background-color: #fff;
-	text-shadow: 0 0px 0px rgba(0,0,0,.8);
-}
-
-#nav-bottom{
-	list-style-type: none;
-	padding:0px;
-}
-
-#nav-bottom li{
-	display:inline;
-	margin-right: 20px;
 }

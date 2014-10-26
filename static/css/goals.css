@@ -3,7 +3,24 @@
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
 @import url(http://fonts.googleapis.com/css?family=Montserrat);*/
 
+.container {
+	height:40px;
+}
+
+body{
+	background-color: #99D699; 
+	font-family:'Open Sans', Arial, sans-serif;
+}
+
+a{
+	color:#fff;
+}
+
 /*top nav bar*/
+.navbar-fixed-top{
+	background-color: #FFFFFF;
+	box-shadow: 0px 1px 0px #47a938;
+}
 #home-logo{
 	width: 40px;
 	height: auto;
@@ -32,16 +49,13 @@ ul#list-nav li a {
 	width: 60px;
 	background: #FFFFFF;
 	color: #47a938;
-	float: left;
+	float: left; 
 	text-align: center;
-	border-left:1px solid #fff;
+	border-left:1px solid #FFFFFF;
 	text-shadow: #FFFFFF 2px 2px 3px;
 }
 ul#list-nav li a:hover{
 	text-shadow: #CCCCCC 1px 1px 1px;
-}
-.container {
-	height:40px;
 }
 
 /*tabbed section*/
@@ -128,15 +142,7 @@ ul.tabs li:active{
 	color : #003300;
 }
 
-body{
-	margin-top: 40px;
-	background-color:#47a938; 
-	font-family:'Open Sans', Arial, sans-serif;
-}
 
-a{
-	color:#fff;
-}
 
 .wrap{
 	position: absolute;
@@ -271,49 +277,4 @@ h1{
 h3{
 	font-size: 24.5px;
 	line-height: 10px;
-}
-
-#home-container{
-	padding-top:0px;
-	width: 800px;
-}
-
-#username{
-	margin-bottom:20px;
-}
-
-#password2{
-	margin-bottom: 10px;
-}
-
-#email-signin{
-	margin-bottom:15px;
-}
-
-#home-logo{
-	width: 40px;
-	height:auto;
-}
-
-.navbar-fixed-top{
-	background-color: #fff;
-}
-
-#signin-button{
-	float:right;
-	margin-top: 5px;
-	color:#47a938;
-	padding:0.4em 0.5em;
-	background-color: #fff;
-	text-shadow: 0 0px 0px rgba(0,0,0,.8);
-}
-
-#nav-bottom{
-	list-style-type: none;
-	padding:0px;
-}
-
-#nav-bottom li{
-	display:inline;
-	margin-right: 20px;
 }
