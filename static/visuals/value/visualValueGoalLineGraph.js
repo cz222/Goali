@@ -1,5 +1,5 @@
-var visualValue = function(divID, goal, updates){
-	
+var visualValue = function(divID, goal, updates, wWdith, wHeight){
+	var wMax = Math.max(wWidth, wHeight);
 	var cColor = "lightgreen";
 	
 	if (goal.goal_determinate) {
@@ -22,12 +22,12 @@ var visualValue = function(divID, goal, updates){
 		.on("zoom", zoomed);
 	
 	//draw svg
-	var width = 650,
-		height = 500;
-
-	var svgWidth = 960,
-		svgHeight = 500;
-
+	var width = wMax*.67708333,
+		height = wMax*.52083333;
+	
+	var svgWidth = wWidth,
+		svgHeight = wHeight;
+	
 	var svg = d3.select("#"+divID).append("svg")
 		.attr("width", svgWidth)
 		.attr("height", svgHeight)
@@ -44,16 +44,15 @@ var visualValue = function(divID, goal, updates){
 		.attr("rx", "10px");
 	
 	var visualContainer = svg.append("g");
-	
 	visualContainer.attr("clip-path", "url(#clip-box)");
 	
 	var container = visualContainer.append("g");
 	
 	var backdrop = container.append("rect")
-		.attr("width", 3000)
-		.attr("height", 3000)
+		.attr("width", svgWidth*3)
+		.attr("height", svgWidth*3)
 		.attr("fill", "white")
-		.attr("transform", "translate(-1500,-1500)");
+		.attr("transform", "translate("+((0-svgWidth)*1.5)+","+((0-svgWidth)*1.5)+")");
 	
 	//Prepare Axis Data
 	var getMaxMin = function(values, start, max, min) {
@@ -101,7 +100,7 @@ var visualValue = function(divID, goal, updates){
 	} else {
 		var finishDate = createDate(goal.goal_complete_by);
 	};
-	var margin = {top: 50, right: 40, bottom: 50, left: 60};
+	var margin = {top: (0.052083*width), right: (0.041667*width), bottom: (0.1*height), left: (0.12*height)};
 	
 	//calculate x and y scales
 	var totalRange = Math.abs(maxmin.max - maxmin.min);
@@ -116,7 +115,7 @@ var visualValue = function(divID, goal, updates){
 		.range([height-margin.bottom, margin.top]);
 	
 	//Draw Chart
-	var radius = 5;
+	var radius = .00520833*width;
 	var pointArray = [];
 	var dataArrayLine = updates.slice();
 	var goalUpdate = {update_value: goal.goal_startValue, 
@@ -149,7 +148,7 @@ var visualValue = function(divID, goal, updates){
 		.attr("d", drawArea(dataArrayArea))
 		.attr("stroke", "none")
 		.style("fill", areacolor)
-		.attr("transform", "translate(750,0)");
+		.attr("transform", "translate("+(svgWidth*.75)+",0)");
 	
 	area.transition()
 		.ease("elastic")
@@ -165,7 +164,7 @@ var visualValue = function(divID, goal, updates){
 		
 	var taxis = container.append("g")
 		.attr("class", "t-axis")
-		.attr("transform", "translate(-1000,"+(height-margin.bottom)+")")
+		.attr("transform", "translate("+(0-svgWidth)+","+(height-margin.bottom)+")")
 		.call(tAxis);
 		
 	taxis.transition()
@@ -194,7 +193,7 @@ var visualValue = function(divID, goal, updates){
 		.attr("stroke", linecolor)
 		.attr("stroke-width", "2px")
 		.style("fill", "none")
-		.attr("transform", "translate(750,0)");
+		.attr("transform", "translate("+(0-svgWidth*0.75)+",0)");
 	
 	line.transition()
 		.ease("elastic")
@@ -218,7 +217,7 @@ var visualValue = function(divID, goal, updates){
 		.attr("cy", function(d) { return yScale(String(d.update_total));})
 		.attr("r", radius)
 		.attr("stroke", linecolor)
-		.attr("transform", "translate(750,-550)")
+		.attr("transform", "translate("+(svgWidth*0.75)+","+(0-svgWidth*.55)+")")
 		.on("mouseover", function(d) {  
 			d3.select("#update_"+d.update_id)
 				.style("fill", linecolor);
@@ -267,7 +266,7 @@ var visualValue = function(divID, goal, updates){
 	
 	var yaxis = container.append("g")
 		.attr("class", "y-axis")
-		.attr("transform", "translate("+(margin.left)+",-1000)")
+		.attr("transform", "translate("+(margin.left)+","+(0-svgWidth)+")")
 		.call(yAxis);
 	
 	yaxis.transition()
@@ -283,7 +282,7 @@ var visualValue = function(divID, goal, updates){
 	
 	var xaxis = container.append("g")
 		.attr("class", "x-axis")
-		.attr("transform", "translate(-1000,"+(height-margin.bottom)+")")
+		.attr("transform", "translate("+(0-svgWidth)+","+(height-margin.bottom)+")")
 		.call(xAxis);
 		
 	xaxis.transition()
@@ -356,29 +355,28 @@ var visualValue = function(divID, goal, updates){
 		.text(goal.goal_valueType);
 	
 	//draw buttons
-	var buttonWidth = 43;
-	var buttonHeight = 42;
-	var iconPadding = 6;
-	var displayBarWidth = (svgWidth-buttonWidth+iconPadding-2);
-	var displayBarHeight = (iconPadding+3);
+	var buttonWidth = wMax*.0448;
+	var buttonHeight = wMax*.04375;
+	var iconPadding = wMax*.00625;
+	var displayBarWidth = (svgWidth-buttonWidth+iconPadding-(wMax*.00208));
+	var displayBarHeight = (iconPadding+(wMax*.003125));
+	
+	//additional padding for aesthetic reasons
+	var bttPad = wMax*.0125;
+	var icnPad = wMax*.00833;
+	var hPad = wMax*.004167;
 	
 	//Text Buttons
 	var detailsContainer = svg.append("g");
-	var detailsButton = detailsContainer.append("rect")
-		.attr("class", "v-button")
-		.attr("width", buttonWidth)
-		.attr("height", buttonHeight)
-		.attr("fill", "none")
-		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(iconPadding+8)+")");
 	var detailsIcon = detailsContainer.append("rect")
 		.attr("id", "details-button")
 		.attr("width", "50px")
 		.attr("height", "50px")
 		.attr("fill", "transparent")
 		.style("fill", "url(#detailsSVG)")
-		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(iconPadding+8)+")");
+		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+bttPad)+","+(iconPadding+icnPad)+")");
 	var displayRectDetails = detailsContainer.append("rect")
-		.attr("height", (buttonHeight-iconPadding/2-4))
+		.attr("height", (buttonHeight-iconPadding/2-hPad))
 		.attr("width", "5")
 		.attr("display", "none")
 		.attr("fill", "white")
@@ -398,22 +396,15 @@ var visualValue = function(divID, goal, updates){
 	});
 	
 	var noteContainer = svg.append("g");
-	var noteButton = noteContainer.append("rect")
-		.attr("class", "v-button")
-		.attr("width", buttonWidth)
-		.attr("height", buttonHeight)
-		.attr("fill", "none")
-		.attr("stroke", "none")
-		.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight)+")")
 	var noteIcon = noteContainer.append("rect")
 		.attr("id", "convert-button")
 		.attr("width", "50px")
 		.attr("height", "50px")
 		.attr("fill", "transparent")
 		.style("fill", "url(#noteSVG)")
-		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight+iconPadding+8)+")");
+		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+bttPad)+","+(buttonHeight+iconPadding+icnPad)+")");
 	var displayRectNote = noteContainer.append("rect")
-		.attr("height", (buttonHeight-iconPadding/2-4))
+		.attr("height", (buttonHeight-iconPadding/2-hPad))
 		.attr("width", "5")
 		.attr("display", "none")
 		.attr("fill", "white")
@@ -433,22 +424,15 @@ var visualValue = function(divID, goal, updates){
 	});
 	
 	var journalContainer = svg.append("g");
-	var journalButton = journalContainer.append("rect")
-		.attr("class", "v-button")
-		.attr("width", buttonWidth)
-		.attr("height", buttonHeight)
-		.attr("fill", "none")
-		.attr("stroke", "none")
-		.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*3)+")")
 	var journalIcon = journalContainer.append("rect")
 		.attr("id", "convert-button")
 		.attr("width", "50px")
 		.attr("height", "50px")
 		.attr("fill", "transparent")
 		.style("fill", "url(#journalSVG)")
-		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*2+iconPadding+8)+")");
+		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+bttPad)+","+(buttonHeight*2+iconPadding+icnPad)+")");
 	var displayRectJournal = journalContainer.append("rect")
-		.attr("height", (buttonHeight-iconPadding/2-4))
+		.attr("height", (buttonHeight-iconPadding/2-hPad))
 		.attr("width", "5")
 		.attr("display", "none")
 		.attr("fill", "white")
@@ -469,22 +453,15 @@ var visualValue = function(divID, goal, updates){
 	
 	//Goal Buttons
 	var convertContainer = svg.append("g");
-	var convertButton = convertContainer.append("rect")
-		.attr("class", "v-button")
-		.attr("width", buttonWidth)
-		.attr("height", buttonHeight)
-		.attr("fill", "none")
-		.attr("stroke", "none")
-		.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*5)+")");	
 	var convertIcon = convertContainer.append("rect")
 		.attr("id", "convert-button")
 		.attr("width", "50px")
 		.attr("height", "50px")
 		.attr("fill", "transparent")
 		.style("fill", "url(#convertSVG)")
-		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*4+iconPadding+8)+")");
+		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+bttPad)+","+(buttonHeight*4+iconPadding+icnPad)+")");
 	var displayRectConvert = convertContainer.append("rect")
-		.attr("height", (buttonHeight-iconPadding/2-4))
+		.attr("height", (buttonHeight-iconPadding/2-hPad))
 		.attr("width", "5")
 		.attr("display", "none")
 		.attr("fill", "white")
@@ -501,22 +478,15 @@ var visualValue = function(divID, goal, updates){
 	});
 	
 	var visualsContainer = svg.append("g");
-	var visualsButton = visualsContainer.append("rect")
-		.attr("class", "v-button")
-		.attr("width", buttonWidth)
-		.attr("height", buttonHeight)
-		.attr("fill", "none")
-		.attr("stroke", "none")
-		.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*6)+")");	
 	var visualsIcon = visualsContainer.append("rect")
 		.attr("id", "convert-button")
 		.attr("width", "50px")
 		.attr("height", "50px")
 		.attr("fill", "transparent")
 		.style("fill", "url(#visualsSVG)")
-		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*5+iconPadding+8)+")");
+		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+bttPad)+","+(buttonHeight*5+iconPadding+icnPad)+")");
 	var displayRectVisuals = visualsContainer.append("rect")
-		.attr("height", (buttonHeight-iconPadding/2-4))
+		.attr("height", (buttonHeight-iconPadding/2-hPad))
 		.attr("width", "5")
 		.attr("display", "none")
 		.attr("fill", "white")
@@ -533,22 +503,15 @@ var visualValue = function(divID, goal, updates){
 	});
 	
 	var addContainer = svg.append("g");
-	var addButton = addContainer.append("rect")
-		.attr("id", "cmplt-tab")
-		.attr("class", "v-button")
-		.attr("width", buttonWidth)
-		.attr("height", buttonHeight)
-		.attr("fill", "none")
-		.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*7)+")");		
 	var addIcon = addContainer.append("rect")
 		.attr("id", "add-button")
 		.attr("width", "50px")
 		.attr("height", "50px")
 		.attr("fill", "transparent")
 		.style("fill", "url(#addSVG)")
-		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*6+iconPadding+8)+")");
+		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+bttPad)+","+(buttonHeight*6+iconPadding+icnPad)+")");
 	var displayRectAdd = addContainer.append("rect")
-		.attr("height", (buttonHeight-iconPadding/2-4))
+		.attr("height", (buttonHeight-iconPadding/2-hPad))
 		.attr("width", "5")
 		.attr("display", "none")
 		.attr("fill", "white")
@@ -566,25 +529,19 @@ var visualValue = function(divID, goal, updates){
 	});
 	
 	var editContainer = svg.append("g");
-	var editButton = editContainer.append("rect")
-		.attr("class", "v-button")
-		.attr("width", buttonWidth)
-		.attr("height", buttonHeight)
-		.attr("fill", "none")
-		.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*8)+")");			
 	var editIcon = editContainer.append("rect")
 		.attr("id", "edit-button")
 		.attr("width", "50px")
 		.attr("height", "50px")
 		.attr("fill", "transparent")
 		.style("fill", "url(#editSVG)")
-		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*7+iconPadding+8)+")");
+		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+bttPad)+","+(buttonHeight*7+iconPadding+icnPad)+")");
 	var displayRectEdit = editContainer.append("rect")
-		.attr("height", (buttonHeight-iconPadding/2-4))
+		.attr("height", (buttonHeight-iconPadding/2-hPad))
 		.attr("width", "5")
 		.attr("display", "none")
 		.attr("fill", "white")
-		.attr("transform", "translate("+displayBarWidth+","+(buttonHeight*7+displayBarHeight-1)+")");
+		.attr("transform", "translate("+displayBarWidth+","+(buttonHeight*7+displayBarHeight)+")");
 	editContainer.on("mouseover", function() {
 		displayRectEdit
 			.attr("display", "block");
@@ -602,21 +559,15 @@ var visualValue = function(divID, goal, updates){
 	});
 	
 	var deleteContainer = svg.append("g");
-	var deleteButton = deleteContainer.append("rect")
-		.attr("class", "v-button")
-		.attr("width", buttonWidth)
-		.attr("height", buttonHeight)
-		.attr("fill", "none")
-		.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*9)+")");
 	var deleteIcon = deleteContainer.append("rect")
 		.attr("id", "delete-button")
 		.attr("width", "50px")
 		.attr("height", "50px")
 		.attr("fill", "transparent")
 		.style("fill", "url(#deleteSVG)")
-		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*8+iconPadding+8)+")");
+		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+bttPad)+","+(buttonHeight*8+iconPadding+icnPad)+")");
 	var displayRectDelete = deleteContainer.append("rect")
-		.attr("height", (buttonHeight-iconPadding/2-4))
+		.attr("height", (buttonHeight-iconPadding/2-hPad))
 		.attr("width", "5")
 		.attr("display", "none")
 		.attr("fill", "white")
@@ -634,21 +585,15 @@ var visualValue = function(divID, goal, updates){
 	});
 	
 	var downloadContainer = svg.append("g");
-	var downloadButton = downloadContainer.append("rect")
-		.attr("class", "v-button")
-		.attr("width", buttonWidth)
-		.attr("height", buttonHeight)
-		.attr("fill", "none")
-		.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*10)+")")
 	var downloadIcon = downloadContainer.append("rect")
 		.attr("id", "download-button")
 		.attr("width", "50px")
 		.attr("height", "50px")
 		.attr("fill", "transparent")
 		.style("fill", "url(#downloadSVG)")
-		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*9+iconPadding+8)+")");
+		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+bttPad)+","+(buttonHeight*9+iconPadding+icnPad)+")");
 	var displayRectDownload = downloadContainer.append("rect")
-		.attr("height", (buttonHeight-iconPadding/2-4))
+		.attr("height", (buttonHeight-iconPadding/2-hPad))
 		.attr("width", "5")
 		.attr("display", "none")
 		.attr("fill", "white")
@@ -665,22 +610,15 @@ var visualValue = function(divID, goal, updates){
 	});
 	
 	var completeContainer = svg.append("g");
-	var completeButton = completeContainer.append("rect")
-		.attr("id", "cmplt-tab")
-		.attr("class", "v-button")
-		.attr("width", buttonWidth)
-		.attr("height", buttonHeight)
-		.attr("transform", "translate("+(svgWidth-buttonWidth)+","+(buttonHeight*11)+")")
-		.attr("fill", "none")
 	var completeIcon = completeContainer.append("rect")
 		.attr("id", "complete-button")
 		.attr("width", "50px")
 		.attr("height", "50px")
 		.attr("fill", "transparent")
 		.style("fill", "url(#completeSVG)")
-		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+12)+","+(buttonHeight*10+iconPadding+8)+")");
+		.attr("transform", "translate("+(svgWidth-buttonWidth+iconPadding+bttPad)+","+(buttonHeight*10+iconPadding+icnPad)+")");
 	var displayRectComplete = completeContainer.append("rect")
-		.attr("height", (buttonHeight-iconPadding/2-4))
+		.attr("height", (buttonHeight-iconPadding/2-hPad))
 		.attr("width", "5")
 		.attr("display", "none")
 		.attr("fill", "white")
@@ -697,14 +635,16 @@ var visualValue = function(divID, goal, updates){
 		$("#valueupdate-form-btn").click();
 	});
 	
-	//background color #cccccc
+	//background color #cccccc e9eaed
 	var displayClipBox = svg.append("clipPath")
 		.attr("id", "display-clip");
-			
+	var displayWidth = wMax*.278125;
+	var bckgrdPad = wMax*.03125;
+	
 	displayClipBox.append("rect")
 		.attr("class", "glass")
-		.attr("width", 267)
-		.attr("height", 500)
+		.attr("width", displayWidth)
+		.attr("height", svgHeight)
 		.attr("fill", "none")
 		.attr("rx", "10px");
 	
@@ -712,15 +652,15 @@ var visualValue = function(divID, goal, updates){
 		.attr("id", "visual_text_display");
 	var display1 = display.append("rect")
 		.attr("id", "visual_text_display_main")
-		.attr("width", 267)
-		.attr("height",  500)
-		.attr("fill", "#CCCCCC")
+		.attr("width", displayWidth)
+		.attr("height", svgHeight)
+		.attr("fill", "#e9eaed")
 		.attr("transform", "translate("+width+",0)")
 		.attr("rx", "10px");
 	var display2 = display.append("rect")
 		.attr("id", "visual_text_display_square")
-		.attr("width", 30)
-		.attr("height", 500)
-		.attr("fill", "#CCCCCC")
+		.attr("width", bckgrdPad)
+		.attr("height", svgHeight)
+		.attr("fill", "#e9eaed")
 		.attr("transform", "translate("+width+",0)");
 };

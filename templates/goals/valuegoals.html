@@ -45,6 +45,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedFS.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDeleteFS.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/prefillEditFormValue.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/functions/resizeGoalDivs.js"></script>
 	
 	<!-- Adding Visualization js files -->
 	<script type="text/javascript" src="{{STATIC_URL}}visuals/value/visualValueGoal{{ visual }}.js"></script>
@@ -210,6 +211,13 @@
 					$("#42").hide();
 				}
 			});
+			var currentHeight = $(window).height()*.8;
+			var currentWidth = $(window).width()*.8;
+			var windowMax = Math.max(currentHeight, currentWidth);
+			var wWidth = windowMax;
+			var wHeight = windowMax*.5208;
+			resizeGoalDivs(wWidth, wHeight);
+			
 			var gl = {{ goalJSON }};
 			var updates = {{ updates }};
 			fillDisplayGoal(gl.goal_title, gl.goal_description, gl.goal_nozero, gl.goal_currentNoZero, gl.goal_date_created, 
@@ -219,7 +227,7 @@
 			fillDisplayNote(gl.goal_title, notes);
 			var journal = {{ journalJSON }};
 			fillDisplayJournal(gl.goal_title, journal);
-			visualValue("goal_visual", gl, updates);
+			visualValue("goal_visual", gl, updates, wWidth, wHeight);
 			
 			$(document).ready(function() {
 				$(".vdtab-content").hide();
