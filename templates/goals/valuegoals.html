@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% comment %}
-	One Shot Goal Page
+	Does not resize
 {% endcomment %}
 
 {% block head %}
@@ -44,7 +44,6 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedEdit.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDateCompletedFS.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/hideDeleteFS.js"></script>
-	<script type="text/javascript" src="{{STATIC_URL}}js/functions/prefillEditFormValue.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/functions/resizeGoalDivs.js"></script>
 	
 	<!-- Adding Visualization js files -->
@@ -76,6 +75,7 @@
 		<a id="editvalue-form-btn" href="#editvalue-form" class="pure-button" rel="editvalue-form" style="display:none">Edit Goal</a>
 		<a id="deletevalue-form-btn" href="#deletevalue-form" class="pure-button" rel="deletevalue-form" style="display:none">Delete Goal</a>
 		<a id="valueupdate-form-btn" href="#valueupdate-form" class="pure-button" rel="valueupdate-form" style="display:none">Add Update</a>
+		<a id="editupdate-form-btn" href="#editupdate-form" class="pure-button" rel="editupdate-form" style="display:none"></a>
 		<a id="note-form-btn" href="#note-form" class="pure-button" rel="note-form" style="display:none">Note</a>
 		<a id="enote-form-btn" href="#enote-form" class="pure-button" rel="enote-form" style="display:none">Note</a>
 		<a id="dnote-form-btn" href="#dnote-form" class="pure-button" rel="dnote-form" style="display:none">Note</a>

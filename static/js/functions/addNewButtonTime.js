@@ -1,6 +1,6 @@
 //dynamically adds buttons
-function addNewButton(type, id, isSub, ref, rel, message, ttl, desc, pri, comp, dcomp) {
-	$("body").append('<a style="display:none" href="#'+ref+'" class="pure-button" rel="'+rel+'" id="'+type+'-'+id+'-btn">'+message+'</a>');
+function addNewButton(type, id, isSub, message, ttl, desc, pri, comp, dcomp) {
+	$("body").append('<a style="display:none" class="pure-button" id="'+type+'-'+id+'-btn">'+message+'</a>');
 	$("#"+type+"-"+id+"-btn").click(function() {
 		$('#id_'+type+'_id').val(id);
 		$('#id_'+type+'_isSub').val(isSub);
@@ -8,4 +8,16 @@ function addNewButton(type, id, isSub, ref, rel, message, ttl, desc, pri, comp, 
 			prefillEditForm(ttl, desc, pri, comp, dcomp)
 		}
 	});
+}
+
+//prefills milestone edit forms
+function prefillEditForm(ttl, desc, pri, comby, comp, dcomp) {
+	$("#id_title","#editmilestoneform").val(ttl);
+	$("#id_description", "#editmilestoneform").val(desc);
+	$("#id_private", "#editmilestoneform").val(pri);
+	$("#id_complete_by", "#editmilestoneform").val(comby);
+	$("#id_completed", "#editmilestoneform").val(comp);
+	$("#id_date_completed", "#editmilestoneform").val(dcomp);
+	checkCompletedCheckbox("editmilestoneform", comp);
+	//hideDateCompleted("editmilestoneform");
 }

@@ -25,6 +25,7 @@
 			$("a[rel*=timemilestonegoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 			$("a[rel*=valuegoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 			$("a[rel*=progressgoal-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
+			$("a[rel*=fitness-form]").leanModal({ top : 200, overlay : 0.8, closeButton: ".modal_close" });
 		});
 	</script>
 	<!--Tabs-->
@@ -92,7 +93,11 @@
 					<div id="all" class="tab_content">
 						<p class="tab_text">
 						<p class="category-text">Special Goals</p>
-							<p class="goal-link">Not Available Yet!</p>
+						{% for fgoal in fitnessgoals %}
+							<p>
+							<a class="goal-link" href="/user/{{ user.username }}/fitness/{{ fgoal.title|slugify }}{{ fgoal.id}}}">{{ fgoal.title }}</a>
+							</p>
+						{% endfor %}
 						<p class="category-text">One Shot Goals</p>
 						{% for osgoal in oneshotgoals %}
 							<p>
@@ -135,6 +140,7 @@
 						<a href="#valuegoal-form" class="pure-button" rel="valuegoal-form">New Value Goal</a>
 						<a href="#timemilestonegoal-form" class="pure-button" rel="timemilestonegoal-form">New Time Milestone Goal</a>
 						<a href="#timeoneshotgoal-form" class="pure-button" id="newtimeoneshotgoal-button" rel="timeoneshotgoal-form">New Time One Shot Goal</a>
+						<a href="#fitness-form" class="pure-button" id="fitness-button" rel="fitness-form">New Fitness Goal</a>
 						</p>
 					</div>
 					<div id="completed" class="tab_content">
@@ -374,6 +380,17 @@
 				//$(document).ready(function() {
 				//	hideDateCompleted('timeoneshotgoal');
 				//});
+			</script>
+		</form>
+		<form id="fitness-form" class="pure-form pure-form-stacked" action="" method="post">
+			{% csrf_token %}
+			<p>Start a Fitness Goal!</p>
+			<div id='fitness'>
+				{% bootstrap_form fitnessform %}
+			</div>
+			<input class="pure-button pure-input-1 pure-button-primary" type="submit" value="Submit" name="fitnessSub"/>
+			<script>
+				$('#id_title', '#fitness').val("Fitness Goal");
 			</script>
 		</form>
 	{% else %}

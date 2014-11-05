@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from Goali.views import homepage, login_new, logout, about, lounge, forums, forum, thread
-from accounts.views import profile, goals, osgoals, msgoals, tosgoals, tmsgoals, vgoals, pgoals, test_view
+from accounts.views import profile, goals, osgoals, msgoals, tosgoals, tmsgoals, vgoals, pgoals, fitnessgoals, test_view
 from django.contrib import admin
 from django.conf import settings
 admin.autodiscover()
@@ -47,6 +47,9 @@ urlpatterns = patterns('',
 	
 	#Progress Goal Pages
 	url(r'^user/(?P<username>.+?)/pgoals/(?P<title>.+?)(?P<id>\d)/$', pgoals, name='pgoals'),
+	
+	#Fitness Goal Pages
+	url(r'^user/(?P<username>.+?)/fitness/(?P<title>.+?)(?P<id>\d)/$', fitnessgoals, name='fitnessgoals'),
 	
 	#Personal Goals (authorization required)
 	url(r'^user/(?P<username>.+?)/$', goals, name='goals'),

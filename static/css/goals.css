@@ -184,6 +184,9 @@ ul.tabs li:active{
 #progressgoal-form{
 	display:none;
 }
+#fitness-form{
+	display:none;
+}
 .hide {
 	display: none;
 }

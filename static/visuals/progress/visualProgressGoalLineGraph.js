@@ -205,7 +205,7 @@ var visualProgress = function(divID, goal, updates, wWidth, wHeight){
 		.data(updates)
 	  .enter().append("circle")
 		.attr("id", function(d) { 
-			addNewButton('editupdate', d.update_id, 'editupdate-form', 'editupdate-form', 'Edit Update'+d.update_id, d.update_value_nozero, d.update_description);
+			addNewButton('editupdate', d.update_id, 'Edit Update'+d.update_id, d.update_value_nozero, d.update_description);
 			return ("update_"+d.update_id);
 		})
 		.style("fill", "white")
@@ -551,6 +551,7 @@ var visualProgress = function(divID, goal, updates, wWidth, wHeight){
 			$("#editvalue-form-btn").click();
 		} else {
 			$("#editupdate-"+selected+"-btn").click();
+			$("#editupdate-form-btn").click();
 		}
 	});
 	

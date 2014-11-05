@@ -340,9 +340,9 @@ var visualTimeMilestone = function(divID, goal, msSet, alljournals, wWdith, wHei
 	
 	var drawArcs = function(arr, clr) {
 		idArray.push(arr.milestone_id);
-		addNewButton('milestone', arr.milestone_id, arr.milestone_is_sub, 'submilestone-form', 'submilestone-form', 'Add New Sub-Milestone'+arr.milestone_id, arr.milestone_title, arr.milestone_description, arr.milestone_private, arr.milestone_complete_by, arr.milestone_completed, arr.milestone_date_completed)
-		addNewButton('editmilestone', arr.milestone_id, arr.milestone_is_sub, 'editmilestone-form', 'editmilestone-form', 'Edit Milestone'+arr.milestone_id, arr.milestone_title, arr.milestone_description, arr.milestone_private, arr.milestone_complete_by, arr.milestone_completed, arr.milestone_date_completed)
-		addNewButton('deletemilestone', arr.milestone_id, arr.milestone_is_sub, 'deletemilestone-form', 'deletemilestone-form', 'Delete Milestone'+arr.milestone_id, arr.milestone_title, arr.milestone_description, arr.milestone_private, arr.milestone_complete_by, arr.milestone_completed, arr.milestone_date_completed)
+		addNewButton('milestone', arr.milestone_id, arr.milestone_is_sub, 'Add New Sub-Milestone'+arr.milestone_id, arr.milestone_title, arr.milestone_description, arr.milestone_private, arr.milestone_complete_by, arr.milestone_completed, arr.milestone_date_completed)
+		addNewButton('editmilestone', arr.milestone_id, arr.milestone_is_sub, 'Edit Milestone'+arr.milestone_id, arr.milestone_title, arr.milestone_description, arr.milestone_private, arr.milestone_complete_by, arr.milestone_completed, arr.milestone_date_completed)
+		addNewButton('deletemilestone', arr.milestone_id, arr.milestone_is_sub, 'Delete Milestone'+arr.milestone_id, arr.milestone_title, arr.milestone_description, arr.milestone_private, arr.milestone_complete_by, arr.milestone_completed, arr.milestone_date_completed)
 		
 		var radAdd = sizeArray[currentDepth];
 		var arcData = {endAngle: (radAdd + currentAngle)};
