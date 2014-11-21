@@ -49,25 +49,25 @@ INSTALLED_APPS = (
 #    'django.contrib.contenttypes',
 #    'django.contrib.sessions',
 #    'django.contrib.messages',
-	'django.contrib.staticfiles',
-	'accounts',
-	'django.contrib.admin',
-	'django.contrib.auth',
-	'django.contrib.contenttypes',
-	'django.contrib.messages',
-	'django.contrib.sessions',
-	'bootstrap3',
-#	'south',
+    'django.contrib.staticfiles',
+    'accounts',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.messages',
+    'django.contrib.sessions',
+    'bootstrap3',
+#   'south',
 )
 
 MIDDLEWARE_CLASSES = (
 #    'django.middleware.csrf.CsrfViewMiddleware',
 #    'django.contrib.messages.middleware.MessageMiddleware',
 #    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	'django.middleware.common.CommonMiddleware',
-	'django.contrib.sessions.middleware.SessionMiddleware',
-	'django.contrib.messages.middleware.MessageMiddleware',
-	'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
 ROOT_URLCONF = 'Goali.urls'
@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'Goali.wsgi.application'
 
 # Template
 TEMPLATE_DIRS = (
-	os.path.join(BASE_DIR, 'templates'),
+    os.path.join(BASE_DIR, 'templates'),
 )
 
 # Database
@@ -86,10 +86,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'goali',
-		'USER': 'root',
-		'PASSWORD': 'goaliadmin',
-		'HOST': '',
-		'PORT': '',
+        'USER': 'root',
+        'PASSWORD': 'goaliadmin',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -112,6 +112,6 @@ USE_TZ = False
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-	os.path.join(BASE_DIR, "static"),
-	'/var/www/static/',
+    os.path.join(BASE_DIR, "static"),
+    '/var/www/static/',
 )
